@@ -1,0 +1,59 @@
+import type { Dict } from "./ko";
+
+export const ja: Dict = {
+  nav: { home: "ホーム", about: "概要", learn: "学び方", intent: "制作意図" },
+  sidebar: { title: "カテゴリー" },
+  hero: {
+    eyebrow: "INTERACTIVE 3D · 学習ツール",
+    title: "複雑な技術を<br>分解して理解する",
+    sub: "製品を3Dで回転させ、層ごとに分解して内部構造と各部品の役割を確かめましょう。",
+    ctaPrimary: "見てみる",
+    ctaSecondary: "使い方",
+  },
+  how: {
+    title: "学び方",
+    s1Title: "回転",
+    s1Desc: "マウス・タッチであらゆる角度から観察",
+    s2Title: "分解",
+    s2Desc: "スクロール・ピンチで部品を展開",
+    s3Title: "学習",
+    s3Desc: "部品をタップして役割を確認",
+  },
+  card: {
+    available: "公開中",
+    soon: "準備中",
+    explore: "見る",
+    catSub: "分解して学ぶモデル",
+  },
+  model: {
+    back: "← 戻る",
+    viewerLbl: "3Dビューア領域",
+    viewerNote: "実際のサイトではここでモデルを回転・分解・学習します。",
+    startLearn: "学習を始める",
+  },
+  category: { suffix: "シミュレーター" },
+  cat: {
+    semiconductor: "半導体",
+    space: "宇宙",
+    automotive: "自動車",
+    appliance: "家電",
+    aviation: "航空",
+    medical: "医療機器",
+    energy: "エネルギー",
+    robotics: "ロボティクス",
+  },
+  pages: {
+    about: {
+      title: "概要",
+      body: "STRATAは、複雑な製品を3Dで分解しながら学ぶ教育ツールです。半導体から宇宙・自動車・医療機器まで、見えない内部構造を回転・展開して理解できます。<br><br>専門知識は不要です。部品をタップすると、その役割をわかりやすく説明します。",
+    },
+    learn: {
+      title: "学習の流れ",
+      body: "すべてのモデルは同じ3ステップで学びます。<br><br>1. 回転 — あらゆる角度から観察。<br>2. 分解 — 層ごとに展開して内部を表示。<br>3. 学習 — 各部品をタップして役割と原理を確認。<br><br>易しい概念から深い構造へ段階的に進む設計です。",
+    },
+    intent: {
+      title: "制作意図",
+      body: "技術はますます小さく複雑になる一方で、その内部で何が起きているかを直感的に示す資料は多くありません。<br><br>STRATAは「開けて自分の目で見れば理解は早い」という単純な信念から生まれました。誰もが気軽に先端技術の内部をのぞき、小さな好奇心が深い理解につながることを目指します。<br><br>— トロントにて、制作者",
+    },
+  },
+};

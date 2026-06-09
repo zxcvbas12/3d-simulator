@@ -1,0 +1,59 @@
+import type { Dict } from "./ko";
+
+export const en: Dict = {
+  nav: { home: "Home", about: "About", learn: "Learning", intent: "Intent" },
+  sidebar: { title: "Categories" },
+  hero: {
+    eyebrow: "INTERACTIVE 3D · LEARNING TOOL",
+    title: "Understand technology<br>by taking it apart",
+    sub: "Rotate a product in 3D, pull it apart layer by layer, and explore what every component does.",
+    ctaPrimary: "Explore",
+    ctaSecondary: "How it works",
+  },
+  how: {
+    title: "How you learn",
+    s1Title: "Rotate",
+    s1Desc: "Inspect from every angle with mouse or touch",
+    s2Title: "Explode",
+    s2Desc: "Pull parts apart by scrolling or pinching",
+    s3Title: "Learn",
+    s3Desc: "Tap a part to see its role and how it works",
+  },
+  card: {
+    available: "Available",
+    soon: "Coming soon",
+    explore: "Explore",
+    catSub: "Models to learn by taking apart",
+  },
+  model: {
+    back: "← Back",
+    viewerLbl: "3D viewer area",
+    viewerNote: "In the live site, you rotate, explode and learn the model here.",
+    startLearn: "Start learning",
+  },
+  category: { suffix: " simulators" },
+  cat: {
+    semiconductor: "Semiconductor",
+    space: "Space",
+    automotive: "Automotive",
+    appliance: "Appliances",
+    aviation: "Aviation",
+    medical: "Medical",
+    energy: "Energy",
+    robotics: "Robotics",
+  },
+  pages: {
+    about: {
+      title: "About",
+      body: "STRATA is a learning tool for exploring complex products in 3D by taking them apart. From semiconductors to spacecraft, cars and medical devices, you can rotate and unfold hidden internal structures to understand how they work.<br><br>No expertise required — tap any part and we'll explain what it does in plain language.",
+    },
+    learn: {
+      title: "Learning structure",
+      body: "Every model follows the same three-step flow.<br><br>1. Rotate — observe the product from every angle.<br>2. Explode — unfold it layer by layer to reveal the inside.<br>3. Learn — tap each part to see its role and the principle behind it.<br><br>It's designed to start from simple ideas and move gradually into deeper structure.",
+    },
+    intent: {
+      title: "Creator's intent",
+      body: "Technology keeps getting smaller and more complex, yet there's little material that intuitively shows what's happening inside.<br><br>STRATA started from a simple belief: opening something up and seeing it for yourself is the fastest way to understand it. The goal is to let anyone peek inside advanced technology, turning small curiosity into deep understanding.<br><br>— From Toronto, the maker",
+    },
+  },
+};

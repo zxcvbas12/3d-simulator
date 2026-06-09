@@ -1,0 +1,59 @@
+import type { Dict } from "./ko";
+
+export const zh: Dict = {
+  nav: { home: "首页", about: "简介", learn: "学习方式", intent: "创作初衷" },
+  sidebar: { title: "分类" },
+  hero: {
+    eyebrow: "INTERACTIVE 3D · 学习工具",
+    title: "拆解复杂技术<br>轻松理解原理",
+    sub: "在3D中旋转产品，逐层拆解，探索内部结构与每个部件的作用。",
+    ctaPrimary: "开始探索",
+    ctaSecondary: "如何使用",
+  },
+  how: {
+    title: "学习方式",
+    s1Title: "旋转",
+    s1Desc: "用鼠标或触控全方位观察",
+    s2Title: "拆解",
+    s2Desc: "滚动或双指捏合展开部件",
+    s3Title: "学习",
+    s3Desc: "点击部件查看作用与原理",
+  },
+  card: {
+    available: "已上线",
+    soon: "即将推出",
+    explore: "探索",
+    catSub: "通过拆解学习的模型",
+  },
+  model: {
+    back: "← 返回",
+    viewerLbl: "3D查看区域",
+    viewerNote: "在正式网站中，你将在此旋转、拆解并学习模型。",
+    startLearn: "开始学习",
+  },
+  category: { suffix: "模拟器" },
+  cat: {
+    semiconductor: "半导体",
+    space: "航天",
+    automotive: "汽车",
+    appliance: "家电",
+    aviation: "航空",
+    medical: "医疗设备",
+    energy: "能源",
+    robotics: "机器人",
+  },
+  pages: {
+    about: {
+      title: "简介",
+      body: "STRATA 是一款通过3D拆解来学习复杂产品的教育工具。从半导体到航天器、汽车和医疗设备，你都能旋转并展开看不见的内部结构，理解其工作原理。<br><br>无需专业知识——点击任意部件，我们会用通俗的语言解释它的作用。",
+    },
+    learn: {
+      title: "学习结构",
+      body: "每个模型都遵循相同的三步流程。<br><br>1. 旋转 — 从各个角度观察产品。<br>2. 拆解 — 逐层展开，显示内部。<br>3. 学习 — 点击每个部件，了解作用与原理。<br><br>设计上从简单概念出发，逐步深入到更复杂的结构。",
+    },
+    intent: {
+      title: "创作初衷",
+      body: "技术越来越小、越来越复杂，但能直观展示其内部运作的资料却很少。<br><br>STRATA 源于一个简单的信念：把东西打开、亲眼去看，是理解它最快的方式。我们希望让每个人都能轻松窥见前沿技术的内部，让小小的好奇心通向深入的理解。<br><br>— 于多伦多，制作者",
+    },
+  },
+};

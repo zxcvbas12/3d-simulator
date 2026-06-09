@@ -1,15 +1,13 @@
-/* 베이스 리셋 + 3D 뷰어 배경. 앱 셸(nav·사이드바)은 이후 단계에서 얹는다. */
+/* 전역 리셋 + 사이트 배경. (시안 homepage-mockup-v2.html의 body 글로벌 이식)
+   정밀 계측기 톤: 네이비 라디얼 그라데이션 + 아주 옅은 블루프린트 그리드. */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -18,15 +16,39 @@ body {
   font-family: var(--sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* 3D 씬 마운트 영역 — 네이비 라디얼 그라데이션 배경.
-   렌더러는 alpha:true라 이 배경이 캔버스 뒤로 비쳐 씬 배경이 된다. */
-#app {
+/* 배경 라디얼(블루·구리 은은하게) */
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
-  touch-action: none;
-  background: radial-gradient(125% 120% at 50% 28%, #1b2438 0%, #0a0e18 56%, #04060c 100%);
+  z-index: -2;
+  background:
+    radial-gradient(120% 90% at 80% -5%, rgba(111, 155, 255, 0.13), transparent 55%),
+    radial-gradient(120% 120% at 8% 110%, rgba(201, 123, 52, 0.09), transparent 55%),
+    radial-gradient(130% 130% at 50% 35%, #1a2236 0%, #0a0e18 55%, #04060c 100%);
+}
+
+/* 옅은 블루프린트 그리드 (상단에서 페이드) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 54px 54px;
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 80%);
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 80%);
+}
+
+.mono {
+  font-family: var(--mono);
 }
 
 canvas {
