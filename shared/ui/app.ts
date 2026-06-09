@@ -2,13 +2,18 @@ import { t, getLang, setLang, onLangChange, LANGS, type Lang } from "@locales/in
 import { BRAND } from "@shared/config";
 import { CATEGORIES, findModel, modelsOf, type CategoryId, type ModelEntry } from "@shared/catalog";
 import { COMMON_PAGES, isCommonPage, type CommonPageId } from "../../pages/common";
-import { viewCategory, viewHome, viewModel, viewPage } from "./views";
+import { viewCategory, viewHome, viewModel, viewModelBottom, viewModelTop, viewPage } from "./views";
 
 type View = "home" | "category" | "model" | CommonPageId;
 
+/** 마운트된 3D 뷰어 핸들(동적 import 되므로 타입만 최소로 안다). */
+interface ViewerHandle {
+  dispose(): void;
+}
+
 /**
- * 앱 셸(컴포지션 루트). 시안 homepage-mockup-v2.html의 구조·동작을 이식한다.
- * 상단 네비 + 2단계 사이드바 + 본문 라우팅 + 모바일 드로어 + 언어 전환.
+ * 앱 셸(컴포지션 루트). 상단 네비 + 2단계 사이드바 + 본문 라우팅 + 모바일 드로어 + 언어 전환.
+ * live 모델 상세에서는 .viewer 영역에 공통 3D 뷰어를 동적 import 해서 마운트한다.
  * 모든 클릭은 루트 한 곳에서 위임 처리하므로 innerHTML 재렌더에도 핸들러가 살아있다.
  */
 export class App {
@@ -22,10 +27,13 @@ export class App {
   private sidebar!: HTMLElement;
   private backdrop!: HTMLElement;
 
+  private activeViewer: ViewerHandle | null = null;
+  private mountToken = 0;
+
   constructor(private root: HTMLElement) {
     this.buildSkeleton();
     this.root.addEventListener("click", (e) => this.onClick(e));
-    onLangChange(() => this.render());
+    onLangChange(() => this.onLang());
     this.render();
   }
 
@@ -100,48 +108,32 @@ export class App {
     if (!el) return;
 
     const lang = el.dataset.lang;
-    if (lang) {
-      setLang(lang as Lang);
-      return;
-    }
+    if (lang) return setLang(lang as Lang);
+
     const navView = el.dataset.view;
-    if (navView) {
-      this.goView(navView as View);
-      return;
-    }
+    if (navView) return this.goView(navView as View);
+
     const openCat = el.dataset.openCat;
-    if (openCat) {
-      this.openCategory(openCat as CategoryId);
-      return;
-    }
+    if (openCat) return this.openCategory(openCat as CategoryId);
+
     const openModel = el.dataset.openModel;
     if (openModel) {
       const [cat, id] = openModel.split(":");
-      this.openModel(cat as CategoryId, id);
-      return;
+      return this.openModel(cat as CategoryId, id);
     }
     switch (el.dataset.act) {
       case "home":
-        this.goView("home");
-        break;
+        return this.goView("home");
       case "explore":
-        this.openCategory("semiconductor");
-        break;
+        return this.openCategory("semiconductor");
       case "how":
-        this.goView("learn");
-        break;
+        return this.goView("learn");
       case "back":
-        this.goView("category");
-        break;
-      case "start":
-        // 3D 학습 시작은 다음 단계(공통 3D 토대 → HBM)에서 이 뷰어에 연결한다.
-        break;
+        return this.goView("category");
       case "toggle-drawer":
-        this.sidebar.classList.contains("open") ? this.closeDrawer() : this.openDrawer();
-        break;
+        return this.sidebar.classList.contains("open") ? this.closeDrawer() : this.openDrawer();
       case "backdrop":
-        this.closeDrawer();
-        break;
+        return this.closeDrawer();
     }
   }
 
@@ -156,10 +148,28 @@ export class App {
   }
 
   // ── 렌더 ───────────────────────────────────────────────
+  /** 네비게이션 시: 크롬 + 본문 전체. */
   private render(): void {
-    const d = t();
+    this.renderChrome();
+    this.renderMain();
+  }
 
-    // 상단 네비: 라벨은 언어에 따라 바뀌므로 매번 다시 만든다.
+  /** 언어 변경 시: 크롬은 항상 갱신. live 뷰어가 떠 있으면 뷰어는 유지하고 주변 텍스트만. */
+  private onLang(): void {
+    this.renderChrome();
+    if (this.view === "model" && this.curModel?.status === "live" && this.activeViewer) {
+      const top = this.main.querySelector('[data-role="md-top"]');
+      const bottom = this.main.querySelector('[data-role="md-bottom"]');
+      if (top) top.innerHTML = viewModelTop();
+      if (bottom) bottom.innerHTML = viewModelBottom(this.curModel);
+      // 뷰어 자신의 크롬·패널은 뷰어가 스스로 relocalize 한다.
+    } else {
+      this.renderMain();
+    }
+  }
+
+  private renderChrome(): void {
+    const d = t();
     const links: { view: View; label: string }[] = [
       { view: "home", label: d.nav.home },
       ...COMMON_PAGES.map((p) => ({ view: p as View, label: d.nav[p] })),
@@ -171,20 +181,24 @@ export class App {
       )
       .join("");
 
-    // 언어 버튼 활성 표시
     this.root.querySelectorAll<HTMLElement>("[data-lang]").forEach((b) => {
       b.classList.toggle("on", b.dataset.lang === getLang());
     });
 
     this.q('[data-role="sb-title"]').textContent = d.sidebar.title;
     this.renderSidebar();
+  }
 
-    // 본문
+  private renderMain(): void {
+    this.disposeViewer(); // 본문을 갈아끼우기 전에 기존 뷰어를 정리
+
     if (this.view === "home") this.main.innerHTML = viewHome();
     else if (this.view === "category") this.main.innerHTML = viewCategory(this.curCat);
     else if (this.view === "model" && this.curModel) this.main.innerHTML = viewModel(this.curModel);
     else if (isCommonPage(this.view)) this.main.innerHTML = viewPage(this.view);
     else this.main.innerHTML = viewHome();
+
+    if (this.view === "model" && this.curModel?.status === "live") this.mountViewer(this.curModel);
 
     window.scrollTo({ top: 0 });
   }
@@ -210,5 +224,32 @@ export class App {
 
       return `<div>${head}<div class="cat-models${open ? " open" : ""}">${models}</div></div>`;
     }).join("");
+  }
+
+  // ── 3D 뷰어 마운트/정리 (Three.js는 여기서 동적 import → 초기 번들 분리) ──
+  private mountViewer(model: ModelEntry): void {
+    const token = ++this.mountToken;
+    const mountEl = this.main.querySelector<HTMLElement>('[data-role="viewer-mount"]');
+    if (!mountEl) return;
+
+    void (async () => {
+      const [{ Viewer }, mod] = await Promise.all([
+        import("@shared/interaction/viewer"),
+        model.load
+          ? model.load()
+          : import("@shared/scene/demoModel").then((m) => m.createDemoModel()),
+      ]);
+      // 그새 다른 화면으로 이동했거나 마운트 노드가 사라졌으면 중단
+      if (token !== this.mountToken || !mountEl.isConnected) return;
+      this.activeViewer = new Viewer(mountEl, mod);
+    })();
+  }
+
+  private disposeViewer(): void {
+    this.mountToken++; // 진행 중인 비동기 마운트 무효화
+    if (this.activeViewer) {
+      this.activeViewer.dispose();
+      this.activeViewer = null;
+    }
   }
 }

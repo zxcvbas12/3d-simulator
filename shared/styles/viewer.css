@@ -1,0 +1,194 @@
+/* 3D 뷰어 오버레이 크롬 — .viewer 컨테이너 안에 절대배치. (hbm-3d.html UI 이식)
+   v- 접두사로 셸 스타일과 충돌을 피한다. */
+
+/* live 모델 상세의 뷰어는 더 크게. (소형 placeholder는 shell.css의 .viewer 그대로) */
+.viewer--live {
+  height: min(72vh, 560px);
+  cursor: grab;
+  touch-action: none;
+}
+.viewer--live:active {
+  cursor: grabbing;
+}
+
+/* 상단 우측 버튼 */
+.v-topright {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.v-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cdd6e6;
+  font-size: 12.5px;
+  font-family: var(--sans);
+  padding: 8px 13px;
+  border-radius: 11px;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: 0.18s;
+}
+.v-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+.v-btn.on {
+  background: rgba(96, 140, 255, 0.24);
+  border-color: rgba(125, 165, 255, 0.5);
+  color: #dce6ff;
+}
+
+/* 하단 슬라이더 + 힌트 */
+.v-bottom {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(440px, 86%);
+  text-align: center;
+  z-index: 3;
+}
+.v-hint {
+  font-size: 11.5px;
+  color: #7e8aa1;
+  margin-bottom: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+}
+.v-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 16px;
+  border-radius: 15px;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.v-slider-wrap span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #9aa6bd;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.v-slider-wrap input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+  outline: none;
+}
+.v-slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(111, 155, 255, 0.22);
+}
+.v-slider-wrap input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+/* 부품 정보 패널 */
+.v-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 320px;
+  max-width: 86%;
+  padding: 64px 24px 24px;
+  background: linear-gradient(180deg, rgba(12, 17, 27, 0.84), rgba(9, 13, 21, 0.95));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  transform: translateX(106%);
+  transition: transform 0.38s cubic-bezier(0.2, 0.75, 0.2, 1);
+  z-index: 4;
+}
+.v-panel.open {
+  transform: translateX(0);
+}
+.v-panel-accent {
+  width: 40px;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--blue);
+  margin-bottom: 16px;
+}
+.v-panel-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: #9fb6ff;
+  background: rgba(111, 155, 255, 0.1);
+  border: 1px solid rgba(111, 155, 255, 0.25);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+}
+.v-panel-title {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.35;
+  margin-bottom: 14px;
+}
+.v-panel-body {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #b6c0d5;
+}
+.v-panel-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cdd6e6;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .v-panel {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: 60%;
+    padding: 24px 22px 28px;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px 22px 0 0;
+    transform: translateY(108%);
+    overflow-y: auto;
+  }
+  .v-panel.open {
+    transform: translateY(0);
+  }
+  .v-bottom {
+    bottom: 12px;
+  }
+}

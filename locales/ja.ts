@@ -31,6 +31,14 @@ export const ja: Dict = {
     viewerNote: "実際のサイトではここでモデルを回転・分解・学習します。",
     startLearn: "学習を始める",
   },
+  viewer: {
+    assemble: "組立",
+    explode: "分解",
+    hint: "ドラッグで回転 · スクロール・ピンチ・スライダーで展開 · 部品をタップで説明",
+    autoRotate: "自動回転",
+    reset: "リセット",
+    layerLabel: "{n}番目の層",
+  },
   category: { suffix: "シミュレーター" },
   cat: {
     semiconductor: "半導体",

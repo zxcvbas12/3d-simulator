@@ -34,6 +34,14 @@ export const ko = {
     viewerNote: "실제 사이트에서는 여기에서 모델을 회전·분해·학습합니다.",
     startLearn: "학습 시작",
   },
+  viewer: {
+    assemble: "조립",
+    explode: "분해",
+    hint: "드래그로 회전 · 스크롤·핀치·슬라이더로 펼치고 접기 · 부품을 탭하면 설명",
+    autoRotate: "자동 회전",
+    reset: "초기화",
+    layerLabel: "{n}번째 층",
+  },
   category: { suffix: " 시뮬레이터" },
   cat: {
     semiconductor: "반도체",

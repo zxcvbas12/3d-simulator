@@ -1,4 +1,5 @@
 import type { Lang } from "@locales/index";
+import type { ModelModule } from "@shared/model";
 
 /**
  * 사이트 콘텐츠 카탈로그 — 카테고리와 모델 목록.
@@ -37,7 +38,9 @@ export interface ModelEntry {
   thumb: ThumbType;
   name: LocalizedText;
   desc: LocalizedText;
-  // load?: () => Promise<ModelModule>;  // 이후 단계에서 model.ts 동적 import 연결
+  /** 모델의 model.ts를 동적 import 하는 로더. 없으면 뷰어는 검증용 더미 모델을 띄운다.
+   *  (각 모델 폴더에 model.ts가 생기면 여기에 () => import("../<cat>/<id>/model") 를 단다.) */
+  load?: () => Promise<ModelModule>;
 }
 
 export const CATEGORIES: CategoryEntry[] = [

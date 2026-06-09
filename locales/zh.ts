@@ -31,6 +31,14 @@ export const zh: Dict = {
     viewerNote: "在正式网站中，你将在此旋转、拆解并学习模型。",
     startLearn: "开始学习",
   },
+  viewer: {
+    assemble: "组装",
+    explode: "拆解",
+    hint: "拖动旋转 · 滚动 / 捏合 / 滑块展开 · 点击部件查看说明",
+    autoRotate: "自动旋转",
+    reset: "重置",
+    layerLabel: "第{n}层",
+  },
   category: { suffix: "模拟器" },
   cat: {
     semiconductor: "半导体",

@@ -63,12 +63,28 @@ export function viewCategory(cat: CategoryId): string {
     <div class="grid">${cards}</div>`;
 }
 
-export function viewModel(m: ModelEntry): string {
-  const d = t();
+/** 뒤로 버튼. (언어 바뀌면 텍스트만 갱신) */
+export function viewModelTop(): string {
+  return `<button class="back" data-act="back">${t().model.back}</button>`;
+}
+
+/** 모델 메타(이름·상태) + 설명. (언어 바뀌면 텍스트만 갱신) */
+export function viewModelBottom(m: ModelEntry): string {
   const lang = getLang();
-  return `<button class="back" data-act="back">${d.model.back}</button>
-    <div class="viewer"><div class="lbl mono">${d.model.viewerLbl}</div>${stackMarkup()}<div class="note">${d.model.viewerNote}</div></div>
-    <div class="md-meta"><h2>${m.name[lang]}</h2>${statusBadge(m.status)}</div>
-    <p class="md-desc">${m.desc[lang]}</p>
-    ${m.status === "live" ? `<button class="btn btn-primary" data-act="start">${d.model.startLearn}</button>` : ""}`;
+  return `<div class="md-meta"><h2>${m.name[lang]}</h2>${statusBadge(m.status)}</div>
+    <p class="md-desc">${m.desc[lang]}</p>`;
+}
+
+export function viewModel(m: ModelEntry): string {
+  // live 모델: 빈 .viewer--live 컨테이너를 두고 app이 여기에 실제 3D 뷰어를 마운트한다.
+  //            (언어 변경 시 뷰어는 유지하고 위/아래 텍스트 래퍼만 다시 그린다)
+  // soon 모델: 회전하는 적층 모티프 placeholder.
+  const d = t();
+  const viewer =
+    m.status === "live"
+      ? `<div class="viewer viewer--live" data-role="viewer-mount"></div>`
+      : `<div class="viewer"><div class="lbl mono">${d.model.viewerLbl}</div>${stackMarkup()}<div class="note">${d.model.viewerNote}</div></div>`;
+  return `<div data-role="md-top">${viewModelTop()}</div>
+    ${viewer}
+    <div data-role="md-bottom">${viewModelBottom(m)}</div>`;
 }

@@ -31,6 +31,14 @@ export const en: Dict = {
     viewerNote: "In the live site, you rotate, explode and learn the model here.",
     startLearn: "Start learning",
   },
+  viewer: {
+    assemble: "Assembled",
+    explode: "Exploded",
+    hint: "Drag to rotate · scroll / pinch / slider to explode · tap a part for details",
+    autoRotate: "Auto-rotate",
+    reset: "Reset",
+    layerLabel: "Layer {n}",
+  },
   category: { suffix: " simulators" },
   cat: {
     semiconductor: "Semiconductor",
