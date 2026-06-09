@@ -1,0 +1,34 @@
+/* 베이스 리셋 + 3D 뷰어 배경. 앱 셸(nav·사이드바)은 이후 단계에서 얹는다. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg0);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 3D 씬 마운트 영역 — 네이비 라디얼 그라데이션 배경.
+   렌더러는 alpha:true라 이 배경이 캔버스 뒤로 비쳐 씬 배경이 된다. */
+#app {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  background: radial-gradient(125% 120% at 50% 28%, #1b2438 0%, #0a0e18 56%, #04060c 100%);
+}
+
+canvas {
+  display: block;
+}

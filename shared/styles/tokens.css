@@ -1,0 +1,26 @@
+/* ──────────────────────────────────────────────────────────────
+   디자인 토큰 — 전체 공통 색·폰트. (시안 homepage-mockup-v2.html 기준)
+   모델별 포인트 색은 각 모델에서 별도로 정한다.
+   정밀 계측기 톤: 거의 검정 네이비 + 블루·구리·골드 포인트.
+   ────────────────────────────────────────────────────────────── */
+:root {
+  /* 배경 / 텍스트 */
+  --bg0: #04060c;
+  --ink: #eaeff7;
+  --muted: #8a96ad;
+  --faint: #5a6478;
+
+  /* 라인 / 글래스 패널 */
+  --line: rgba(255, 255, 255, 0.09);
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-bd: rgba(255, 255, 255, 0.1);
+
+  /* 포인트 색 */
+  --blue: #6f9bff;
+  --copper: #c97b34;
+  --gold: #e6b53c;
+
+  /* 타이포그래피 — 제목·라벨·수치는 모노, 본문은 산세리프 */
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRATA — 3D 교육 시뮬레이터</title>
+<style>
+  :root{
+    --bg0:#04060c;--ink:#eaeff7;--muted:#8a96ad;--faint:#5a6478;
+    --line:rgba(255,255,255,.09);--glass:rgba(255,255,255,.045);--glass-bd:rgba(255,255,255,.10);
+    --blue:#6f9bff;--copper:#c97b34;--gold:#e6b53c;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg0);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(120% 90% at 80% -5%,rgba(111,155,255,.13),transparent 55%),
+    radial-gradient(120% 120% at 8% 110%,rgba(201,123,52,.09),transparent 55%),
+    radial-gradient(130% 130% at 50% 35%,#1a2236 0%,#0a0e18 55%,#04060c 100%);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.45;
+    background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+    background-size:54px 54px;-webkit-mask-image:radial-gradient(120% 100% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(120% 100% at 50% 0%,#000 30%,transparent 80%);}
+  .mono{font-family:var(--mono);}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:60;background:rgba(7,10,17,.6);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav-in{display:flex;align-items:center;gap:18px;height:62px;padding:0 22px;}
+  .brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:600;letter-spacing:4px;font-size:17px;cursor:pointer;}
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--copper);box-shadow:0 0 10px var(--copper);}
+  .commnav{display:flex;gap:2px;margin-left:10px;}
+  .navlink{font-size:13.5px;color:var(--muted);background:transparent;border:none;padding:9px 13px;border-radius:9px;cursor:pointer;font-family:var(--sans);transition:.15s;}
+  .navlink:hover{color:var(--ink);background:rgba(255,255,255,.04);}
+  .navlink.active{color:var(--ink);}
+  .navlink.active::after{content:"";display:block;height:2px;margin-top:5px;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--copper));}
+  .lang{margin-left:auto;display:flex;gap:2px;border:1px solid var(--glass-bd);border-radius:10px;padding:3px;background:var(--glass);}
+  .lang button{font-family:var(--mono);font-size:11px;color:var(--muted);background:transparent;border:none;padding:6px 9px;border-radius:7px;cursor:pointer;transition:.15s;}
+  .lang button:hover{color:var(--ink);}
+  .lang button.on{color:#dce6ff;background:rgba(111,155,255,.22);}
+  .sb-toggle{display:none;background:var(--glass);border:1px solid var(--glass-bd);color:var(--ink);border-radius:9px;width:38px;height:34px;cursor:pointer;font-size:15px;}
+
+  /* SHELL */
+  .shell{display:grid;grid-template-columns:250px 1fr;align-items:start;}
+  aside.sidebar{position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;border-right:1px solid var(--line);padding:20px 14px;}
+  .sb-title{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin:4px 8px 14px;}
+  .cat-head{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;color:var(--muted);font-family:var(--sans);font-size:14px;padding:10px;border-radius:9px;cursor:pointer;text-align:left;transition:.15s;}
+  .cat-head:hover{background:rgba(255,255,255,.04);color:var(--ink);}
+  .cat-head.active{color:var(--ink);background:rgba(111,155,255,.10);}
+  .cat-head .ic{width:7px;height:7px;border-radius:2px;background:var(--blue);opacity:.85;}
+  .cat-head .chev{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint);transition:.2s;}
+  .cat-head.open .chev{transform:rotate(90deg);}
+  .cat-models{overflow:hidden;max-height:0;transition:max-height .28s ease;}
+  .cat-models.open{max-height:360px;}
+  .model-link{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:none;color:var(--muted);font-size:12.5px;padding:8px 10px 8px 28px;border-radius:8px;cursor:pointer;text-align:left;position:relative;transition:.15s;}
+  .model-link::before{content:"";position:absolute;left:16px;top:0;bottom:0;width:1px;background:var(--line);}
+  .model-link:hover{color:var(--ink);background:rgba(255,255,255,.03);}
+  .model-link.active{color:#cfe0ff;}
+  .model-link.active::after{content:"";position:absolute;left:14px;top:50%;width:5px;height:5px;border-radius:50%;background:var(--copper);transform:translateY(-50%);box-shadow:0 0 6px var(--copper);}
+  .model-link .live{width:5px;height:5px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px var(--blue);margin-left:auto;}
+
+  main#main{padding:32px 30px 64px;min-height:calc(100vh - 62px);}
+
+  /* HERO (home) */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding:18px 0 44px;}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--blue);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--blue);}
+  h1{font-size:clamp(32px,4.6vw,54px);line-height:1.08;font-weight:680;letter-spacing:-.5px;}
+  h1 .accent{color:transparent;background:linear-gradient(120deg,var(--ink),var(--blue));-webkit-background-clip:text;background-clip:text;}
+  .sub{color:var(--muted);font-size:16px;max-width:440px;margin:22px 0 30px;line-height:1.7;}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{font-size:14px;padding:13px 22px;border-radius:12px;cursor:pointer;font-family:var(--sans);transition:.2s;border:1px solid transparent;}
+  .btn-primary{background:linear-gradient(120deg,#5d8bff,#7c63ff 140%);color:#fff;font-weight:600;box-shadow:0 8px 30px rgba(93,139,255,.32);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(93,139,255,.42);}
+  .btn-ghost{background:var(--glass);border-color:var(--glass-bd);color:var(--ink);}
+  .btn-ghost:hover{background:rgba(255,255,255,.1);}
+  .stage{position:relative;height:380px;display:flex;align-items:center;justify-content:center;perspective:1000px;}
+  .stage .t1{position:absolute;top:6px;left:6px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--faint);}
+  .stage .t2{position:absolute;bottom:6px;right:6px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--faint);}
+  .stack{position:relative;width:220px;height:220px;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ(-34deg);animation:spin 24s linear infinite;}
+  .stack:hover{animation-play-state:paused;}
+  .plate{position:absolute;inset:0;border-radius:12px;border:1px solid rgba(150,180,255,.35);background:linear-gradient(135deg,rgba(80,120,220,.34),rgba(40,60,120,.22));box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);}
+  .pin{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--copper);box-shadow:0 0 8px rgba(201,123,52,.8);}
+  @keyframes spin{to{transform:rotateX(58deg) rotateZ(326deg);}}
+
+  /* HOW strip */
+  .how{padding:44px 0 0;border-top:1px solid var(--line);}
+  .how h3{font-size:13px;font-family:var(--mono);letter-spacing:3px;text-transform:uppercase;color:var(--faint);margin-bottom:26px;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .step{border:1px solid var(--line);border-radius:16px;padding:22px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--copper);letter-spacing:2px;}
+  .step h4{font-size:18px;margin:11px 0 7px;font-weight:620;}
+  .step p{font-size:13.5px;color:var(--muted);line-height:1.6;}
+
+  /* category + grid */
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:26px;}
+  .sec-head .eyebrow2{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:8px;}
+  .sec-head h2{font-size:25px;font-weight:660;letter-spacing:-.3px;}
+  .sec-head .count{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:1px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:18px;}
+  .card{position:relative;border:1px solid var(--glass-bd);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));transition:.25s;opacity:0;animation:rise .5s ease forwards;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  .card.live{cursor:pointer;}
+  .card.live:hover{transform:translateY(-5px);border-color:rgba(111,155,255,.45);box-shadow:0 16px 44px rgba(0,0,0,.4);}
+  .card.soon{opacity:.6;}
+  .thumb{height:148px;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%,rgba(111,155,255,.10),transparent 60%);border-bottom:1px solid var(--line);overflow:hidden;}
+  .card-body{padding:16px 17px 18px;}
+  .badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:4px 9px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+  .badge .b{width:6px;height:6px;border-radius:50%;}
+  .badge.b-live{background:rgba(111,155,255,.14);border:1px solid rgba(111,155,255,.4);color:#bcd0ff;}
+  .badge.b-live .b{background:var(--blue);box-shadow:0 0 7px var(--blue);}
+  .badge.b-soon{background:rgba(255,255,255,.05);border:1px solid var(--glass-bd);color:var(--muted);}
+  .badge.b-soon .b{background:var(--faint);}
+  .card h3{font-size:15.5px;font-weight:620;margin-bottom:6px;letter-spacing:-.2px;}
+  .card p{font-size:12.5px;color:var(--muted);line-height:1.55;}
+  .card .open{margin-top:13px;font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--blue);display:flex;align-items:center;gap:7px;text-transform:uppercase;}
+  .card .open::after{content:"→";transition:.2s;}
+  .card.live:hover .open::after{transform:translateX(4px);}
+
+  /* pages */
+  .page{max-width:720px;animation:rise .4s ease;}
+  .page .eyebrow2{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:14px;}
+  .page h2{font-size:30px;font-weight:680;letter-spacing:-.4px;margin-bottom:18px;}
+  .page .lead{color:var(--muted);font-size:15.5px;line-height:1.85;}
+
+  /* model detail */
+  .back{background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;margin-bottom:18px;padding:6px 0;}
+  .back:hover{color:var(--ink);}
+  .viewer{height:350px;border:1px solid var(--glass-bd);border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;perspective:1000px;background:radial-gradient(120% 120% at 50% 0%,rgba(111,155,255,.10),transparent 60%);overflow:hidden;margin-bottom:22px;}
+  .viewer .lbl{position:absolute;top:13px;left:15px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--faint);}
+  .viewer .note{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--faint);padding:0 20px;}
+  .md-meta{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .md-meta h2{font-size:26px;font-weight:670;letter-spacing:-.3px;}
+  .md-desc{color:var(--muted);font-size:15px;line-height:1.75;max-width:620px;margin-bottom:22px;}
+
+  /* motifs */
+  .m{position:relative;}
+  .m-layers{width:104px;height:90px;transform:rotateX(56deg) rotateZ(-32deg);}
+  .m-layers i{position:absolute;left:0;right:0;height:13px;border-radius:4px;border:1px solid rgba(150,180,255,.4);background:linear-gradient(135deg,rgba(90,130,220,.5),rgba(40,60,120,.3));}
+  .m-orbit i,.m-coil i,.m-wave i{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);}
+  .m-orbit i{border:1px solid rgba(180,200,255,.35);}
+  .m-orbit .core{width:14px;height:14px;background:var(--gold);box-shadow:0 0 14px var(--gold);border:none;}
+  .m-coil i{border:1px solid rgba(230,181,60,.4);}
+  .m-coil .core{width:18px;height:18px;background:linear-gradient(135deg,var(--copper),var(--gold));border:none;box-shadow:0 0 12px rgba(201,123,52,.6);}
+  .m-cells{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:108px;}
+  .m-cells i{aspect-ratio:1/1.6;border-radius:4px;border:1px solid rgba(150,180,255,.35);background:linear-gradient(180deg,rgba(90,130,220,.4),rgba(40,60,120,.25));}
+  .m-blades{width:108px;height:108px;}
+  .m-blades i{position:absolute;left:50%;top:50%;width:9px;height:42px;border-radius:6px;background:linear-gradient(180deg,rgba(150,180,255,.6),rgba(60,90,170,.25));transform-origin:50% 100%;}
+  .m-blades .hub{position:absolute;left:50%;top:50%;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--copper),var(--gold));transform:translate(-50%,-50%);box-shadow:0 0 10px rgba(201,123,52,.6);}
+  .m-wave i{border:1px solid rgba(180,200,255,.35);}
+  .m-wave .cross{position:absolute;left:50%;top:50%;width:1px;height:106px;background:rgba(230,181,60,.5);transform:translate(-50%,-50%);}
+  .m-joint{width:118px;height:88px;}
+  .m-joint .seg{position:absolute;height:16px;width:54px;border-radius:8px;background:linear-gradient(135deg,rgba(90,130,220,.5),rgba(40,60,120,.3));border:1px solid rgba(150,180,255,.4);}
+  .m-joint .s1{left:12px;top:50px;transform:rotate(-18deg);}
+  .m-joint .s2{left:48px;top:26px;transform:rotate(-72deg);}
+  .m-joint .pivot{position:absolute;left:48px;top:46px;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--copper),var(--gold));box-shadow:0 0 8px rgba(201,123,52,.6);}
+
+  .backdrop{display:none;position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.5);}
+
+  @media (max-width:860px){
+    .shell{grid-template-columns:1fr;}
+    aside.sidebar{position:fixed;top:62px;left:0;width:262px;z-index:58;background:#080b12;transform:translateX(-104%);transition:transform .28s ease;}
+    aside.sidebar.open{transform:translateX(0);}
+    .sb-toggle{display:block;}
+    .commnav{display:none;}
+    .hero{grid-template-columns:1fr;gap:8px;}
+    .stage{order:-1;height:280px;}
+    .steps{grid-template-columns:1fr;}
+    main#main{padding:26px 20px 50px;}
+    .backdrop.show{display:block;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <button class="sb-toggle" id="sbToggle">☰</button>
+    <div class="brand" id="brandHome">STRATA<span class="dot"></span></div>
+    <div class="commnav" id="commnav">
+      <button class="navlink" data-view="home" data-i18n="nav_home">홈</button>
+      <button class="navlink" data-view="about" data-i18n="nav_about">소개</button>
+      <button class="navlink" data-view="learn" data-i18n="nav_learn">학습 구조</button>
+      <button class="navlink" data-view="intent" data-i18n="nav_intent">제작자 의도</button>
+    </div>
+    <div class="lang" id="lang">
+      <button data-lang="ko" class="on">KO</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="ja">日</button>
+      <button data-lang="zh">中</button>
+    </div>
+  </div>
+</nav>
+
+<div class="backdrop" id="backdrop"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-title" data-i18n="sb_title">카테고리</div>
+    <div id="catList"></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+const I18N = {
+  ko:{nav_home:"홈",nav_about:"소개",nav_learn:"학습 구조",nav_intent:"제작자 의도",sb_title:"카테고리",
+    eyebrow:"INTERACTIVE 3D · 학습 도구",heroTitle:"복잡한 기술을<br>분해해서 이해하다",
+    heroSub:"제품을 3D로 돌려보고, 한 겹씩 펼쳐 내부 구조와 각 부품의 역할을 직접 살펴보세요.",
+    ctaPrimary:"둘러보기",ctaSecondary:"작동 방식",
+    howTitle:"이렇게 학습해요",how1t:"회전",how1d:"마우스·터치로 360° 모든 각도에서 살펴보기",how2t:"분해",how2d:"스크롤·핀치로 부품을 한 겹씩 펼치기",how3t:"학습",how3d:"부품을 눌러 역할과 원리 확인하기",
+    available:"학습 가능",soon:"준비 중",explore:"탐구하기",catSub:"분해하며 배우는 모델",
+    back:"← 뒤로",viewerLbl:"3D 뷰어 영역",viewerNote:"실제 사이트에서는 여기에서 모델을 회전·분해·학습합니다.",startLearn:"학습 시작",
+    cat_semi:"반도체",cat_space:"우주",cat_auto:"자동차",cat_appliance:"가전",cat_aviation:"항공",cat_medical:"의료기기",cat_energy:"에너지",cat_robotics:"로보틱스",
+    p_about_t:"소개",p_about:"STRATA는 복잡한 기술 제품을 3D로 분해해 보며 배우는 교육 도구입니다. 반도체부터 우주·자동차·의료기기까지, 겉으로는 보이지 않는 내부 구조를 직접 돌려보고 펼쳐보며 이해할 수 있습니다.<br><br>전문 지식이 없어도 괜찮습니다. 부품을 누르면 그 역할을 쉬운 말로 설명해 드립니다.",
+    p_learn_t:"학습 구조",p_learn:"모든 모델은 같은 3단계 흐름으로 배웁니다.<br><br>1. 회전 — 제품을 모든 각도에서 관찰합니다.<br>2. 분해 — 한 겹씩 펼쳐 내부를 드러냅니다.<br>3. 학습 — 각 부품을 눌러 역할과 원리를 확인합니다.<br><br>쉬운 개념에서 시작해 점점 깊은 구조로 들어가도록 설계했습니다.",
+    p_intent_t:"제작자 의도",p_intent:"기술은 점점 작고 복잡해지지만, 그 안에서 무슨 일이 일어나는지 직관적으로 보여주는 자료는 드뭅니다.<br><br>STRATA는 '열어서 직접 보면 이해가 빠르다'는 단순한 믿음에서 출발했습니다. 누구나 부담 없이 첨단 기술의 내부를 들여다보고, 작은 호기심이 깊은 이해로 이어지도록 만드는 것이 목표입니다.<br><br>— 토론토에서, 제작자"},
+  en:{nav_home:"Home",nav_about:"About",nav_learn:"Learning",nav_intent:"Intent",sb_title:"Categories",
+    eyebrow:"INTERACTIVE 3D · LEARNING TOOL",heroTitle:"Understand technology<br>by taking it apart",
+    heroSub:"Rotate a product in 3D, pull it apart layer by layer, and explore what every component does.",
+    ctaPrimary:"Explore",ctaSecondary:"How it works",
+    howTitle:"How you learn",how1t:"Rotate",how1d:"Inspect from every angle with mouse or touch",how2t:"Explode",how2d:"Pull parts apart by scrolling or pinching",how3t:"Learn",how3d:"Tap a part to see its role and how it works",
+    available:"Available",soon:"Coming soon",explore:"Explore",catSub:"Models to learn by taking apart",
+    back:"← Back",viewerLbl:"3D viewer area",viewerNote:"In the live site, you rotate, explode and learn the model here.",startLearn:"Start learning",
+    cat_semi:"Semiconductor",cat_space:"Space",cat_auto:"Automotive",cat_appliance:"Appliances",cat_aviation:"Aviation",cat_medical:"Medical",cat_energy:"Energy",cat_robotics:"Robotics",
+    p_about_t:"About",p_about:"STRATA is a learning tool for exploring complex products in 3D by taking them apart. From semiconductors to spacecraft, cars and medical devices, you can rotate and unfold hidden internal structures to understand how they work.<br><br>No expertise required — tap any part and we'll explain what it does in plain language.",
+    p_learn_t:"Learning structure",p_learn:"Every model follows the same three-step flow.<br><br>1. Rotate — observe the product from every angle.<br>2. Explode — unfold it layer by layer to reveal the inside.<br>3. Learn — tap each part to see its role and the principle behind it.<br><br>It's designed to start from simple ideas and move gradually into deeper structure.",
+    p_intent_t:"Creator's intent",p_intent:"Technology keeps getting smaller and more complex, yet there's little material that intuitively shows what's happening inside.<br><br>STRATA started from a simple belief: opening something up and seeing it for yourself is the fastest way to understand it. The goal is to let anyone peek inside advanced technology, turning small curiosity into deep understanding.<br><br>— From Toronto, the maker"},
+  ja:{nav_home:"ホーム",nav_about:"概要",nav_learn:"学び方",nav_intent:"制作意図",sb_title:"カテゴリー",
+    eyebrow:"INTERACTIVE 3D · 学習ツール",heroTitle:"複雑な技術を<br>分解して理解する",
+    heroSub:"製品を3Dで回転させ、層ごとに分解して内部構造と各部品の役割を確かめましょう。",
+    ctaPrimary:"見てみる",ctaSecondary:"使い方",
+    howTitle:"学び方",how1t:"回転",how1d:"マウス・タッチであらゆる角度から観察",how2t:"分解",how2d:"スクロール・ピンチで部品を展開",how3t:"学習",how3d:"部品をタップして役割を確認",
+    available:"公開中",soon:"準備中",explore:"見る",catSub:"分解して学ぶモデル",
+    back:"← 戻る",viewerLbl:"3Dビューア領域",viewerNote:"実際のサイトではここでモデルを回転・分解・学習します。",startLearn:"学習を始める",
+    cat_semi:"半導体",cat_space:"宇宙",cat_auto:"自動車",cat_appliance:"家電",cat_aviation:"航空",cat_medical:"医療機器",cat_energy:"エネルギー",cat_robotics:"ロボティクス",
+    p_about_t:"概要",p_about:"STRATAは、複雑な製品を3Dで分解しながら学ぶ教育ツールです。半導体から宇宙・自動車・医療機器まで、見えない内部構造を回転・展開して理解できます。<br><br>専門知識は不要です。部品をタップすると、その役割をわかりやすく説明します。",
+    p_learn_t:"学習の流れ",p_learn:"すべてのモデルは同じ3ステップで学びます。<br><br>1. 回転 — あらゆる角度から観察。<br>2. 分解 — 層ごとに展開して内部を表示。<br>3. 学習 — 各部品をタップして役割と原理を確認。<br><br>易しい概念から深い構造へ段階的に進む設計です。",
+    p_intent_t:"制作意図",p_intent:"技術はますます小さく複雑になる一方で、その内部で何が起きているかを直感的に示す資料は多くありません。<br><br>STRATAは「開けて自分の目で見れば理解は早い」という単純な信念から生まれました。誰もが気軽に先端技術の内部をのぞき、小さな好奇心が深い理解につながることを目指します。<br><br>— トロントにて、制作者"},
+  zh:{nav_home:"首页",nav_about:"简介",nav_learn:"学习方式",nav_intent:"创作初衷",sb_title:"分类",
+    eyebrow:"INTERACTIVE 3D · 学习工具",heroTitle:"拆解复杂技术<br>轻松理解原理",
+    heroSub:"在3D中旋转产品，逐层拆解，探索内部结构与每个部件的作用。",
+    ctaPrimary:"开始探索",ctaSecondary:"如何使用",
+    howTitle:"学习方式",how1t:"旋转",how1d:"用鼠标或触控全方位观察",how2t:"拆解",how2d:"滚动或双指捏合展开部件",how3t:"学习",how3d:"点击部件查看作用与原理",
+    available:"已上线",soon:"即将推出",explore:"探索",catSub:"通过拆解学习的模型",
+    back:"← 返回",viewerLbl:"3D查看区域",viewerNote:"在正式网站中，你将在此旋转、拆解并学习模型。",startLearn:"开始学习",
+    cat_semi:"半导体",cat_space:"航天",cat_auto:"汽车",cat_appliance:"家电",cat_aviation:"航空",cat_medical:"医疗设备",cat_energy:"能源",cat_robotics:"机器人",
+    p_about_t:"简介",p_about:"STRATA 是一款通过3D拆解来学习复杂产品的教育工具。从半导体到航天器、汽车和医疗设备，你都能旋转并展开看不见的内部结构，理解其工作原理。<br><br>无需专业知识——点击任意部件，我们会用通俗的语言解释它的作用。",
+    p_learn_t:"学习结构",p_learn:"每个模型都遵循相同的三步流程。<br><br>1. 旋转 — 从各个角度观察产品。<br>2. 拆解 — 逐层展开，显示内部。<br>3. 学习 — 点击每个部件，了解作用与原理。<br><br>设计上从简单概念出发，逐步深入到更复杂的结构。",
+    p_intent_t:"创作初衷",p_intent:"技术越来越小、越来越复杂，但能直观展示其内部运作的资料却很少。<br><br>STRATA 源于一个简单的信念：把东西打开、亲眼去看，是理解它最快的方式。我们希望让每个人都能轻松窥见前沿技术的内部，让小小的好奇心通向深入的理解。<br><br>— 于多伦多，制作者"}
+};
+
+const CATS = [
+  {id:"semi",thumb:"layers"},{id:"space",thumb:"orbit"},{id:"auto",thumb:"cells"},
+  {id:"appliance",thumb:"coil"},{id:"aviation",thumb:"blades"},{id:"medical",thumb:"wave"},
+  {id:"energy",thumb:"cells"},{id:"robotics",thumb:"joint"}
+];
+
+const PRODUCTS = [
+  {cat:"semi",thumb:"layers",status:"live",name:{ko:"HBM 고대역폭 메모리",en:"HBM High-Bandwidth Memory",ja:"HBM 広帯域メモリ",zh:"HBM 高带宽内存"},desc:{ko:"수직으로 쌓은 적층 DRAM",en:"Vertically stacked DRAM",ja:"積層型DRAM",zh:"垂直堆叠DRAM"}},
+  {cat:"semi",thumb:"layers",status:"soon",name:{ko:"GPU 패키지",en:"GPU Package",ja:"GPUパッケージ",zh:"GPU封装"},desc:{ko:"그래픽 처리 장치 구조",en:"Graphics processor anatomy",ja:"GPUの構造",zh:"图形处理器结构"}},
+  {cat:"semi",thumb:"layers",status:"soon",name:{ko:"CPU 다이",en:"CPU Die",ja:"CPUダイ",zh:"CPU裸片"},desc:{ko:"중앙 처리 장치 내부",en:"Inside a processor",ja:"プロセッサ内部",zh:"处理器内部"}},
+  {cat:"space",thumb:"orbit",status:"soon",name:{ko:"로켓 엔진",en:"Rocket Engine",ja:"ロケットエンジン",zh:"火箭发动机"},desc:{ko:"추진 시스템 단면",en:"Propulsion cutaway",ja:"推進システム断面",zh:"推进系统剖面"}},
+  {cat:"space",thumb:"orbit",status:"soon",name:{ko:"인공위성",en:"Satellite",ja:"人工衛星",zh:"人造卫星"},desc:{ko:"궤도 위성 모듈",en:"Orbital satellite",ja:"軌道衛星",zh:"轨道卫星模块"}},
+  {cat:"space",thumb:"orbit",status:"soon",name:{ko:"재진입 캡슐",en:"Reentry Capsule",ja:"再突入カプセル",zh:"返回舱"},desc:{ko:"대기권 재진입 구조",en:"Atmospheric reentry",ja:"大気圏再突入",zh:"大气层返回"}},
+  {cat:"auto",thumb:"cells",status:"soon",name:{ko:"EV 배터리 팩",en:"EV Battery Pack",ja:"EVバッテリーパック",zh:"电动汽车电池组"},desc:{ko:"전기차 에너지 저장",en:"EV energy storage",ja:"EVのエネルギー貯蔵",zh:"电动车储能"}},
+  {cat:"auto",thumb:"cells",status:"soon",name:{ko:"내연기관 엔진",en:"Combustion Engine",ja:"内燃エンジン",zh:"内燃机"},desc:{ko:"4행정 작동 원리",en:"Four-stroke cycle",ja:"4ストロークの原理",zh:"四冲程原理"}},
+  {cat:"auto",thumb:"cells",status:"soon",name:{ko:"구동 모터",en:"Drive Motor",ja:"駆動モーター",zh:"驱动电机"},desc:{ko:"전기 구동 장치",en:"Electric drive unit",ja:"電動駆動装置",zh:"电力驱动装置"}},
+  {cat:"appliance",thumb:"coil",status:"soon",name:{ko:"냉각 컴프레서",en:"Cooling Compressor",ja:"冷却コンプレッサー",zh:"制冷压缩机"},desc:{ko:"냉장·냉방의 심장부",en:"The heart of cooling",ja:"冷却の心臓部",zh:"制冷核心"}},
+  {cat:"appliance",thumb:"coil",status:"soon",name:{ko:"전기 모터",en:"Electric Motor",ja:"電動モーター",zh:"电动机"},desc:{ko:"회전 동력 장치",en:"Rotary drive",ja:"回転駆動",zh:"旋转动力"}},
+  {cat:"appliance",thumb:"coil",status:"soon",name:{ko:"전자레인지",en:"Microwave Oven",ja:"電子レンジ",zh:"微波炉"},desc:{ko:"마그네트론 작동 원리",en:"How a magnetron works",ja:"マグネトロンの仕組み",zh:"磁控管原理"}},
+  {cat:"aviation",thumb:"blades",status:"soon",name:{ko:"제트 엔진",en:"Jet Engine",ja:"ジェットエンジン",zh:"喷气发动机"},desc:{ko:"터보팬 구조",en:"Turbofan anatomy",ja:"ターボファン構造",zh:"涡扇结构"}},
+  {cat:"aviation",thumb:"blades",status:"soon",name:{ko:"랜딩기어",en:"Landing Gear",ja:"着陸装置",zh:"起落架"},desc:{ko:"이착륙 장치",en:"Takeoff & landing gear",ja:"離着陸装置",zh:"起降装置"}},
+  {cat:"aviation",thumb:"blades",status:"soon",name:{ko:"날개 구조",en:"Wing Structure",ja:"主翼構造",zh:"机翼结构"},desc:{ko:"항공기 날개 내부",en:"Inside an aircraft wing",ja:"主翼の内部",zh:"机翼内部"}},
+  {cat:"medical",thumb:"wave",status:"soon",name:{ko:"MRI 스캐너",en:"MRI Scanner",ja:"MRIスキャナー",zh:"磁共振扫描仪"},desc:{ko:"자기공명영상 장치",en:"Magnetic resonance imaging",ja:"磁気共鳴画像",zh:"磁共振成像"}},
+  {cat:"medical",thumb:"wave",status:"soon",name:{ko:"페이스메이커",en:"Pacemaker",ja:"ペースメーカー",zh:"心脏起搏器"},desc:{ko:"인공 심장박동 조율기",en:"Cardiac rhythm device",ja:"心臓ペースメーカー",zh:"心律调节器"}},
+  {cat:"medical",thumb:"wave",status:"soon",name:{ko:"인슐린 펌프",en:"Insulin Pump",ja:"インスリンポンプ",zh:"胰岛素泵"},desc:{ko:"자동 인슐린 주입",en:"Automated insulin delivery",ja:"自動インスリン注入",zh:"自动注射胰岛素"}},
+  {cat:"energy",thumb:"cells",status:"soon",name:{ko:"리튬이온 배터리",en:"Lithium-Ion Cell",ja:"リチウムイオン電池",zh:"锂离子电池"},desc:{ko:"충전식 배터리 셀",en:"Rechargeable battery cell",ja:"充電式電池セル",zh:"可充电电芯"}},
+  {cat:"energy",thumb:"cells",status:"soon",name:{ko:"태양광 패널",en:"Solar Panel",ja:"太陽光パネル",zh:"太阳能板"},desc:{ko:"광전지 변환 구조",en:"Photovoltaic conversion",ja:"太陽光発電",zh:"光伏转换"}},
+  {cat:"energy",thumb:"cells",status:"soon",name:{ko:"풍력 터빈",en:"Wind Turbine",ja:"風力タービン",zh:"风力涡轮机"},desc:{ko:"풍력 발전 장치",en:"Wind power generator",ja:"風力発電",zh:"风力发电"}},
+  {cat:"robotics",thumb:"joint",status:"soon",name:{ko:"로봇 액추에이터",en:"Robotic Actuator",ja:"ロボットアクチュエータ",zh:"机器人执行器"},desc:{ko:"로봇 관절 구동부",en:"Robot joint drive",ja:"関節駆動部",zh:"关节驱动"}},
+  {cat:"robotics",thumb:"joint",status:"soon",name:{ko:"휴머노이드 손",en:"Humanoid Hand",ja:"ヒューマノイドハンド",zh:"仿生机械手"},desc:{ko:"다관절 로봇 손",en:"Multi-joint robot hand",ja:"多関節ロボットハンド",zh:"多关节机械手"}},
+  {cat:"robotics",thumb:"joint",status:"soon",name:{ko:"라이다",en:"LiDAR Sensor",ja:"LiDARセンサー",zh:"激光雷达"},desc:{ko:"자율주행 거리 센서",en:"Self-driving range sensor",ja:"自動運転センサー",zh:"自动驾驶传感器"}}
+];
+
+let lang="ko", view="home", curCat="semi", curModel=null;
+const T = ()=>I18N[lang];
+const main = document.getElementById("main");
+const catList = document.getElementById("catList");
+const sidebar = document.getElementById("sidebar");
+const backdrop = document.getElementById("backdrop");
+
+function catTitle(id){
+  const n = T()["cat_"+id];
+  return lang==="ko"?n+" 시뮬레이터":lang==="en"?n+" simulators":lang==="ja"?n+"シミュレーター":n+"模拟器";
+}
+function thumbMarkup(type){
+  if(type==="layers"){let s="";for(let i=0;i<5;i++)s+=`<i style="top:${i*16}px"></i>`;return `<div class="m m-layers">${s}</div>`;}
+  if(type==="orbit")return `<div class="m m-orbit"><i style="width:118px;height:118px"></i><i style="width:82px;height:82px"></i><i style="width:46px;height:46px"></i><i class="core"></i></div>`;
+  if(type==="coil")return `<div class="m m-coil"><i style="width:116px;height:116px"></i><i style="width:86px;height:86px"></i><i style="width:56px;height:56px"></i><i class="core"></i></div>`;
+  if(type==="cells"){let s="";for(let i=0;i<8;i++)s+="<i></i>";return `<div class="m m-cells">${s}</div>`;}
+  if(type==="blades"){let s="";for(let i=0;i<6;i++)s+=`<i style="transform:translate(-50%,-100%) rotate(${i*60}deg)"></i>`;return `<div class="m m-blades">${s}<span class="hub"></span></div>`;}
+  if(type==="wave")return `<div class="m m-wave"><i style="width:106px;height:106px"></i><i style="width:72px;height:72px"></i><i style="width:38px;height:38px"></i><span class="cross"></span></div>`;
+  if(type==="joint")return `<div class="m m-joint"><span class="seg s1"></span><span class="seg s2"></span><span class="pivot"></span></div>`;
+  return "";
+}
+function stackMarkup(){
+  let plates="";for(let i=0;i<5;i++)plates+=`<div class="plate" style="transform:translateZ(${i*26}px);opacity:${0.55+i*0.09}"></div>`;
+  const corners=[[14,14],[200,14],[14,200],[200,200]];
+  corners.forEach(c=>plates+=`<div class="pin" style="left:${c[0]}px;top:${c[1]}px;transform:translateZ(146px)"></div>`);
+  return `<div class="stack">${plates}</div>`;
+}
+
+function applyChrome(){
+  document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.getAttribute("data-i18n");if(T()[k]!==undefined)el.textContent=T()[k];});
+  document.querySelectorAll("#commnav .navlink").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  document.documentElement.lang=lang;
+}
+function renderSidebar(){
+  catList.innerHTML="";
+  CATS.forEach(c=>{
+    const item=document.createElement("div");
+    const open = curCat===c.id;
+    const active = (view==="category"||view==="model") && curCat===c.id;
+    const head=document.createElement("button");
+    head.className="cat-head"+(open?" open":"")+(active?" active":"");
+    head.innerHTML=`<span class="ic"></span>${T()["cat_"+c.id]}<span class="chev">▶</span>`;
+    head.onclick=()=>{ curCat=c.id; view="category"; curModel=null; render(); };
+    item.appendChild(head);
+    const wrap=document.createElement("div");
+    wrap.className="cat-models"+(open?" open":"");
+    PRODUCTS.filter(p=>p.cat===c.id).forEach(p=>{
+      const ml=document.createElement("button");
+      const isActive = view==="model" && curModel===p;
+      ml.className="model-link"+(isActive?" active":"");
+      ml.innerHTML=`${p.name[lang]}${p.status==="live"?'<span class="live"></span>':''}`;
+      ml.onclick=()=>{ openModel(p); };
+      wrap.appendChild(ml);
+    });
+    item.appendChild(wrap);
+    catList.appendChild(item);
+  });
+}
+function openModel(p){ curCat=p.cat; curModel=p; view="model"; closeDrawer(); render(); }
+
+function viewHome(){
+  return `<header class="hero">
+    <div>
+      <div class="eyebrow">${T().eyebrow}</div>
+      <h1><span class="accent">${T().heroTitle}</span></h1>
+      <p class="sub">${T().heroSub}</p>
+      <div class="cta-row">
+        <button class="btn btn-primary" id="ctaExplore">${T().ctaPrimary}</button>
+        <button class="btn btn-ghost" id="ctaHow">${T().ctaSecondary}</button>
+      </div>
+    </div>
+    <div class="stage"><div class="t1 mono">EXPLODED VIEW · 01</div><div class="t2 mono">Z-AXIS / 220μ</div>${stackMarkup()}</div>
+  </header>
+  <section class="how">
+    <h3>${T().howTitle}</h3>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h4>${T().how1t}</h4><p>${T().how1d}</p></div>
+      <div class="step"><div class="n">02</div><h4>${T().how2t}</h4><p>${T().how2d}</p></div>
+      <div class="step"><div class="n">03</div><h4>${T().how3t}</h4><p>${T().how3d}</p></div>
+    </div>
+  </section>`;
+}
+function viewPage(key){
+  return `<div class="page"><div class="eyebrow2">STRATA</div><h2>${T()[key+"_t"]}</h2><div class="lead">${T()[key]}</div></div>`;
+}
+function viewCategory(){
+  const list=PRODUCTS.filter(p=>p.cat===curCat);
+  let cards="";
+  list.forEach((p,i)=>{
+    const live=p.status==="live";
+    const badge=live?`<div class="badge b-live"><span class="b"></span>${T().available}</div>`:`<div class="badge b-soon"><span class="b"></span>${T().soon}</div>`;
+    cards+=`<div class="card ${live?"live":"soon"}" data-mi="${PRODUCTS.indexOf(p)}" style="animation-delay:${i*0.05}s">
+      <div class="thumb">${badge}${thumbMarkup(p.thumb)}</div>
+      <div class="card-body"><h3>${p.name[lang]}</h3><p>${p.desc[lang]}</p>${live?`<div class="open">${T().explore}</div>`:""}</div></div>`;
+  });
+  return `<div class="sec-head"><div><div class="eyebrow2">${T().catSub}</div><h2>${catTitle(curCat)}</h2></div>
+    <div class="count mono">${String(list.length).padStart(2,"0")}</div></div>
+    <div class="grid">${cards}</div>`;
+}
+function viewModel(){
+  const p=curModel;
+  return `<button class="back" id="backBtn">${T().back}</button>
+    <div class="viewer"><div class="lbl mono">${T().viewerLbl}</div>${stackMarkup()}<div class="note">${T().viewerNote}</div></div>
+    <div class="md-meta"><h2>${p.name[lang]}</h2>${p.status==="live"?`<div class="badge b-live"><span class="b"></span>${T().available}</div>`:`<div class="badge b-soon"><span class="b"></span>${T().soon}</div>`}</div>
+    <p class="md-desc">${p.desc[lang]}</p>
+    ${p.status==="live"?`<button class="btn btn-primary">${T().startLearn}</button>`:""}`;
+}
+
+function render(){
+  applyChrome();
+  renderSidebar();
+  if(view==="home")main.innerHTML=viewHome();
+  else if(view==="about")main.innerHTML=viewPage("p_about");
+  else if(view==="learn")main.innerHTML=viewPage("p_learn");
+  else if(view==="intent")main.innerHTML=viewPage("p_intent");
+  else if(view==="category")main.innerHTML=viewCategory();
+  else if(view==="model")main.innerHTML=viewModel();
+
+  // wire dynamic buttons
+  const ex=document.getElementById("ctaExplore");if(ex)ex.onclick=()=>{view="category";curCat="semi";render();};
+  const hw=document.getElementById("ctaHow");if(hw)hw.onclick=()=>{view="learn";render();};
+  const bk=document.getElementById("backBtn");if(bk)bk.onclick=()=>{view="category";curModel=null;render();};
+  main.querySelectorAll(".card.live").forEach(c=>c.onclick=()=>{const p=PRODUCTS[+c.dataset.mi];openModel(p);});
+  main.scrollTop=0;window.scrollTo({top:0});
+}
+
+// nav + lang
+document.getElementById("commnav").addEventListener("click",e=>{const b=e.target.closest(".navlink");if(!b)return;view=b.dataset.view;curModel=null;closeDrawer();render();});
+document.getElementById("brandHome").onclick=()=>{view="home";curModel=null;render();};
+document.getElementById("lang").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;lang=b.dataset.lang;document.querySelectorAll("#lang button").forEach(x=>x.classList.toggle("on",x===b));render();});
+
+// mobile drawer
+function openDrawer(){sidebar.classList.add("open");backdrop.classList.add("show");}
+function closeDrawer(){sidebar.classList.remove("open");backdrop.classList.remove("show");}
+document.getElementById("sbToggle").onclick=()=>sidebar.classList.contains("open")?closeDrawer():openDrawer();
+backdrop.onclick=closeDrawer;
+
+render();
+</script>
+</body>
+</html>
