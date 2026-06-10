@@ -5,6 +5,16 @@
 
 > **STRATA**는 임시 브랜드명(자리표시)입니다. [`shared/config.ts`](shared/config.ts) 한 곳에서 바꿀 수 있습니다.
 
+## 미리보기
+
+| 홈 | GPU 패키지 — 분해 + 정보 패널 |
+|---|---|
+| ![홈 화면](docs/screenshots/home.png) | ![GPU 분해도와 인터포저 정보 패널](docs/screenshots/gpu-exploded-panel.png) |
+
+| HBM — 수직 적층 분해 | CPU — 칩렛 평면 분해 |
+|---|---|
+| ![HBM 8층 적층 분해](docs/screenshots/hbm-exploded.png) | ![CPU 칩렛 패키지 분해](docs/screenshots/cpu-exploded.png) |
+
 ---
 
 ## 핵심 개념
