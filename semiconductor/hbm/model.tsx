@@ -193,6 +193,7 @@ function addEdges(group: THREE.Group, mesh: THREE.Mesh, color: number, op = 0.5)
     new THREE.EdgesGeometry(mesh.geometry),
     new THREE.LineBasicMaterial({ color, transparent: true, opacity: op }),
   );
+  e.raycast = () => {}; // 엣지 라인은 장식 — 클릭을 가로채지 않도록 픽 대상에서 제외
   group.add(e);
 }
 function addBumps(group: THREE.Group, w: number, dieHalfH: number) {
@@ -333,6 +334,8 @@ function update({ groups }: ViewerFrameCtx) {
     tsvMesh.setMatrixAt(i, _m);
   }
   tsvMesh.instanceMatrix.needsUpdate = true;
+  // 인스턴스 행렬(길이)이 바뀌었으니 레이캐스트용 경계구를 무효화 → 펼친 TSV도 클릭 적중 보장
+  tsvMesh.boundingSphere = null;
 }
 
 export const hbmModel: ModelDef = { parts, info: hbmInfo, extras: <primitive object={tsvMesh} />, update };

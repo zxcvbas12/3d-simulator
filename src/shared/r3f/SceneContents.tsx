@@ -94,6 +94,12 @@ export function SceneContents({ model }: { model: ModelDef }) {
     };
   }, [scene, invalidate]);
 
+  // 라인 픽 임계값을 작게 — 엣지 라인이 클릭을 가로채지 않도록(모델이 깜빡 안 꺼도 안전).
+  useEffect(() => {
+    const lineParams = raycaster.current.params.Line;
+    if (lineParams) lineParams.threshold = 0.05;
+  }, []);
+
   // 입력: 마우스 드래그=회전, 휠/핀치=줌(독립), 탭=선택
   useEffect(() => {
     const el = gl.domElement;
