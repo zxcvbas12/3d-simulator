@@ -23,9 +23,10 @@
 ## 푸터 — 구현 완료
 - `ui/Footer.tsx` + shell.css(`.footer`), `App.tsx`의 `.main` 안. 구성·문구 사양은 `pages/CLAUDE.md`. 면책 한 줄(`footer.disclaimer`)은 신뢰 레이어 — 빼지 말 것.
 
-## 메타/OG (Astro 이전 전의 "기본만")
-- `index.html`: lang 동기화(이미 setLang에서 처리), title·description·OG(og:title/description/image)·파비콘·테마 컬러(#04060c).
-- OG 이미지 1장은 정적으로(분해도 모티프). 페이지별 메타는 Astro 이전 때 — 지금 만들지 말 것.
+## 메타/OG — 구현 완료 (Astro 이전 전의 "기본만")
+- `index.html`: description·theme-color·OG(title/description/image)·SVG 파비콘(`public/favicon.svg`, 적층 판 모티프). `public/robots.txt` 허용.
+- OG 이미지 = `public/og.png`(1200×630, 홈 히어로 정적 캡처). **og:url은 도메인 확정 후 추가**, 페이지별 메타·사이트맵은 Astro 이전 때.
+- 본문 한국어 줄바꿈은 `word-break: keep-all`(index.css) — 단어 중간에서 꺾이지 않는다.
 
 ## 성능 예산표 (측정해서 갱신하는 곳)
 | 항목 | 예산 | 현재 (2026-06, gzip) |
@@ -39,15 +40,14 @@
 - 측정 방법: 번들 = `npm run build` 출력. FPS = 모델 화면 `?stats`(실기기). 로드 = Lighthouse(빌드+preview에 대해).
 - 폴리시 작업 전후로 이 표를 갱신하고, 예산 초과 시 기능 추가를 멈추고 최적화 먼저(루트 규칙).
 
-### 8-a 기준선 (2026-06-10, Lighthouse 12 · headless Chromium · localhost preview)
-| 카테고리 | 점수 | 메모 |
-|---|---|---|
-| Performance | 100 | FCP/LCP 1.5s · TBT 10ms · CLS 0 · 홈 전송량 80 KiB |
-| Accessibility | 91 | color-contrast 2곳(`.stage .t2`, `.how h3`) · heading-order(`.how`가 h1→h3) |
-| Best Practices | 96 | 파비콘 404 콘솔 에러 |
-| SEO | 82 | meta description 없음 · robots.txt 없음 |
-- 환경 주의: 컨테이너(소프트웨어 GL·localhost) 측정 — 실배포·실기기 수치와 다를 수 있다. 비교용 기준선으로만 사용.
-- 위 감점 항목이 8-b(대비·헤딩)·8-d(파비콘·메타·robots) 작업 목록이다. 해결 후 재측정해 이 표를 갱신할 것.
+### Lighthouse — 8-a 기준선 → 8-d 재측정 (2026-06-10, LH12 · headless Chromium · localhost preview)
+| 카테고리 | 8-a 기준선 | 8-d 최종 | 메모 |
+|---|---|---|---|
+| Performance | 100 | **95** | FCP/LCP 1.5→2.4s — 웹폰트·콘텐츠 추가 비용(swap이라 실기기 체감은 폴백 즉시 표시). 예산 ≥90 유지 |
+| Accessibility | 91 | **100** | 대비(--faint 상향)·heading-order(h2/h3 정리)·푸터 target-size 해결 |
+| Best Practices | 96 | **100** | SVG 파비콘 추가로 404 해소 |
+| SEO | 82 | **100** | meta description + robots.txt |
+- 홈 전송량 80→241 KiB (폰트 101 KiB + 콘텐츠·CSS). 환경 주의: 컨테이너 측정 — 실배포 후 실기기로 재확인.
 
 ## 지키던 것 (회귀 금지)
 - `frameloop="demand"` 온디맨드 렌더 / dpr 1.5 캡 / 3D lazy 로드 / 절차적 텍스처 캐시(`r3f/textures.ts`) / `prefers-reduced-motion` 처리 / 키보드 회전·포커스 링·ARIA 라벨.

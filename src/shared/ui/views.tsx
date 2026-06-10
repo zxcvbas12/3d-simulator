@@ -57,17 +57,17 @@ function Home() {
         <div className="steps">
           <div className="step">
             <div className="n">01</div>
-            <h4>{t.how.s1Title}</h4>
+            <h3>{t.how.s1Title}</h3>
             <p>{t.how.s1Desc}</p>
           </div>
           <div className="step">
             <div className="n">02</div>
-            <h4>{t.how.s2Title}</h4>
+            <h3>{t.how.s2Title}</h3>
             <p>{t.how.s2Desc}</p>
           </div>
           <div className="step">
             <div className="n">03</div>
-            <h4>{t.how.s3Title}</h4>
+            <h3>{t.how.s3Title}</h3>
             <p>{t.how.s3Desc}</p>
           </div>
         </div>
@@ -99,15 +99,15 @@ function Home() {
         <h2 className="how-title">{t.home.trustTitle}</h2>
         <div className="steps">
           <div className="step">
-            <h4>{t.home.trust1Title}</h4>
+            <h3>{t.home.trust1Title}</h3>
             <p>{t.home.trust1Desc}</p>
           </div>
           <div className="step">
-            <h4>{t.home.trust2Title}</h4>
+            <h3>{t.home.trust2Title}</h3>
             <p>{t.home.trust2Desc}</p>
           </div>
           <div className="step">
-            <h4>{t.home.trust3Title}</h4>
+            <h3>{t.home.trust3Title}</h3>
             <p>{t.home.trust3Desc}</p>
           </div>
         </div>

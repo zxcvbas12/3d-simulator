@@ -16,6 +16,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   background-color: #070c18;
+  word-break: keep-all; /* 한국어가 단어 중간에서 꺾이지 않게 (라틴 텍스트에는 영향 없음) */
 }
 
 /* 큰 제목은 디스플레이 그로테스크 — 모노 라벨(.how-title 등 font-family 명시)은 영향 없음 */
