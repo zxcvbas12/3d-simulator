@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from "react";
 import { BRAND } from "@shared/config";
 import { getModelViewer } from "../r3f/registry";
-import { modelsOf, type ModelEntry, type Status } from "@shared/catalog";
+import { CATEGORIES, modelsOf, type ModelEntry, type Status } from "@shared/catalog";
 import { useAppStore } from "../state/store";
 import { useRoute, type PageId } from "../state/route";
 import { useT } from "../i18n";
@@ -69,6 +69,46 @@ function Home() {
             <div className="n">03</div>
             <h4>{t.how.s3Title}</h4>
             <p>{t.how.s3Desc}</p>
+          </div>
+        </div>
+      </section>
+      {/* 카테고리 쇼케이스 — 카탈로그에서 모델 수 계산(숫자 하드코딩 금지) */}
+      <section className="cats-show">
+        <h2 className="how-title">{t.home.catsTitle}</h2>
+        <div className="cat-grid">
+          {CATEGORIES.map((c) => {
+            const ms = modelsOf(c.id);
+            const live = ms.filter((m) => m.status === "live").length;
+            const meta = (live > 0 ? t.home.catMeta : t.home.catMetaSoon)
+              .replace("{total}", String(ms.length))
+              .replace("{live}", String(live));
+            return (
+              <button key={c.id} className="cat-card" onClick={() => openCategory(c.id)}>
+                <div className="cat-thumb">
+                  <Thumb type={c.thumb} />
+                </div>
+                <div className="cat-name">{t.cat[c.id]}</div>
+                <div className="cat-meta mono">{meta}</div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+      {/* 신뢰 레이어 — 왜 믿을 수 있는가 */}
+      <section className="trust">
+        <h2 className="how-title">{t.home.trustTitle}</h2>
+        <div className="steps">
+          <div className="step">
+            <h4>{t.home.trust1Title}</h4>
+            <p>{t.home.trust1Desc}</p>
+          </div>
+          <div className="step">
+            <h4>{t.home.trust2Title}</h4>
+            <p>{t.home.trust2Desc}</p>
+          </div>
+          <div className="step">
+            <h4>{t.home.trust3Title}</h4>
+            <p>{t.home.trust3Desc}</p>
           </div>
         </div>
       </section>
@@ -180,7 +220,13 @@ function PageView({ id }: { id: PageId }) {
     <div className="page">
       <div className="eyebrow2">{BRAND}</div>
       <h2>{p.title}</h2>
-      <div className="lead" dangerouslySetInnerHTML={{ __html: p.body }} />
+      <p className="lead" dangerouslySetInnerHTML={{ __html: p.lead }} />
+      {p.sections.map((s, i) => (
+        <section className="page-sec" key={i}>
+          <h3>{s.heading}</h3>
+          <p dangerouslySetInnerHTML={{ __html: s.body }} />
+        </section>
+      ))}
     </div>
   );
 }

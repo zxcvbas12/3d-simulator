@@ -93,11 +93,26 @@ h1 .accent { color: transparent; background: linear-gradient(120deg, var(--ink),
 .card .open::after { content: "→"; transition: 0.2s; }
 .card.live:hover .open::after { transform: translateX(4px); }
 
+/* ── home: 카테고리 쇼케이스 + 신뢰 레이어 ── */
+.cats-show,
+.trust { padding: var(--sp-7) 0 0; margin-top: var(--sp-7); border-top: 1px solid var(--line); }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: var(--sp-4); }
+.cat-card { border: 1px solid var(--glass-bd); border-radius: var(--r-lg); background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)); padding: var(--sp-4); text-align: left; cursor: pointer; color: var(--ink); font-family: var(--sans); transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.cat-card:hover { transform: translateY(-4px); border-color: rgba(111, 155, 255, 0.45); }
+.cat-thumb { height: 84px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: var(--sp-3); pointer-events: none; }
+.cat-thumb .m { transform: scale(0.55); }
+.cat-name { font-size: var(--fs-base); font-weight: 620; }
+.cat-meta { margin-top: var(--sp-1); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.5px; color: var(--faint); }
+.trust .step h4 { margin-top: 0; }
+
 /* ── pages ── */
 .page { max-width: 720px; animation: rise 0.4s ease; }
 .page .eyebrow2 { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; margin-bottom: 14px; }
 .page h2 { font-size: 30px; font-weight: 680; letter-spacing: -0.4px; margin-bottom: 18px; }
 .page .lead { color: var(--muted); font-size: 15.5px; line-height: 1.85; }
+.page .page-sec { margin-top: var(--sp-6); }
+.page .page-sec h3 { font-size: var(--fs-md); font-weight: 640; letter-spacing: -0.2px; margin-bottom: var(--sp-2); font-family: var(--display); }
+.page .page-sec p { color: var(--muted); font-size: 15px; line-height: 1.85; }
 
 /* ── model detail ── */
 .back { background: transparent; border: none; color: var(--muted); font-family: var(--mono); font-size: 12px; letter-spacing: 1px; cursor: pointer; margin-bottom: 18px; padding: 6px 0; }
