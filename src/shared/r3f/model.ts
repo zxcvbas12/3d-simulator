@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Object3D } from "three";
 import type { Lang } from "@locales/index";
 
 /**
@@ -35,7 +36,19 @@ export interface PartDef {
   node: ReactNode;
 }
 
+/** 엔진이 매 프레임 모델 update에 넘기는 컨텍스트. */
+export interface ViewerFrameCtx {
+  /** 현재 분해값(이징 적용) 0~1. */
+  t: number;
+  /** parts와 같은 순서의 부품 그룹(엔진이 위치를 잡아둔 상태). */
+  groups: (Object3D | null)[];
+}
+
 export interface ModelDef {
   parts: PartDef[];
   info: PartInfoMap;
+  /** 분해와 무관한 추가 메시(별도 그룹). 예: 스택을 관통하는 TSV. groupRef 안에 렌더돼 프레이밍·피킹에 포함된다. */
+  extras?: ReactNode;
+  /** 매 프레임 모델별 갱신(엔진이 부품 위치를 잡은 뒤 호출). 예: TSV 길이를 스택 높이에 맞춤. */
+  update?: (ctx: ViewerFrameCtx) => void;
 }

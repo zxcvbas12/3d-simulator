@@ -6,6 +6,32 @@ import type { ModelDef } from "./model";
 
 const HIGHLIGHT = 0x2a4d8f;
 
+/** 절차적 환경맵 — 금속(PBR) 반사용. 창문 같은 밝은 띠로 계측기 느낌의 하이라이트를 만든다. */
+function makeEnvTexture(): THREE.Texture {
+  const c = document.createElement("canvas");
+  c.width = 512;
+  c.height = 256;
+  const x = c.getContext("2d")!;
+  const g = x.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, "#9fb4d8");
+  g.addColorStop(0.45, "#46506a");
+  g.addColorStop(0.5, "#2a3142");
+  g.addColorStop(0.55, "#202733");
+  g.addColorStop(1, "#0c1018");
+  x.fillStyle = g;
+  x.fillRect(0, 0, 512, 256);
+  x.globalAlpha = 0.5;
+  ["#dfe8ff", "#aab8d8", "#8fa0c8"].forEach((col, i) => {
+    x.fillStyle = col;
+    x.fillRect(60 + i * 150, 30 + i * 12, 70, 16);
+  });
+  x.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 /**
  * 공통 3D 엔진의 캔버스 내부 — 분해·카메라·피킹을 한 useFrame에서 처리한다.
  * (바닐라 viewer.ts의 회전·프레이밍·분해·선택 로직을 R3F로 이식. 줌은 분해와 독립.)
@@ -15,6 +41,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const invalidate = useThree((s) => s.invalidate);
+  const scene = useThree((s) => s.scene);
 
   // 데맨드 루프를 깨우기 위해 구독 (값 자체는 useFrame에서 getState로 최신을 읽음)
   const explodeT = useAppStore((s) => s.explodeT);
@@ -56,6 +83,17 @@ export function SceneContents({ model }: { model: ModelDef }) {
       invalidate();
     }
   }, [selected, invalidate]);
+
+  // 절차적 환경맵(PBR 금속 반사) — 전 모델 공통
+  useEffect(() => {
+    const env = makeEnvTexture();
+    scene.environment = env;
+    invalidate();
+    return () => {
+      scene.environment = null;
+      env.dispose();
+    };
+  }, [scene, invalidate]);
 
   // 입력: 마우스 드래그=회전, 휠/핀치=줌(독립), 탭=선택
   useEffect(() => {
@@ -226,6 +264,9 @@ export function SceneContents({ model }: { model: ModelDef }) {
       g.position.set(p.base[0] + p.explode[0] * lt, p.base[1] + p.explode[1] * lt, p.base[2] + p.explode[2] * lt);
     }
 
+    // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이를 스택 높이에 맞춤.
+    model.update?.({ t: curT.current, groups: partRefs.current });
+
     // 카메라 자동 프레이밍 + 독립 줌
     const grp = groupRef.current;
     if (grp) {
@@ -262,7 +303,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
       <group ref={groupRef}>
         {model.parts.map((p, i) => (
           <group
-            key={p.id}
+            key={i}
             ref={(el) => {
               partRefs.current[i] = el;
             }}
@@ -271,6 +312,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
             {p.node}
           </group>
         ))}
+        {model.extras}
       </group>
     </>
   );

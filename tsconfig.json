@@ -19,6 +19,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "paths": {
+      "@app/*": ["./src/*"],
       "@shared/*": ["./shared/*"],
       "@locales/*": ["./locales/*"]
     }
@@ -28,6 +29,8 @@
     "src/**/*.tsx",
     "shared/**/*.ts",
     "locales/**/*.ts",
+    "semiconductor/**/*.ts",
+    "semiconductor/**/*.tsx",
     "vite.config.ts"
   ],
   "exclude": ["node_modules", "dist"]

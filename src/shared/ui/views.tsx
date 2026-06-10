@@ -1,14 +1,11 @@
-import { lazy, Suspense, useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { BRAND } from "@shared/config";
-import { demoModel } from "../r3f/demoModel";
+import { getModelViewer } from "../r3f/registry";
 import { modelsOf, type ModelEntry, type Status } from "@shared/catalog";
 import { useAppStore } from "../state/store";
 import { useRoute, type PageId } from "../state/route";
 import { useT } from "../i18n";
 import { Thumb, Stack } from "./motifs";
-
-// 3D 뷰어는 R3F/three가 무거우므로 모델 화면에서만 lazy 로드 (초기 번들 분리).
-const Viewer = lazy(() => import("../r3f/Viewer"));
 
 function StatusBadge({ status }: { status: Status }) {
   const t = useT();
@@ -124,15 +121,16 @@ function ModelView({ model }: { model: ModelEntry }) {
   const lang = useAppStore((s) => s.lang);
   const back = useRoute((s) => s.back);
   const live = model.status === "live";
+  const ModelViewer = getModelViewer(model.cat, model.id);
   return (
     <>
       <button className="back" onClick={back}>
         {t.model.back}
       </button>
       {live ? (
-        // live 모델: 공통 R3F 엔진을 lazy 로드해 마운트 (지금은 검증용 더미 모델).
+        // live 모델: 카탈로그 id에 맞는 모델 뷰어를 lazy 로드 (model.tsx 없으면 더미 폴백).
         <Suspense fallback={<div className="viewer viewer--live" />}>
-          <Viewer model={demoModel} />
+          <ModelViewer />
         </Suspense>
       ) : (
         <div className="viewer">

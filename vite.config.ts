@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "@app": r("./src"),
       "@shared": r("./shared"),
       "@locales": r("./locales"),
     },
