@@ -18,6 +18,12 @@ body {
   background-color: #070c18;
 }
 
+/* 큰 제목은 디스플레이 그로테스크 — 모노 라벨(.how-title 등 font-family 명시)은 영향 없음 */
+h1,
+h2 {
+  font-family: var(--display);
+}
+
 /* 차분한 네이비 라디얼 + 미세 블루 글로우 (우주 톤 ↓, 공학 톤 ↑) */
 body::before {
   content: "";
