@@ -8,7 +8,7 @@
   --bg0: #04060c;
   --ink: #eaeff7;
   --muted: #8a96ad;
-  --faint: #5a6478;
+  --faint: #7b869c; /* 어두운 배경 위 작은 텍스트 대비 4.5:1 이상 유지 (Lighthouse 기준선 수정) */
 
   /* 라인 / 글래스 패널 */
   --line: rgba(255, 255, 255, 0.09);
@@ -20,9 +20,42 @@
   --copper: #c97b34;
   --gold: #e6b53c;
 
-  /* 타이포그래피 — 제목·라벨·수치는 모노, 본문은 산세리프 */
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --sans: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  /* 타이포그래피 — 제목은 테크니컬 그로테스크, 라벨·수치는 모노, 본문은 산세리프+한글.
+     웹폰트(self-host)는 main.tsx에서 로드. 미로드 시 시스템 폰트로 폴백(swap). */
+  --display: "Space Grotesk Variable", "Pretendard Variable", -apple-system, system-ui, sans-serif;
+  --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Pretendard Variable", -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+
+  /* 간격 — 4px 배수 스케일 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* 타입 스케일 */
+  --fs-xs: 11px;
+  --fs-sm: 12.5px;
+  --fs-base: 14px;
+  --fs-md: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 28px;
+  --fs-2xl: 38px;
+  --fs-3xl: 52px;
+
+  /* 모션 — 새 전환은 반드시 이 토큰으로 */
+  --dur-fast: 0.15s;
+  --dur: 0.25s;
+  --dur-slow: 0.4s;
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+
+  /* 라운드 */
+  --r-sm: 7px;
+  --r: 12px;
+  --r-lg: 18px;
 }
 
 /* 키보드 포커스 링 — 마우스 클릭에는 안 보이고 키보드 이동에만 표시 */

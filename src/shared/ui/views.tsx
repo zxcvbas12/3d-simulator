@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from "react";
 import { BRAND } from "@shared/config";
 import { getModelViewer } from "../r3f/registry";
-import { modelsOf, type ModelEntry, type Status } from "@shared/catalog";
+import { CATEGORIES, modelsOf, type ModelEntry, type Status } from "@shared/catalog";
 import { useAppStore } from "../state/store";
 import { useRoute, type PageId } from "../state/route";
 import { useT } from "../i18n";
@@ -52,22 +52,63 @@ function Home() {
         </div>
       </header>
       <section className="how">
-        <h3>{t.how.title}</h3>
+        {/* h1 다음 단계 헤딩(h2) — 룩은 기존 라벨 그대로 (heading-order 접근성) */}
+        <h2 className="how-title">{t.how.title}</h2>
         <div className="steps">
           <div className="step">
             <div className="n">01</div>
-            <h4>{t.how.s1Title}</h4>
+            <h3>{t.how.s1Title}</h3>
             <p>{t.how.s1Desc}</p>
           </div>
           <div className="step">
             <div className="n">02</div>
-            <h4>{t.how.s2Title}</h4>
+            <h3>{t.how.s2Title}</h3>
             <p>{t.how.s2Desc}</p>
           </div>
           <div className="step">
             <div className="n">03</div>
-            <h4>{t.how.s3Title}</h4>
+            <h3>{t.how.s3Title}</h3>
             <p>{t.how.s3Desc}</p>
+          </div>
+        </div>
+      </section>
+      {/* 카테고리 쇼케이스 — 카탈로그에서 모델 수 계산(숫자 하드코딩 금지) */}
+      <section className="cats-show">
+        <h2 className="how-title">{t.home.catsTitle}</h2>
+        <div className="cat-grid">
+          {CATEGORIES.map((c) => {
+            const ms = modelsOf(c.id);
+            const live = ms.filter((m) => m.status === "live").length;
+            const meta = (live > 0 ? t.home.catMeta : t.home.catMetaSoon)
+              .replace("{total}", String(ms.length))
+              .replace("{live}", String(live));
+            return (
+              <button key={c.id} className="cat-card" onClick={() => openCategory(c.id)}>
+                <div className="cat-thumb">
+                  <Thumb type={c.thumb} />
+                </div>
+                <div className="cat-name">{t.cat[c.id]}</div>
+                <div className="cat-meta mono">{meta}</div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+      {/* 신뢰 레이어 — 왜 믿을 수 있는가 */}
+      <section className="trust">
+        <h2 className="how-title">{t.home.trustTitle}</h2>
+        <div className="steps">
+          <div className="step">
+            <h3>{t.home.trust1Title}</h3>
+            <p>{t.home.trust1Desc}</p>
+          </div>
+          <div className="step">
+            <h3>{t.home.trust2Title}</h3>
+            <p>{t.home.trust2Desc}</p>
+          </div>
+          <div className="step">
+            <h3>{t.home.trust3Title}</h3>
+            <p>{t.home.trust3Desc}</p>
           </div>
         </div>
       </section>
@@ -90,6 +131,7 @@ function CategoryView() {
         </div>
         <div className="count mono">{String(list.length).padStart(2, "0")}</div>
       </div>
+      {list.every((m) => m.status !== "live") && <p className="none-live">{t.card.noneLive}</p>}
       <div className="grid">
         {list.map((m, i) => {
           const live = m.status === "live";
@@ -178,7 +220,13 @@ function PageView({ id }: { id: PageId }) {
     <div className="page">
       <div className="eyebrow2">{BRAND}</div>
       <h2>{p.title}</h2>
-      <div className="lead" dangerouslySetInnerHTML={{ __html: p.body }} />
+      <p className="lead" dangerouslySetInnerHTML={{ __html: p.lead }} />
+      {p.sections.map((s, i) => (
+        <section className="page-sec" key={i}>
+          <h3>{s.heading}</h3>
+          <p dangerouslySetInnerHTML={{ __html: s.body }} />
+        </section>
+      ))}
     </div>
   );
 }

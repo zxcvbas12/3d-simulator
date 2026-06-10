@@ -9,23 +9,24 @@
 - **모션**: `--dur-fast(0.15s) / --dur(0.25s) / --dur-slow(0.4s)` + `--ease(cubic-bezier(0.2, 0.75, 0.2, 1))`. 새 전환은 반드시 이 토큰으로.
 - **라운드**: `--r-sm / --r / --r-lg` (현행 7~18px 값을 정리).
 
-## 웹폰트 (루트 지침 "실제 웹폰트" 이행)
-- 후보: 제목·라벨 = **Space Grotesk**(또는 Fontshare의 Clash Grotesk), 수치·모노 = **JetBrains Mono**, 한글 본문 = **Pretendard Variable**. 확정 전에 제작자 승인(루트의 라이브러리 승인 규칙과 동일하게 에셋도 승인).
-- **self-host**: `public/fonts/`에 woff2만, 라틴/한글 서브셋. CDN 링크 금지(성능·프라이버시).
-- 로딩: `<link rel="preload">` + `font-display: swap`. 토큰의 `--mono`/`--sans` 폰트 스택 맨 앞에 추가만 하면 전 화면 적용되게 유지.
-- 한글 서브셋이 커지면(>300kB) 본문은 시스템 한글 폰트 유지 + 제목만 웹폰트도 허용 — 성능 예산이 우선.
+## 웹폰트 — 도입 완료 (제작자 승인: 전체 도입)
+- 확정: 제목 = **Space Grotesk Variable**(`--display`, h1·h2), 수치·라벨 = **JetBrains Mono Variable**(`--mono`), 본문·한글 = **Pretendard Variable**(`--sans`, 동적 서브셋 — 쓰는 글자 조각만 로드).
+- **self-host**: npm 패키지(`@fontsource-variable/*`, `pretendard`)를 `main.tsx`에서 import — Vite가 woff2를 같은 오리진 자산으로 번들(CDN 요청 없음). `font-display: swap`.
+- 측정(2026-06): 한국어 홈 기준 woff2 전송 **101 KiB / 14파일** — 예산 300kB 이내. 언어별 실측은 8-d에서.
+- 모노 라벨(.how-title 등)은 font-family 명시로 디스플레이 폰트의 영향을 받지 않는다 — 새 제목을 만들 땐 h1/h2 또는 `--display`를 쓸 것.
 
-## 상태 디자인 (로딩·에러·빈 화면)
-- **3D 로딩**: `views.tsx`의 `Suspense fallback`이 지금 빈 div다 → 뷰어 자리 스켈레톤(배경 + 펄스 + "모델 불러오는 중" 다국어 문구)으로 교체. 펄스는 `prefers-reduced-motion` 시 정지.
-- **에러 바운더리**: 3D 뷰어를 React ErrorBoundary로 감싼다(WebGL 미지원·셰이더 실패 대비). 에러 화면 = 같은 자리에서 다국어 안내 + "다시 시도" 버튼. 앱 전체를 죽이지 말 것.
-- **빈/준비 중 화면**: soon 모델 화면은 현행 유지하되 문구를 locales로(이미 됨). 카테고리에 live 모델이 0개일 때의 문구 추가.
+## 상태 디자인 (로딩·에러·빈 화면) — 구현 완료
+- **3D 로딩**: `Suspense fallback` = `.viewer-status` 스켈레톤(은은한 스윕 + "3D 불러오는 중" 다국어). 스윕은 `prefers-reduced-motion` 전역 규칙으로 정지.
+- **에러 바운더리**: `ui/ErrorBoundary.tsx`가 lazy 3D를 감싼다(model id를 key로 — 모델 이동 시 에러 리셋). 폴백은 같은 자리 다국어 안내.
+- **빈 화면**: live 모델이 0개인 카테고리는 카드 위에 `card.noneLive` 안내 한 줄.
 
-## 푸터
-- 구성·문구는 `pages/CLAUDE.md` 푸터 사양. 구현은 `ui/Footer.tsx` + shell.css, `App.tsx`의 `.main` 아래.
+## 푸터 — 구현 완료
+- `ui/Footer.tsx` + shell.css(`.footer`), `App.tsx`의 `.main` 안. 구성·문구 사양은 `pages/CLAUDE.md`. 면책 한 줄(`footer.disclaimer`)은 신뢰 레이어 — 빼지 말 것.
 
-## 메타/OG (Astro 이전 전의 "기본만")
-- `index.html`: lang 동기화(이미 setLang에서 처리), title·description·OG(og:title/description/image)·파비콘·테마 컬러(#04060c).
-- OG 이미지 1장은 정적으로(분해도 모티프). 페이지별 메타는 Astro 이전 때 — 지금 만들지 말 것.
+## 메타/OG — 구현 완료 (Astro 이전 전의 "기본만")
+- `index.html`: description·theme-color·OG(title/description/image)·SVG 파비콘(`public/favicon.svg`, 적층 판 모티프). `public/robots.txt` 허용.
+- OG 이미지 = `public/og.png`(1200×630, 홈 히어로 정적 캡처). **og:url은 도메인 확정 후 추가**, 페이지별 메타·사이트맵은 Astro 이전 때.
+- 본문 한국어 줄바꿈은 `word-break: keep-all`(index.css) — 단어 중간에서 꺾이지 않는다.
 
 ## 성능 예산표 (측정해서 갱신하는 곳)
 | 항목 | 예산 | 현재 (2026-06, gzip) |
@@ -33,11 +34,20 @@
 | 셸 번들(index) | < 100 kB | 76.6 kB |
 | 뷰어 청크(Viewer, lazy) | < 70 kB | 53.5 kB |
 | three 청크(lazy) | — (lazy면 허용) | 184.3 kB |
-| 모델 청크(개당, lazy) | < 15 kB | 7.5~9.4 kB |
-| 폰트(woff2 합계) | < 300 kB | 0 (미도입) |
-| 첫 로드(홈, Lighthouse Perf) | ≥ 90 | 미측정 |
+| 모델 청크(개당, lazy) | < 15 kB | 7.6~9.4 kB |
+| 폰트(woff2, 홈/ko 전송) | < 300 kB | 101 KiB · 14파일 (동적 서브셋) |
+| 첫 로드(홈, Lighthouse Perf) | ≥ 90 | **100** |
 - 측정 방법: 번들 = `npm run build` 출력. FPS = 모델 화면 `?stats`(실기기). 로드 = Lighthouse(빌드+preview에 대해).
 - 폴리시 작업 전후로 이 표를 갱신하고, 예산 초과 시 기능 추가를 멈추고 최적화 먼저(루트 규칙).
+
+### Lighthouse — 8-a 기준선 → 8-d 재측정 (2026-06-10, LH12 · headless Chromium · localhost preview)
+| 카테고리 | 8-a 기준선 | 8-d 최종 | 메모 |
+|---|---|---|---|
+| Performance | 100 | **95** | FCP/LCP 1.5→2.4s — 웹폰트·콘텐츠 추가 비용(swap이라 실기기 체감은 폴백 즉시 표시). 예산 ≥90 유지 |
+| Accessibility | 91 | **100** | 대비(--faint 상향)·heading-order(h2/h3 정리)·푸터 target-size 해결 |
+| Best Practices | 96 | **100** | SVG 파비콘 추가로 404 해소 |
+| SEO | 82 | **100** | meta description + robots.txt |
+- 홈 전송량 80→241 KiB (폰트 101 KiB + 콘텐츠·CSS). 환경 주의: 컨테이너 측정 — 실배포 후 실기기로 재확인.
 
 ## 지키던 것 (회귀 금지)
 - `frameloop="demand"` 온디맨드 렌더 / dpr 1.5 캡 / 3D lazy 로드 / 절차적 텍스처 캐시(`r3f/textures.ts`) / `prefers-reduced-motion` 처리 / 키보드 회전·포커스 링·ARIA 라벨.

@@ -24,6 +24,12 @@ export const en: Dict = {
     soon: "Coming soon",
     explore: "Explore",
     catSub: "Models to learn by taking apart",
+    noneLive: "No models are ready to explore here yet — coming soon.",
+  },
+  footer: {
+    tagline: "A learning tool for taking technology apart in 3D.",
+    siteHead: "Site",
+    disclaimer: "Simplified models for education",
   },
   model: {
     back: "← Back",
@@ -52,6 +58,18 @@ export const en: Dict = {
     less: "Less",
     sources: "Further reading",
   },
+  home: {
+    catsTitle: "Fields to explore",
+    catMeta: "{total} models · {live} available",
+    catMetaSoon: "{total} models · coming soon",
+    trustTitle: "Accuracy comes first",
+    trust1Title: "Based on real structure",
+    trust1Desc: "Models follow the structure described in public standards and technical literature. Where we simplify for teaching, we say so.",
+    trust2Title: "Numbers, not adjectives",
+    trust2Desc: "Click a part and you get its role along with real dimensions and process figures — not “thin”, but “50 μm”.",
+    trust3Title: "Plain words first",
+    trust3Desc: "Every explanation starts with a one-line summary, then moves into precise terms and principles. No background required.",
+  },
   category: { suffix: " simulators" },
   cat: {
     semiconductor: "Semiconductor",
@@ -66,15 +84,65 @@ export const en: Dict = {
   pages: {
     about: {
       title: "About",
-      body: "STRATA is a learning tool for exploring complex products in 3D by taking them apart. From semiconductors to spacecraft, cars and medical devices, you can rotate and unfold hidden internal structures to understand how they work.<br><br>No expertise required — tap any part and we'll explain what it does in plain language.",
+      lead: "STRATA is a learning tool for understanding complex technology by taking it apart in 3D. Rotate products, unfold their hidden internal structure, and see what every component does.",
+      sections: [
+        {
+          heading: "What is this place",
+          body: "We cover technology products field by field — from semiconductor packages to spacecraft, cars and medical devices — as interactive 3D exploded views. Rotate the product, pull it apart layer by layer with the slider, and click any part for its role and real dimensions.",
+        },
+        {
+          heading: "Who it's for",
+          body: "Students exploring technical fields and careers,<br>engineers who want a quick grasp of a neighbouring discipline,<br>and anyone curious about the HBM and chiplets in the news.<br><br>No background needed — every explanation starts in plain words.",
+        },
+        {
+          heading: "What makes it different",
+          body: "Articles and videos show you a fixed sequence; here you rotate and unfold at your own pace. Each part comes with its role, the principle behind it and real figures — and every model shares the same controls, so learning one means you can explore them all.",
+        },
+        {
+          heading: "How models are made",
+          body: "Models follow the structure described in public standards and technical papers. Where we simplify for teaching — layer counts, proportions — we say so openly. All content is free.",
+        },
+      ],
     },
     learn: {
       title: "Learning structure",
-      body: "Every model follows the same three-step flow.<br><br>1. Rotate — observe the product from every angle.<br>2. Explode — unfold it layer by layer to reveal the inside.<br>3. Learn — tap each part to see its role and the principle behind it.<br><br>It's designed to start from simple ideas and move gradually into deeper structure.",
+      lead: "Every model follows the same three-step flow. Learn it once and you can explore a model from any field the same way.",
+      sections: [
+        {
+          heading: "The three steps",
+          body: "1. Rotate — drag or touch to observe from every angle and get a feel for the overall shape.<br>2. Explode — use the bottom slider to unfold the parts layer by layer and reveal what is stacked in what order.<br>3. Learn — click a part for its role, principle and dimensions. Reading after seeing the shape makes it stick much faster.",
+        },
+        {
+          heading: "Reading the info panel",
+          body: "Clicking a part opens the info panel. From the top — a part-type tag with real dimensions, a one-line summary, how it works and why it matters, then three key facts to remember. The “Less” button collapses it to just the summary.",
+        },
+        {
+          heading: "From plain words to precise figures",
+          body: "Explanations start with analogies and plain language, then move into real terms and numbers — “the metal lid that spreads heat” comes before “Ni-plated copper IHS”. If it gets heavy, reading just the summaries still carries you through.",
+        },
+        {
+          heading: "Suggested order",
+          body: "For semiconductors we suggest HBM → GPU → CPU. Once you understand stacking (HBM), why it sits beside a processor (the GPU package) and why chips are split small (CPU chiplets) follow naturally. New categories will ship with the same kind of suggested path.",
+        },
+      ],
     },
     intent: {
       title: "Creator's intent",
-      body: "Technology keeps getting smaller and more complex, yet there's little material that intuitively shows what's happening inside.<br><br>STRATA started from a simple belief: opening something up and seeing it for yourself is the fastest way to understand it. The goal is to let anyone peek inside advanced technology, turning small curiosity into deep understanding.<br><br>— From Toronto, the maker",
+      lead: "Technology keeps getting smaller and more complex, yet little material intuitively shows what happens inside.",
+      sections: [
+        {
+          heading: "Where it started",
+          body: "STRATA began with a simple belief: opening something up and seeing it for yourself is the fastest way to understand it. Somewhere between textbook cross-sections and news headlines, there is an understanding you only get by turning and unfolding things with your own hands.",
+        },
+        {
+          heading: "What we promise",
+          body: "Accuracy comes before looks.<br>Simplifications made for teaching are stated, not hidden.<br>All content stays free.",
+        },
+        {
+          heading: "Where it's going",
+          body: "Starting from semiconductors, the categories will grow — space, automotive, medical devices, energy. I hope this becomes a place where small curiosity turns into deep understanding.<br><br>— From Toronto, the maker",
+        },
+      ],
     },
   },
 };
