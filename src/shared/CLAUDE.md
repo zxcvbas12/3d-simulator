@@ -33,11 +33,21 @@
 | 셸 번들(index) | < 100 kB | 76.6 kB |
 | 뷰어 청크(Viewer, lazy) | < 70 kB | 53.5 kB |
 | three 청크(lazy) | — (lazy면 허용) | 184.3 kB |
-| 모델 청크(개당, lazy) | < 15 kB | 7.5~9.4 kB |
+| 모델 청크(개당, lazy) | < 15 kB | 7.6~9.4 kB |
 | 폰트(woff2 합계) | < 300 kB | 0 (미도입) |
-| 첫 로드(홈, Lighthouse Perf) | ≥ 90 | 미측정 |
+| 첫 로드(홈, Lighthouse Perf) | ≥ 90 | **100** |
 - 측정 방법: 번들 = `npm run build` 출력. FPS = 모델 화면 `?stats`(실기기). 로드 = Lighthouse(빌드+preview에 대해).
 - 폴리시 작업 전후로 이 표를 갱신하고, 예산 초과 시 기능 추가를 멈추고 최적화 먼저(루트 규칙).
+
+### 8-a 기준선 (2026-06-10, Lighthouse 12 · headless Chromium · localhost preview)
+| 카테고리 | 점수 | 메모 |
+|---|---|---|
+| Performance | 100 | FCP/LCP 1.5s · TBT 10ms · CLS 0 · 홈 전송량 80 KiB |
+| Accessibility | 91 | color-contrast 2곳(`.stage .t2`, `.how h3`) · heading-order(`.how`가 h1→h3) |
+| Best Practices | 96 | 파비콘 404 콘솔 에러 |
+| SEO | 82 | meta description 없음 · robots.txt 없음 |
+- 환경 주의: 컨테이너(소프트웨어 GL·localhost) 측정 — 실배포·실기기 수치와 다를 수 있다. 비교용 기준선으로만 사용.
+- 위 감점 항목이 8-b(대비·헤딩)·8-d(파비콘·메타·robots) 작업 목록이다. 해결 후 재측정해 이 표를 갱신할 것.
 
 ## 지키던 것 (회귀 금지)
 - `frameloop="demand"` 온디맨드 렌더 / dpr 1.5 캡 / 3D lazy 로드 / 절차적 텍스처 캐시(`r3f/textures.ts`) / `prefers-reduced-motion` 처리 / 키보드 회전·포커스 링·ARIA 라벨.
