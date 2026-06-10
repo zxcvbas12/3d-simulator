@@ -56,7 +56,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
   const curT = useRef(0);
   const theta = useRef(0.62);
   const phi = useRef(1.12);
-  const highlighted = useRef<THREE.Mesh | null>(null);
+  const highlightedMats = useRef<{ mat: THREE.MeshStandardMaterial; hex: number; intensity: number }[]>([]);
 
   const raycaster = useRef(new THREE.Raycaster());
   const pointer = useRef(new THREE.Vector2());
@@ -77,9 +77,8 @@ export function SceneContents({ model }: { model: ModelDef }) {
 
   // 선택 해제 → 강조 복원
   useEffect(() => {
-    if (!selected && highlighted.current) {
-      restoreEmissive(highlighted.current);
-      highlighted.current = null;
+    if (!selected && highlightedMats.current.length) {
+      restoreHighlight();
       invalidate();
     }
   }, [selected, invalidate]);
@@ -129,8 +128,10 @@ export function SceneContents({ model }: { model: ModelDef }) {
       invalidate();
     };
     const onUp = (e: MouseEvent) => {
-      if (dragging && moved < 6 && performance.now() - downT < 350) pick(e.clientX, e.clientY);
+      // 드래그 상태를 먼저 해제(pick에서 예외가 나도 회전 상태로 끼지 않도록)
+      const click = dragging && moved < 6 && performance.now() - downT < 350;
       dragging = false;
+      if (click) pick(e.clientX, e.clientY);
     };
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -176,8 +177,9 @@ export function SceneContents({ model }: { model: ModelDef }) {
       }
     };
     const onTEnd = (e: TouchEvent) => {
-      if (dragging && e.touches.length === 0 && moved < 8 && performance.now() - downT < 350) pick(tapX, tapY);
+      const tap = dragging && e.touches.length === 0 && moved < 8 && performance.now() - downT < 350;
       if (e.touches.length === 0) dragging = false;
+      if (tap) pick(tapX, tapY);
     };
 
     el.addEventListener("mousedown", onDown);
@@ -199,28 +201,37 @@ export function SceneContents({ model }: { model: ModelDef }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gl, invalidate, setZoom]);
 
-  function emiOf(m: THREE.Mesh): THREE.MeshStandardMaterial[] {
-    return (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshStandardMaterial[];
-  }
-  function highlight(mesh: THREE.Mesh) {
-    if (highlighted.current && highlighted.current !== mesh) restoreEmissive(highlighted.current);
-    highlighted.current = mesh;
-    const mats = emiOf(mesh);
-    if (mesh.userData.emi === undefined) {
-      mesh.userData.emi = mats.map((m) => m.emissive.getHex());
-      mesh.userData.emiI = mats.map((m) => m.emissiveIntensity);
-    }
-    mats.forEach((m) => {
-      m.emissive.setHex(HIGHLIGHT);
-      m.emissiveIntensity = 0.85;
+  // 선택한 부품 그룹 아래에서 emissive를 가진 재질만 모은다(엣지 라인 등 비표준 재질은 건너뜀).
+  function collectEmissive(root: THREE.Object3D): THREE.MeshStandardMaterial[] {
+    const out: THREE.MeshStandardMaterial[] = [];
+    root.traverse((o) => {
+      const mat = (o as THREE.Mesh).material;
+      if (!mat) return;
+      for (const m of Array.isArray(mat) ? mat : [mat]) {
+        const sm = m as THREE.MeshStandardMaterial;
+        if (sm.emissive) out.push(sm);
+      }
     });
+    return out;
   }
-  function restoreEmissive(mesh: THREE.Mesh) {
-    if (mesh.userData.emi !== undefined) {
-      emiOf(mesh).forEach((m, i) => {
-        m.emissive.setHex(mesh.userData.emi[i]);
-        m.emissiveIntensity = mesh.userData.emiI[i];
-      });
+  function restoreHighlight() {
+    for (const h of highlightedMats.current) {
+      h.mat.emissive.setHex(h.hex);
+      h.mat.emissiveIntensity = h.intensity;
+    }
+    highlightedMats.current = [];
+  }
+  function highlight(part: THREE.Object3D) {
+    restoreHighlight();
+    const mats = collectEmissive(part);
+    highlightedMats.current = mats.map((mat) => ({
+      mat,
+      hex: mat.emissive.getHex(),
+      intensity: mat.emissiveIntensity,
+    }));
+    for (const mat of mats) {
+      mat.emissive.setHex(HIGHLIGHT);
+      mat.emissiveIntensity = 0.85;
     }
   }
   function pick(clientX: number, clientY: number) {
@@ -231,13 +242,19 @@ export function SceneContents({ model }: { model: ModelDef }) {
     pointer.current.y = -((clientY - r.top) / r.height) * 2 + 1;
     raycaster.current.setFromCamera(pointer.current, camera);
     const hits = raycaster.current.intersectObject(grp, true);
-    if (hits.length) {
-      let o: THREE.Object3D | null = hits[0].object;
+    // 박스·엣지 라인·인스턴스 무엇을 맞히든, partId를 가진 가장 가까운 조상으로 부품을 찾는다.
+    let part: THREE.Object3D | null = null;
+    for (const h of hits) {
+      let o: THREE.Object3D | null = h.object;
       while (o && o.userData.partId === undefined) o = o.parent;
       if (o) {
-        highlight(hits[0].object as THREE.Mesh);
-        select({ id: o.userData.partId as string, layer: o.userData.layer as number | undefined });
+        part = o;
+        break;
       }
+    }
+    if (part) {
+      select({ id: part.userData.partId as string, layer: part.userData.layer as number | undefined });
+      highlight(part);
     } else {
       select(null);
     }
