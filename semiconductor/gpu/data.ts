@@ -9,6 +9,7 @@ export const gpuInfo: PartInfoMap = {
   gpudie: {
     tag: { ko: "COMPUTE DIE", en: "COMPUTE DIE", ja: "COMPUTE DIE", zh: "COMPUTE DIE" },
     spec: "≈ 800 mm² (reticle limit) · 4 nm",
+    sources: [{ label: "Wikipedia · Graphics processing unit", url: "https://en.wikipedia.org/wiki/Graphics_processing_unit" }],
     title: {
       ko: "GPU 연산 다이 (Compute Die)",
       en: "GPU Compute Die",
@@ -37,6 +38,10 @@ export const gpuInfo: PartInfoMap = {
   hbm: {
     tag: { ko: "HBM STACK", en: "HBM STACK", ja: "HBM STACK", zh: "HBM STACK" },
     spec: "8-Hi DRAM stack · ≈ 1 TB/s / stack",
+    sources: [
+      { label: "Wikipedia · High Bandwidth Memory", url: "https://en.wikipedia.org/wiki/High_Bandwidth_Memory" },
+      { label: "JEDEC · JESD235 (HBM standard)", url: "https://www.jedec.org/standards-documents/docs/jesd235a" },
+    ],
     title: {
       ko: "HBM 스택 (적층 메모리)",
       en: "HBM Stack (Stacked Memory)",
@@ -65,6 +70,10 @@ export const gpuInfo: PartInfoMap = {
   interposer: {
     tag: { ko: "2.5D BRIDGE", en: "2.5D BRIDGE", ja: "2.5D BRIDGE", zh: "2.5D BRIDGE" },
     spec: "Si · ≈ 2,500 mm² · t ≈ 100 μm",
+    sources: [
+      { label: "Wikipedia · Interposer", url: "https://en.wikipedia.org/wiki/Interposer" },
+      { label: "TSMC · CoWoS (2.5D packaging)", url: "https://3dfabric.tsmc.com/english/dedicatedFoundry/technology/cowos.htm" },
+    ],
     title: {
       ko: "실리콘 인터포저 (Interposer)",
       en: "Silicon Interposer",
@@ -92,7 +101,8 @@ export const gpuInfo: PartInfoMap = {
   },
   substrate: {
     tag: { ko: "SUBSTRATE", en: "SUBSTRATE", ja: "SUBSTRATE", zh: "SUBSTRATE" },
-    spec: "≈ 55 × 55 mm · multilayer organic",
+    spec: "≈ 70 × 70 mm · multilayer organic",
+    sources: [{ label: "Wikipedia · Integrated circuit packaging", url: "https://en.wikipedia.org/wiki/Integrated_circuit_packaging" }],
     title: {
       ko: "패키지 기판 (Substrate)",
       en: "Package Substrate",
@@ -121,6 +131,7 @@ export const gpuInfo: PartInfoMap = {
   bga: {
     tag: { ko: "PACKAGE I/O", en: "PACKAGE I/O", ja: "PACKAGE I/O", zh: "PACKAGE I/O" },
     spec: "1,000+ balls · ∅ ≈ 0.5 mm",
+    sources: [{ label: "Wikipedia · Ball grid array", url: "https://en.wikipedia.org/wiki/Ball_grid_array" }],
     title: {
       ko: "BGA 솔더 볼",
       en: "BGA Solder Balls",
@@ -149,6 +160,7 @@ export const gpuInfo: PartInfoMap = {
   lid: {
     tag: { ko: "HEAT SPREADER", en: "HEAT SPREADER", ja: "HEAT SPREADER", zh: "HEAT SPREADER" },
     spec: "Ni-plated Cu lid",
+    sources: [{ label: "Wikipedia · Integrated heat spreader", url: "https://en.wikipedia.org/wiki/Integrated_heat_spreader" }],
     title: {
       ko: "히트 스프레더 리드 (Lid)",
       en: "Heat Spreader Lid",

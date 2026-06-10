@@ -8,6 +8,7 @@ export const hbmInfo: PartInfoMap = {
   substrate: {
     tag: { ko: "SUBSTRATE", en: "SUBSTRATE", ja: "SUBSTRATE", zh: "SUBSTRATE" },
     spec: "≈ 55 × 55 mm · multilayer organic",
+    sources: [{ label: "Wikipedia · Integrated circuit packaging", url: "https://en.wikipedia.org/wiki/Integrated_circuit_packaging" }],
     title: {
       ko: "패키지 기판 (Package Substrate)",
       en: "Package Substrate",
@@ -36,6 +37,7 @@ export const hbmInfo: PartInfoMap = {
   interposer: {
     tag: { ko: "INTERPOSER", en: "INTERPOSER", ja: "INTERPOSER", zh: "INTERPOSER" },
     spec: "Si · t ≈ 100 μm",
+    sources: [{ label: "Wikipedia · Interposer", url: "https://en.wikipedia.org/wiki/Interposer" }],
     title: {
       ko: "실리콘 인터포저 (Interposer)",
       en: "Silicon Interposer",
@@ -64,6 +66,7 @@ export const hbmInfo: PartInfoMap = {
   base: {
     tag: { ko: "LOGIC DIE", en: "LOGIC DIE", ja: "LOGIC DIE", zh: "LOGIC DIE" },
     spec: "≈ 11 × 11 mm · logic",
+    sources: [{ label: "JEDEC · JESD235 (HBM standard)", url: "https://www.jedec.org/standards-documents/docs/jesd235a" }],
     title: {
       ko: "베이스 다이 (Base / Logic Die)",
       en: "Base / Logic Die",
@@ -92,7 +95,10 @@ export const hbmInfo: PartInfoMap = {
   dram: {
     tag: { ko: "DRAM DIE", en: "DRAM DIE", ja: "DRAM DIE", zh: "DRAM DIE" },
     spec: "≈ 11 × 11 mm · t ≈ 50 μm",
-    sources: [{ label: "Wikipedia · High Bandwidth Memory", url: "https://en.wikipedia.org/wiki/High_Bandwidth_Memory" }],
+    sources: [
+      { label: "Wikipedia · High Bandwidth Memory", url: "https://en.wikipedia.org/wiki/High_Bandwidth_Memory" },
+      { label: "JEDEC · JESD235 (HBM standard)", url: "https://www.jedec.org/standards-documents/docs/jesd235a" },
+    ],
     title: { ko: "DRAM 다이 (DRAM Die)", en: "DRAM Die", ja: "DRAM ダイ", zh: "DRAM 裸片" },
     lead: {
       ko: "실제로 데이터를 저장하는 메모리 셀이 빼곡히 들어 있는 층이에요.",
@@ -145,6 +151,7 @@ export const hbmInfo: PartInfoMap = {
   microbump: {
     tag: { ko: "BONDING", en: "BONDING", ja: "BONDING", zh: "BONDING" },
     spec: "∅ ≈ 25 μm · pitch ≈ 45 μm",
+    sources: [{ label: "Wikipedia · Flip chip", url: "https://en.wikipedia.org/wiki/Flip_chip" }],
     title: {
       ko: "마이크로 범프 (Micro Bump)",
       en: "Micro Bump",
@@ -173,6 +180,7 @@ export const hbmInfo: PartInfoMap = {
   bga: {
     tag: { ko: "PACKAGE I/O", en: "PACKAGE I/O", ja: "PACKAGE I/O", zh: "PACKAGE I/O" },
     spec: "pitch ≈ 1 mm",
+    sources: [{ label: "Wikipedia · Ball grid array", url: "https://en.wikipedia.org/wiki/Ball_grid_array" }],
     title: {
       ko: "BGA 솔더 볼 (Solder Balls)",
       en: "BGA Solder Balls",

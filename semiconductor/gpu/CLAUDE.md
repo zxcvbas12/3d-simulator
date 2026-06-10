@@ -34,7 +34,7 @@ GPU 가속기 **패키지 전체** — 큰 연산 다이(GPU die) 옆에 HBM 스
 - `gpudie` — `≈ 800 mm² (reticle limit) · 4 nm`
 - `hbm` — `8-Hi DRAM stack · ≈ 1 TB/s / stack`
 - `interposer` — `Si · ≈ 2,500 mm² · t ≈ 100 μm`
-- `substrate` — `≈ 55 × 55 mm · multilayer organic`
+- `substrate` — `≈ 70 × 70 mm · multilayer organic` (SXM급 표기)
 - `bga` — `1,000+ balls · ∅ ≈ 0.5 mm`
 - `lid` — `Ni-plated Cu lid`
 
@@ -43,9 +43,9 @@ GPU 가속기 **패키지 전체** — 큰 연산 다이(GPU die) 옆에 HBM 스
 - 인터포저가 두 칩을 **수천 배선으로 잇는다(2.5D)**.
 - 큰 연산 다이 + 옆 메모리 = **현대 AI 가속기의 기본 형태**.
 
-## 남은 보강 (다음 작업 시)
-- [ ] `data.ts`에 `sources`(더 읽기 링크) 추가 — JEDEC HBM 표준, CoWoS/2.5D 백서 등. (패널의 출처 표시는 엔진이 이미 지원)
-- [ ] 패키지·인터포저 치수 재검토 — 데이터센터 GPU(SXM)는 패키지 ≈ 70 × 70 mm 표기가 더 일반적. 카탈로그 specs와 함께 갱신.
+## 남은 보강
+- [x] `data.ts`에 `sources`(더 읽기) — 전 부품 완료 (JEDEC JESD235·TSMC CoWoS·Wikipedia).
+- [x] 패키지 치수 재검토 — ≈ 70 × 70 mm(SXM급)로 data.ts·카탈로그 갱신 완료.
 - [ ] (선택) HBM 스택 개수 옵션(4↔6↔8) / 베어 다이(리드 제거) 보기.
 
 ## 사용자 노출 문구
