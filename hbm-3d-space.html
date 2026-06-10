@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HBM 3D 분해도 · HD</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#05070d;}
+  #app{position:fixed;inset:0;touch-action:none;
+    background-color:#070c18;
+    background-image:
+      radial-gradient(120% 90% at 78% -8%, rgba(111,155,255,.10), transparent 55%),
+      linear-gradient(rgba(125,150,205,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(125,150,205,.05) 1px, transparent 1px),
+      radial-gradient(125% 120% at 50% 33%, #131d30 0%, #0a1120 52%, #05070f 100%);
+    background-size:auto, 48px 48px, 48px 48px, auto;}
+  canvas{display:block;}
+  .ui{position:absolute;color:#eaeff7;
+    font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+    -webkit-user-select:none;user-select:none;}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
+
+  #title{top:20px;left:22px;}
+  #title h1{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:18px;font-weight:600;letter-spacing:3px;}
+  #title p{font-size:12px;color:#8a96ad;margin-top:4px;letter-spacing:.3px;}
+
+  #topright{top:18px;right:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:60vw;}
+  .btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    color:#cdd6e6;font-size:12.5px;padding:8px 13px;border-radius:11px;cursor:pointer;
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.18s;white-space:nowrap;}
+  .btn:hover{background:rgba(255,255,255,.13);}
+  .btn.active{background:rgba(96,140,255,.24);border-color:rgba(125,165,255,.5);color:#dce6ff;}
+
+  #bottom{bottom:24px;left:50%;transform:translateX(-50%);width:min(460px,88vw);text-align:center;}
+  #hint{font-size:11.5px;color:#7e8aa1;margin-bottom:11px;line-height:1.6;letter-spacing:.2px;}
+  .slider-wrap{display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);
+    padding:10px 16px;border-radius:15px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+  .slider-wrap span{font-size:11px;color:#9aa6bd;white-space:nowrap;letter-spacing:.5px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;flex:1;
+    background:rgba(255,255,255,.16);border-radius:3px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+    border-radius:50%;background:#6f9bff;cursor:pointer;box-shadow:0 0 0 4px rgba(111,155,255,.22);}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:none;border-radius:50%;background:#6f9bff;cursor:pointer;}
+
+  #panel{top:0;right:0;height:100%;width:336px;padding:78px 24px 24px;
+    background:linear-gradient(180deg,rgba(12,17,27,.85),rgba(9,13,21,.94));
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    border-left:1px solid rgba(255,255,255,.07);
+    transform:translateX(106%);transition:transform .38s cubic-bezier(.2,.75,.2,1);}
+  #panel.open{transform:translateX(0);}
+  #panel .accent{width:40px;height:4px;border-radius:3px;background:#6f9bff;margin-bottom:16px;}
+  #panel .tag{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;
+    letter-spacing:1px;color:#9fb6ff;background:rgba(111,155,255,.1);
+    border:1px solid rgba(111,155,255,.25);padding:4px 10px;border-radius:20px;margin-bottom:15px;}
+  #panel h2{font-size:18px;font-weight:650;line-height:1.35;margin-bottom:14px;}
+  #panel .body{font-size:13.5px;line-height:1.75;color:#b6c0d5;}
+  #panel .body .lead{color:#eef2fb;font-size:14.5px;font-weight:600;line-height:1.6;margin-bottom:12px;}
+  #panel .body .detail{color:#aeb9cf;margin-bottom:16px;}
+  #panel .body .facts{list-style:none;margin:0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:9px;}
+  #panel .body .facts li{position:relative;padding-left:16px;font-size:12.5px;color:#c4cee0;font-family:ui-monospace,Menlo,monospace;letter-spacing:.2px;line-height:1.45;}
+  #panel .body .facts li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:1.5px;background:#6f9bff;box-shadow:0 0 6px rgba(111,155,255,.6);}
+  #close{position:absolute;top:22px;right:22px;width:32px;height:32px;border-radius:9px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    color:#cdd6e6;font-size:17px;line-height:1;cursor:pointer;}
+
+  #loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#05070d;z-index:20;transition:opacity .5s;}
+  #loader .l{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:2px;color:#6f9bff;}
+
+  @media (max-width:720px){
+    #panel{top:auto;bottom:0;right:0;width:100%;height:auto;max-height:54%;
+      padding:24px 22px 28px;border-left:none;border-top:1px solid rgba(255,255,255,.08);
+      border-radius:22px 22px 0 0;transform:translateY(108%);overflow-y:auto;}
+    #panel.open{transform:translateY(0);}
+    #bottom{bottom:18px;}
+    #title h1{font-size:16px;letter-spacing:2px;}
+  }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="loader"><div class="l">LOADING · HBM</div></div>
+
+  <div class="ui" id="title"><h1>HBM</h1><p>High Bandwidth Memory · HD 분해도</p></div>
+
+  <div class="ui" id="topright">
+    <button class="btn" id="zoomInBtn" title="확대">＋</button>
+    <button class="btn" id="zoomOutBtn" title="축소">－</button>
+    <button class="btn" id="rotateBtn">자동 회전</button>
+    <button class="btn" id="resetBtn">초기화</button>
+  </div>
+
+  <div class="ui" id="bottom">
+    <div id="hint">드래그로 회전 · 스크롤 / 핀치 / ＋－ 로 확대·축소 · 아래 슬라이더로 분해·조립 · 부품을 탭하면 설명</div>
+    <div class="slider-wrap"><span>조립</span><input type="range" id="slider" min="0" max="50" value="0"><span>분해</span></div>
+  </div>
+
+  <div class="ui" id="panel">
+    <button id="close">×</button>
+    <div class="accent"></div>
+    <div class="tag" id="panelTag"></div>
+    <h2 id="panelTitle"></h2>
+    <div class="body" id="panelBody"></div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const INFO = {
+  substrate:{tag:'SUBSTRATE', title:'패키지 기판 (Package Substrate)',
+    lead:'칩 전체를 받치고 바깥 세상과 이어 주는 바닥판이에요.',
+    detail:'그 위로 인터포저와 칩들이 차례로 올라가고, 아래로는 BGA 솔더 볼을 통해 메인보드(PCB)에 연결됩니다. 전원을 공급하고 수많은 신호가 안팎으로 드나드는 통로 역할을 해요.',
+    facts:['역할 — 지지 + 외부 연결','위: 인터포저·칩 / 아래: 솔더 볼','전원과 신호의 관문']},
+  interposer:{tag:'INTERPOSER', title:'실리콘 인터포저 (Interposer)',
+    lead:'HBM과 GPU를 한 패키지 안에서 아주 가깝게 이어 주는 얇은 실리콘 판이에요.',
+    detail:'표면에 머리카락보다 훨씬 가는 배선이 수천 개 이상 깔려 있어, 두 칩 사이에 폭넓은 데이터 고속도로를 만듭니다. 이렇게 칩들을 옆으로 나란히 붙이는 방식을 2.5D 패키징이라고 불러요.',
+    facts:['역할 — HBM ↔ GPU 초고속 연결','수천 개 이상의 미세 배선','2.5D 패키징의 핵심']},
+  base:{tag:'LOGIC DIE', title:'베이스 다이 (Base / Logic Die)',
+    lead:'스택 맨 아래에서 위쪽 DRAM들을 지휘하는 “관제탑” 다이예요.',
+    detail:'메모리 컨트롤러와 입출력 회로(PHY)가 들어 있어, 위에 쌓인 DRAM들이 주고받는 데이터를 정리해 인터포저 쪽으로 내보내고 받아들입니다. DRAM은 저장만 하고, 바깥과의 소통은 이 베이스 다이가 맡아요.',
+    facts:['역할 — 메모리 제어 + 입출력','DRAM과 외부 사이의 중계소','스택의 가장 아래층']},
+  dram:{tag:'DRAM DIE', title:'DRAM 다이 (DRAM Die)',
+    lead:'실제로 데이터를 저장하는 메모리 셀이 빼곡히 들어 있는 층이에요.',
+    detail:'HBM은 이런 얇은 DRAM 다이를 여러 장(보통 8~12층, 최신 세대는 16층까지) 수직으로 쌓습니다. 넓게 까는 대신 위로 쌓기 때문에, 좁은 면적에 큰 용량과 넓은 데이터 통로(대역폭)를 동시에 얻을 수 있어요.',
+    facts:['역할 — 데이터 저장','보통 8~12층, 최신 16층','쌓을수록 용량·대역폭 ↑']},
+  tsv:{tag:'CORE TECH', title:'TSV · 실리콘 관통 전극',
+    lead:'쌓인 다이들을 위아래로 곧장 꿰뚫는 구리 기둥이에요. HBM을 가능하게 한 핵심 기술입니다.',
+    detail:'예전에는 칩 옆으로 전선을 둘러 연결했지만, TSV는 다이를 수직으로 관통해 가장 짧은 길로 모든 층을 잇습니다. 길이 짧아지니 데이터가 더 빠르게 오가고 전력도 덜 써요. 한 스택에 수천 개가 들어갑니다.',
+    facts:['역할 — 층과 층을 수직 연결','기존 방식보다 빠르고 저전력','한 스택에 수천 개']},
+  microbump:{tag:'BONDING', title:'마이크로 범프 (Micro Bump)',
+    lead:'다이와 다이 사이를 붙여 주는 아주 작은 솔더 공이에요.',
+    detail:'TSV가 만든 수직 통로를 실제 층끼리 연결해, 다이 사이로 전기 신호가 건너가게 합니다. 머리카락 굵기 수준이라 한 층에 수천 개가 촘촘히 박혀요. 최신 세대는 범프 없이 두 면을 직접 붙이는 하이브리드 본딩으로 진화하고 있습니다.',
+    facts:['역할 — 층 사이 물리·전기 연결','머리카락 굵기의 솔더 공','→ 하이브리드 본딩으로 진화 중']},
+  bga:{tag:'PACKAGE I/O', title:'BGA 솔더 볼 (Solder Balls)',
+    lead:'패키지 맨 아래에 격자로 붙어, 메인보드와 연결되는 솔더 공이에요.',
+    detail:'이 공들이 기판(PCB) 위에서 녹아 붙으며 패키지를 고정하고, 전원과 수많은 신호를 외부와 주고받습니다. 다리(핀)를 가장자리에만 두는 대신 바닥 면 전체를 격자로 쓰기 때문에, 같은 면적에 훨씬 많은 연결을 담을 수 있어요. BGA = Ball Grid Array.',
+    facts:['역할 — 패키지 ↔ 메인보드 연결','바닥 전체를 격자로 활용','BGA = Ball Grid Array']},
+};
+
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+renderer.shadowMap.enabled = false;
+app.appendChild(renderer.domElement);
+
+// ---------- procedural environment map (for PBR reflections) ----------
+function makeEnvTexture(){
+  const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,0,256);
+  g.addColorStop(0,'#9fb4d8'); g.addColorStop(0.45,'#46506a'); g.addColorStop(0.5,'#2a3142');
+  g.addColorStop(0.55,'#202733'); g.addColorStop(1,'#0c1018');
+  x.fillStyle = g; x.fillRect(0,0,512,256);
+  // a few soft bright strips = window-like highlights for metals
+  x.globalAlpha = 0.5;
+  ['#dfe8ff','#aab8d8','#8fa0c8'].forEach((col,i)=>{ x.fillStyle=col; x.fillRect(60+i*150, 30+i*12, 70, 16); });
+  x.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.encoding = THREE.sRGBEncoding;
+  return tex;
+}
+const envMap = makeEnvTexture();
+scene.environment = envMap;
+
+// ---------- procedural textures ----------
+function makeDieTexture(hue, topDie){
+  const s = 512, c = document.createElement('canvas'); c.width=c.height=s;
+  const x = c.getContext('2d');
+  x.fillStyle = `hsl(${hue},42%,15%)`; x.fillRect(0,0,s,s);
+  // memory-bank blocks (DRAM = regular grid of banks)
+  const pad=28, cells=8, gap=6, cw=(s-pad*2-gap*(cells-1))/cells;
+  for(let i=0;i<cells;i++) for(let j=0;j<cells;j++){
+    const bx=pad+i*(cw+gap), by=pad+j*(cw+gap);
+    x.fillStyle=`hsla(${hue},44%,${20+Math.random()*8}%,.85)`;
+    x.fillRect(bx,by,cw,cw);
+    x.strokeStyle=`hsla(${hue},60%,62%,.16)`; x.lineWidth=1; x.strokeRect(bx,by,cw,cw);
+    // fine row/column lines inside each bank
+    x.strokeStyle=`hsla(${hue},55%,60%,.07)`;
+    for(let k=4;k<cw;k+=4){ x.beginPath(); x.moveTo(bx,by+k); x.lineTo(bx+cw,by+k); x.stroke(); }
+  }
+  // a central control stripe
+  x.fillStyle=`hsla(${hue},50%,30%,.6)`; x.fillRect(0,s/2-7,s,14);
+  x.strokeStyle=`hsla(${hue},70%,70%,.25)`; x.strokeRect(0,s/2-7,s,14);
+  // bright contact pads scattered
+  for(let i=0;i<160;i++){ x.fillStyle=`hsla(${hue},55%,72%,${Math.random()*0.5})`;
+    x.fillRect(Math.random()*s, Math.random()*s, 2, 2); }
+  if(topDie){
+    // laser-etched marking on the top die
+    x.fillStyle='rgba(220,232,255,.55)'; x.font='bold 30px monospace';
+    x.fillText('HBM', 30, s-46); x.font='18px monospace';
+    x.fillStyle='rgba(180,200,235,.4)'; x.fillText('K4ZAH08 · 8H', 30, s-22);
+  }
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4; tex.encoding=THREE.sRGBEncoding; return tex;
+}
+function makeRoutingTexture(base, line, density){
+  const s=512, c=document.createElement('canvas'); c.width=c.height=s;
+  const x=c.getContext('2d'); x.fillStyle=base; x.fillRect(0,0,s,s);
+  // dense orthogonal micro-routing (interposer-like)
+  x.lineWidth=1;
+  for(let i=0;i<density;i++){
+    x.strokeStyle=line.replace('A', (0.05+Math.random()*0.22).toFixed(2));
+    x.beginPath();
+    let px=Math.random()*s, py=Math.random()*s; x.moveTo(px,py);
+    const segs=2+Math.floor(Math.random()*3);
+    for(let k=0;k<segs;k++){ if(Math.random()<0.5) px+=(Math.random()-0.5)*120; else py+=(Math.random()-0.5)*120; x.lineTo(px,py); }
+    x.stroke();
+  }
+  // contact pad grid
+  for(let i=0;i<24;i++) for(let j=0;j<24;j++){ if(Math.random()<0.4) continue;
+    x.fillStyle=line.replace('A',(0.1+Math.random()*0.3).toFixed(2));
+    x.fillRect(8+i*21, 8+j*21, 3, 3); }
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4; tex.encoding=THREE.sRGBEncoding; return tex;
+}
+function makeBaseTexture(){
+  const s=512, c=document.createElement('canvas'); c.width=c.height=s;
+  const x=c.getContext('2d'); x.fillStyle='#1b2533'; x.fillRect(0,0,s,s);
+  // a few large controller/PHY blocks
+  const blocks=[[24,24,200,150],[250,24,238,150],[24,200,150,288],[200,200,288,160],[200,380,288,108]];
+  blocks.forEach(b=>{ x.fillStyle='rgba(90,130,200,.16)'; x.fillRect(b[0],b[1],b[2],b[3]);
+    x.strokeStyle='rgba(140,180,255,.28)'; x.lineWidth=1.5; x.strokeRect(b[0],b[1],b[2],b[3]);
+    for(let k=8;k<b[2];k+=8){ x.strokeStyle='rgba(120,160,230,.06)'; x.beginPath(); x.moveTo(b[0]+k,b[1]); x.lineTo(b[0]+k,b[1]+b[3]); x.stroke(); } });
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4; tex.encoding=THREE.sRGBEncoding; return tex;
+}
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0xbcd0ff, 0x141821, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 2.1);
+key.position.set(7, 13, 7);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x88aaff, 0.8); rim.position.set(-9,5,-8); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xffd9b0, 0.4); fill.position.set(3,2,10); scene.add(fill);
+
+// ---------- faint particle field (subtle depth, not a space scene) ----------
+const starGroup = new THREE.Group();
+function makeStars(count, radiusMin, radiusMax, size, color, op){
+  const g = new THREE.BufferGeometry();
+  const pos = new Float32Array(count*3);
+  for(let i=0;i<count;i++){
+    const r = radiusMin + Math.random()*(radiusMax-radiusMin);
+    const th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
+    pos[i*3+2] = r*Math.cos(ph);
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const m = new THREE.PointsMaterial({color, size, sizeAttenuation:true, transparent:true, opacity:op, depthWrite:false});
+  return new THREE.Points(g,m);
+}
+starGroup.add(makeStars(420, 45, 95, 0.16, 0x9fb0cf, 0.40));
+starGroup.add(makeStars(120, 40, 90, 0.28, 0xc4d0e6, 0.48));
+scene.add(starGroup);
+
+// ---------- build model ----------
+const parts = [], pickables = [];
+const HALF_W = 5.6, CY = 1.55, SPREAD = 2.6;
+const BASE_HALF = 0.2, DRAM_HALF = 0.15;
+let baseGroup, topGroup;
+let curT = 0, targetT = 0;
+
+// per-part current/animated explode value for STAGGERED motion
+function partTarget(p){
+  // p.order 0..1 across the stack; higher parts start later & finish later
+  const start = p.order * 0.45;       // stagger window
+  const local = (targetT - start) / (1 - 0.45);
+  return Math.max(0, Math.min(1, local));
+}
+function explodeYFor(baseY, t){ return CY + (baseY - CY) * (1 + SPREAD * t); }
+
+function roundedBoxGeo(w,h,d,r){
+  // BoxGeometry with slight bevel feel via ShapeGeometry is heavy; use BoxGeometry + scaled bevel illusion.
+  return new THREE.BoxGeometry(w,h,d,1,1,1);
+}
+function makeBox(w,h,d,mat){ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.castShadow=true; m.receiveShadow=true; return m; }
+function addEdges(group, mesh, color, op){
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),
+    new THREE.LineBasicMaterial({color, transparent:true, opacity:op||0.5}));
+  group.add(e);
+}
+function addBumps(group,w,dieHalfH){
+  const n=7, span=w*0.78, step=span/(n-1), start=-span/2;
+  const mat=new THREE.MeshStandardMaterial({color:0xe6b53c, metalness:1.0, roughness:0.28, envMapIntensity:1.1});
+  const im=new THREE.InstancedMesh(new THREE.SphereGeometry(0.036,10,10), mat, n*n);
+  im.castShadow=true;
+  const mm=new THREE.Matrix4(); let i=0;
+  for(let a=0;a<n;a++)for(let b=0;b<n;b++){ mm.makeTranslation(start+a*step,-dieHalfH-0.045,start+b*step); im.setMatrixAt(i++,mm); }
+  im.instanceMatrix.needsUpdate=true; im.userData.id='microbump';
+  group.add(im); pickables.push(im);
+}
+// reusable solder-ball / bump grid (BGA balls, C4 bumps, etc.)
+function addBallGrid(group,n,w,yLocal,radius,color,rough,pickId){
+  const span=w, step=span/(n-1), start=-span/2;
+  const mat=new THREE.MeshStandardMaterial({color, metalness:0.95, roughness:rough, envMapIntensity:1.1});
+  const im=new THREE.InstancedMesh(new THREE.SphereGeometry(radius,12,12), mat, n*n);
+  im.castShadow=true;
+  const mm=new THREE.Matrix4(); let i=0;
+  for(let a=0;a<n;a++)for(let b=0;b<n;b++){ mm.makeTranslation(start+a*step,yLocal,start+b*step); im.setMatrixAt(i++,mm); }
+  im.instanceMatrix.needsUpdate=true;
+  if(pickId){ im.userData.id=pickId; pickables.push(im); }
+  group.add(im); return im;
+}
+
+function makePart(c){
+  const g=new THREE.Group(); g.position.y=c.y;
+  let mat;
+  if(c.type==='substrate'){
+    const tex=makeRoutingTexture('#0e261f','hsla(150,55%,55%,A)',360);
+    mat=[
+      new THREE.MeshStandardMaterial({color:0x123028, roughness:0.82, metalness:0.15, envMapIntensity:0.5}),
+      new THREE.MeshStandardMaterial({color:0x123028, roughness:0.82, metalness:0.15, envMapIntensity:0.5}),
+      new THREE.MeshStandardMaterial({map:tex, roughness:0.7, metalness:0.25, envMapIntensity:0.6}),
+      new THREE.MeshStandardMaterial({color:0x0d2019, roughness:0.85, metalness:0.1}),
+      new THREE.MeshStandardMaterial({color:0x123028, roughness:0.82, metalness:0.15, envMapIntensity:0.5}),
+      new THREE.MeshStandardMaterial({color:0x123028, roughness:0.82, metalness:0.15, envMapIntensity:0.5}),
+    ];
+  } else if(c.type==='interposer'){
+    const tex=makeRoutingTexture('#5a6874','hsla(210,40%,82%,A)',520);
+    mat=[
+      new THREE.MeshStandardMaterial({color:0x6a7886, roughness:0.32, metalness:0.7, envMapIntensity:1.0}),
+      new THREE.MeshStandardMaterial({color:0x6a7886, roughness:0.32, metalness:0.7, envMapIntensity:1.0}),
+      new THREE.MeshStandardMaterial({map:tex, roughness:0.3, metalness:0.6, envMapIntensity:1.0}),
+      new THREE.MeshStandardMaterial({color:0x4a5662, roughness:0.45, metalness:0.6}),
+      new THREE.MeshStandardMaterial({color:0x6a7886, roughness:0.32, metalness:0.7, envMapIntensity:1.0}),
+      new THREE.MeshStandardMaterial({color:0x6a7886, roughness:0.32, metalness:0.7, envMapIntensity:1.0}),
+    ];
+  } else if(c.type==='base'){
+    const tex=makeBaseTexture();
+    mat=[
+      new THREE.MeshStandardMaterial({color:0x222d3a, roughness:0.5, metalness:0.35, envMapIntensity:0.8}),
+      new THREE.MeshStandardMaterial({color:0x222d3a, roughness:0.5, metalness:0.35, envMapIntensity:0.8}),
+      new THREE.MeshStandardMaterial({map:tex, roughness:0.42, metalness:0.4, envMapIntensity:0.9}),
+      new THREE.MeshStandardMaterial({color:0x161d2a, roughness:0.6, metalness:0.3}),
+      new THREE.MeshStandardMaterial({color:0x222d3a, roughness:0.5, metalness:0.35, envMapIntensity:0.8}),
+      new THREE.MeshStandardMaterial({color:0x222d3a, roughness:0.5, metalness:0.35, envMapIntensity:0.8}),
+    ];
+  } else if(c.type==='dram'){
+    const tex=makeDieTexture(c.hue, c.topDie);
+    mat=[
+      new THREE.MeshStandardMaterial({color:c.side, roughness:0.45, metalness:0.4, envMapIntensity:0.9}),//+x
+      new THREE.MeshStandardMaterial({color:c.side, roughness:0.45, metalness:0.4, envMapIntensity:0.9}),//-x
+      new THREE.MeshStandardMaterial({map:tex, roughness:0.38, metalness:0.55, envMapIntensity:0.9}),    //+y top
+      new THREE.MeshStandardMaterial({color:0x1a2230, roughness:0.6, metalness:0.3}),                    //-y
+      new THREE.MeshStandardMaterial({color:c.side, roughness:0.45, metalness:0.4, envMapIntensity:0.9}),//+z
+      new THREE.MeshStandardMaterial({color:c.side, roughness:0.45, metalness:0.4, envMapIntensity:0.9}),//-z
+    ];
+  }
+  const b=makeBox(c.w,c.h,c.d,mat); b.userData.id=c.id; if(c.layer)b.userData.layer=c.layer;
+  g.add(b); pickables.push(b);
+  addEdges(g,b,c.edge,c.edgeOp);
+  if(c.bumps) addBumps(g,c.w,c.h/2);
+  // BGA solder balls under the package substrate
+  if(c.type==='substrate') addBallGrid(g, 14, c.w*0.88, -c.h/2-0.12, 0.12, 0xc6ccd6, 0.3, 'bga');
+  // C4 micro-bumps under the interposer (decorative)
+  if(c.type==='interposer') addBallGrid(g, 18, c.w*0.82, -c.h/2-0.045, 0.04, 0xd9a23c, 0.32, null);
+  scene.add(g);
+  const part={group:g, baseY:c.y, halfH:c.h/2, order:0, mesh:b};
+  parts.push(part);
+  return part;
+}
+
+// stack
+makePart({id:'substrate',type:'substrate',y:0.00,h:0.5,w:7.0,d:7.0,edge:0x2f6f5e,edgeOp:0.5});
+makePart({id:'interposer',type:'interposer',y:0.40,h:0.3,w:6.4,d:5.6,edge:0xaebfce,edgeOp:0.55});
+const baseP=makePart({id:'base',type:'base',y:0.78,h:0.42,w:3.2,d:3.2,edge:0x6a86a0,edgeOp:0.6,bumps:true});
+baseGroup=baseP.group;
+let yc=0.99;
+const DRAM_N=8;
+for(let i=0;i<DRAM_N;i++){
+  const cy=yc+DRAM_HALF;
+  const side=new THREE.Color().setHSL(0.58,0.5,0.40+i*0.012).getHex();
+  const edge=new THREE.Color().setHSL(0.58,0.7,0.72).getHex();
+  const p=makePart({id:'dram',type:'dram',layer:i+1,y:cy,h:0.3,w:3.2,d:3.2,hue:212,side:side,edge:edge,edgeOp:0.5,bumps:true,topDie:(i===DRAM_N-1)});
+  topGroup=p.group; yc=cy+DRAM_HALF;
+}
+
+// assign stagger order by height (substrate lowest -> 0, top dram -> 1)
+{
+  const ys = parts.map(p=>p.baseY);
+  const mn=Math.min(...ys), mx=Math.max(...ys);
+  parts.forEach(p=>{ p.order = (p.baseY - mn)/(mx-mn); });
+}
+
+// ---------- TSV pillars (denser, finer) ----------
+const tsvPos=[];
+const TSV_GRID=5, TSV_SP=0.62;
+for(let i=0;i<TSV_GRID;i++) for(let j=0;j<TSV_GRID;j++){
+  tsvPos.push({x:(i-(TSV_GRID-1)/2)*TSV_SP, z:(j-(TSV_GRID-1)/2)*TSV_SP});
+}
+const TSV_N=tsvPos.length;
+const tsvMesh=new THREE.InstancedMesh(
+  new THREE.CylinderGeometry(0.028,0.028,1,12),
+  new THREE.MeshStandardMaterial({color:0xcf8038, metalness:1.0, roughness:0.22, envMapIntensity:1.2}), TSV_N);
+tsvMesh.castShadow=true; tsvMesh.userData.id='tsv';
+scene.add(tsvMesh); pickables.push(tsvMesh);
+
+// ---------- camera orbit ----------
+let theta=0.62, phi=1.12, autoRotate=false, zoom=1;
+function clampZoom(z){ return Math.max(0.42, Math.min(2.4, z)); }
+const target=new THREE.Vector3();
+const _m=new THREE.Matrix4(),_v=new THREE.Vector3(),_q=new THREE.Quaternion(),_s=new THREE.Vector3();
+
+function animate(){
+  requestAnimationFrame(animate);
+  curT += (targetT-curT)*0.1;
+  if(Math.abs(targetT-curT)<0.0004) curT=targetT;
+
+  // per-part staggered explode — floats freely (no ground), centered on CY
+  const bob = Math.sin(performance.now()*0.0005)*0.05;   // subtle hover (calmer, instrument-like)
+  for(const p of parts){
+    const start=p.order*0.2;
+    let t=(curT-start)/(1-0.2);
+    t=Math.max(0,Math.min(1,t));
+    // ease
+    t=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    p.group.position.y = explodeYFor(p.baseY, t) + bob;
+  }
+
+  // TSV span
+  const bBottom=baseGroup.position.y-BASE_HALF;
+  const tTop=topGroup.position.y+DRAM_HALF;
+  const c=(bBottom+tTop)/2, hgt=(tTop-bBottom);
+  for(let i=0;i<TSV_N;i++){ _m.compose(_v.set(tsvPos[i].x,c,tsvPos[i].z),_q,_s.set(1,hgt,1)); tsvMesh.setMatrixAt(i,_m); }
+  tsvMesh.instanceMatrix.needsUpdate=true;
+
+  // framing
+  let minY=Infinity,maxY=-Infinity;
+  for(const p of parts){ const y=p.group.position.y; minY=Math.min(minY,y-p.halfH); maxY=Math.max(maxY,y+p.halfH);} 
+  const centerY=(minY+maxY)/2, halfH=(maxY-minY)/2;
+  const camCenterY=centerY-bob;   // keep camera steady so the model visibly floats
+  const rs=Math.sqrt(3.8*3.8 + 3.7*3.7 + halfH*halfH)*0.62;
+  const vF=camera.fov*Math.PI/180, hF=2*Math.atan(Math.tan(vF/2)*camera.aspect);
+  const dist=(rs/Math.sin(Math.min(vF,hF)/2))*1.18*zoom;
+
+  theta += autoRotate ? 0.0026 : 0.0004;   // gentle idle drift; faster when auto-rotating
+  starGroup.rotation.y += 0.00008;          // barely-there parallax in the particle field
+  const sp=Math.sin(phi), cp=Math.cos(phi);
+  camera.position.set(dist*sp*Math.sin(theta), camCenterY+dist*cp, dist*sp*Math.cos(theta));
+  target.set(0,camCenterY,0); camera.lookAt(target);
+  key.target.position.set(0,camCenterY,0); key.target.updateMatrixWorld();
+
+  renderer.render(scene,camera);
+}
+animate();
+// hide loader after first frames
+setTimeout(()=>{ const l=document.getElementById('loader'); l.style.opacity=0; setTimeout(()=>l.remove(),500); }, 350);
+
+// ---------- picking ----------
+const raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
+const el=renderer.domElement;
+const panel=document.getElementById('panel');
+const panelTag=document.getElementById('panelTag'), panelTitle=document.getElementById('panelTitle'), panelBody=document.getElementById('panelBody');
+const slider=document.getElementById('slider');
+let selected=null;
+
+function showInfo(id,layer){ const d=INFO[id]; if(!d)return;
+  panelTag.textContent=(id==='dram'&&layer)?layer+'번째 층':d.tag;
+  panelTitle.textContent=d.title;
+  panelBody.innerHTML =
+    `<p class="lead">${d.lead}</p>`+
+    `<p class="detail">${d.detail}</p>`+
+    `<ul class="facts">${d.facts.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+  panel.classList.add('open'); }
+function emiOf(o){ return Array.isArray(o.material)?o.material:[o.material]; }
+function restore(o){ if(o&&o.userData.emi){ emiOf(o).forEach((m,i)=>{m.emissive.setHex(o.userData.emi[i]);m.emissiveIntensity=o.userData.emiI[i];}); } }
+function select(o){
+  if(selected&&selected!==o) restore(selected);
+  selected=o;
+  if(!o.userData.emi){ o.userData.emi=emiOf(o).map(m=>m.emissive.getHex()); o.userData.emiI=emiOf(o).map(m=>m.emissiveIntensity??1); }
+  emiOf(o).forEach(m=>{m.emissive.setHex(0x2a4d8f);m.emissiveIntensity=0.85;});
+  showInfo(o.userData.id,o.userData.layer);
+}
+function deselect(){ restore(selected); selected=null; panel.classList.remove('open'); }
+function pick(x,y){
+  const r=el.getBoundingClientRect();
+  pointer.x=((x-r.left)/r.width)*2-1; pointer.y=-((y-r.top)/r.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  const list=pickables.filter(o=>o.visible!==false);
+  const hits=raycaster.intersectObjects(list,false);
+  if(hits.length) select(hits[0].object); else deselect();
+}
+
+// ---------- mouse ----------
+let dragging=false,lastX=0,lastY=0,downT=0,moved=0;
+function clampPhi(){ phi=Math.max(0.16,Math.min(Math.PI-0.16,phi)); }
+function clamp01(v){ return Math.max(0,Math.min(1,v)); }
+el.addEventListener('mousedown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;downT=performance.now();moved=0;});
+addEventListener('mousemove',e=>{ if(!dragging)return; const dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX;lastY=e.clientY; moved+=Math.abs(dx)+Math.abs(dy); theta-=dx*0.005; phi-=dy*0.005; clampPhi(); });
+addEventListener('mouseup',e=>{ if(dragging&&moved<6&&performance.now()-downT<350) pick(e.clientX,e.clientY); dragging=false; });
+el.addEventListener('wheel',e=>{ e.preventDefault(); zoom=clampZoom(zoom*(1+e.deltaY*0.0012)); },{passive:false});
+
+// ---------- touch ----------
+let pinchStart=0,pinchZ=1,tx0=0,ty0=0,tDownT=0,tMoved=0;
+function tDist(e){const a=e.touches[0],b=e.touches[1];return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);}
+el.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){const t=e.touches[0];dragging=true;lastX=t.clientX;lastY=t.clientY;tx0=t.clientX;ty0=t.clientY;tDownT=performance.now();tMoved=0;}
+  else if(e.touches.length===2){dragging=false;pinchStart=tDist(e);pinchZ=zoom;}
+},{passive:false});
+el.addEventListener('touchmove',e=>{ e.preventDefault();
+  if(e.touches.length===1&&dragging){const t=e.touches[0];const dx=t.clientX-lastX,dy=t.clientY-lastY;lastX=t.clientX;lastY=t.clientY;tMoved+=Math.abs(dx)+Math.abs(dy);theta-=dx*0.005;phi-=dy*0.005;clampPhi();}
+  else if(e.touches.length===2){ const d=tDist(e); zoom=clampZoom(pinchZ*(pinchStart/Math.max(1,d))); }
+},{passive:false});
+el.addEventListener('touchend',e=>{ if(dragging&&e.touches.length===0&&tMoved<8&&performance.now()-tDownT<350) pick(tx0,ty0); if(e.touches.length===0) dragging=false; },{passive:false});
+
+// ---------- controls ----------
+slider.addEventListener('input',()=>{ targetT=slider.value/50; });
+document.getElementById('close').addEventListener('click',deselect);
+document.getElementById('resetBtn').addEventListener('click',()=>{ theta=0.62;phi=1.12;targetT=0;zoom=1;slider.value=0;deselect(); });
+const rotateBtn=document.getElementById('rotateBtn');
+rotateBtn.addEventListener('click',()=>{ autoRotate=!autoRotate; rotateBtn.classList.toggle('active',autoRotate); });
+document.getElementById('zoomInBtn').addEventListener('click',()=>{ zoom=clampZoom(zoom*0.85); });
+document.getElementById('zoomOutBtn').addEventListener('click',()=>{ zoom=clampZoom(zoom*1.18); });
+
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+</script>
+</body>
+</html>
