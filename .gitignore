@@ -2,3 +2,6 @@ node_modules/
 dist/
 *.local
 .DS_Store
+
+# Claude Code 로컬(머신별) 설정 — 공유하지 않음
+.claude/settings.local.json

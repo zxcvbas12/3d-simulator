@@ -1,0 +1,118 @@
+/* React 앱 전역 — 공학적(계측기) 배경 + 부트스트랩 레이아웃.
+   색·폰트 토큰은 @shared/styles/tokens.css에서 가져온다. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 차분한 네이비 + 옅은 블루프린트 그리드 + 미세 블루 글로우 (우주 톤 ↓, 공학 톤 ↑) */
+#app {
+  position: fixed;
+  inset: 0;
+  background-color: #070c18;
+  background-image:
+    radial-gradient(120% 90% at 78% -8%, rgba(111, 155, 255, 0.1), transparent 55%),
+    linear-gradient(rgba(125, 150, 205, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 150, 205, 0.05) 1px, transparent 1px),
+    radial-gradient(125% 120% at 50% 33%, #131d30 0%, #0a1120 52%, #05070f 100%);
+  background-size: auto, 48px 48px, 48px 48px, auto;
+}
+
+.boot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단 바 */
+.boot-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 58px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 4px;
+  font-size: 16px;
+}
+.brand .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--copper);
+  box-shadow: 0 0 10px var(--copper);
+}
+.boot-tag {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--faint);
+}
+
+/* 3D 스테이지 — R3F Canvas가 이 영역을 채운다 */
+.boot-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.boot-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--blue);
+}
+
+/* 하단 컨트롤 */
+.boot-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px;
+  flex-wrap: wrap;
+}
+.boot-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-bd);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 11px;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: 0.18s;
+}
+.boot-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.boot-note {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--faint);
+}
