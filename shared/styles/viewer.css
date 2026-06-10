@@ -154,6 +154,46 @@
   line-height: 1.75;
   color: #b6c0d5;
 }
+/* 정보 패널 본문 구조: 한 줄 요약(lead) · 자세히(detail) · 핵심 항목(facts) */
+.v-panel-body .lead {
+  color: #eef2fb;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.v-panel-body .detail {
+  color: #aeb9cf;
+  margin-bottom: 16px;
+}
+.v-panel-body .facts {
+  list-style: none;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.v-panel-body .facts li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 12.5px;
+  color: #c4cee0;
+  font-family: var(--mono);
+  letter-spacing: 0.2px;
+  line-height: 1.45;
+}
+.v-panel-body .facts li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  background: var(--blue);
+  box-shadow: 0 0 6px rgba(111, 155, 255, 0.6);
+}
 .v-panel-close {
   position: absolute;
   top: 18px;

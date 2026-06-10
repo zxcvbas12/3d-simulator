@@ -37,7 +37,7 @@ export const ko = {
   viewer: {
     assemble: "조립",
     explode: "분해",
-    hint: "드래그로 회전 · 스크롤·핀치·슬라이더로 펼치고 접기 · 부품을 탭하면 설명",
+    hint: "드래그로 회전 · 스크롤·핀치·＋－로 확대·축소 · 슬라이더로 분해·조립 · 부품을 탭하면 설명",
     autoRotate: "자동 회전",
     reset: "초기화",
     layerLabel: "{n}번째 층",

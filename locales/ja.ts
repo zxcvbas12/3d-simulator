@@ -34,7 +34,7 @@ export const ja: Dict = {
   viewer: {
     assemble: "組立",
     explode: "分解",
-    hint: "ドラッグで回転 · スクロール・ピンチ・スライダーで展開 · 部品をタップで説明",
+    hint: "ドラッグで回転 · スクロール・ピンチ・＋－で拡大縮小 · スライダーで分解 · 部品をタップで説明",
     autoRotate: "自動回転",
     reset: "リセット",
     layerLabel: "{n}番目の層",

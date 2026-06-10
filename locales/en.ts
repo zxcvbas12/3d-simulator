@@ -34,7 +34,7 @@ export const en: Dict = {
   viewer: {
     assemble: "Assembled",
     explode: "Exploded",
-    hint: "Drag to rotate · scroll / pinch / slider to explode · tap a part for details",
+    hint: "Drag to rotate · scroll / pinch / +− to zoom · slider to explode · tap a part for details",
     autoRotate: "Auto-rotate",
     reset: "Reset",
     layerLabel: "Layer {n}",
