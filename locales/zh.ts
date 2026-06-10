@@ -43,6 +43,9 @@ export const zh: Dict = {
     spec: "尺寸",
     loading: "正在加载 3D…",
     loadError: "无法加载 3D 模型",
+    more: "详细",
+    less: "简略",
+    sources: "延伸阅读",
   },
   category: { suffix: "模拟器" },
   cat: {

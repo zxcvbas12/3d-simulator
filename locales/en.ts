@@ -43,6 +43,9 @@ export const en: Dict = {
     spec: "Dimensions",
     loading: "Loading 3D…",
     loadError: "Couldn't load the 3D model",
+    more: "Details",
+    less: "Less",
+    sources: "Further reading",
   },
   category: { suffix: " simulators" },
   cat: {

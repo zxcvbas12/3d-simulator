@@ -65,6 +65,7 @@ export const cpuInfo: PartInfoMap = {
   ccd: {
     tag: { ko: "COMPUTE CHIPLET", en: "COMPUTE CHIPLET", ja: "COMPUTE CHIPLET", zh: "COMPUTE CHIPLET" },
     spec: "≈ 70 mm² (≈ 8 × 9 mm) · 5 nm",
+    sources: [{ label: "Wikipedia · Chiplet", url: "https://en.wikipedia.org/wiki/Chiplet" }],
     title: {
       ko: "컴퓨트 칩렛 (CCD)",
       en: "Compute Chiplet (CCD)",
@@ -144,6 +145,7 @@ export const cpuInfo: PartInfoMap = {
   lga: {
     tag: { ko: "PACKAGE I/O", en: "PACKAGE I/O", ja: "PACKAGE I/O", zh: "PACKAGE I/O" },
     spec: "1,000+ lands · pitch < 1 mm",
+    sources: [{ label: "Wikipedia · Land grid array", url: "https://en.wikipedia.org/wiki/Land_grid_array" }],
     title: {
       ko: "LGA 랜드 (접점)",
       en: "LGA Lands (Contacts)",

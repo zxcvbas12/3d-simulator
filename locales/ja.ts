@@ -43,6 +43,9 @@ export const ja: Dict = {
     spec: "寸法",
     loading: "3Dを読み込み中…",
     loadError: "3Dモデルを読み込めませんでした",
+    more: "詳しく",
+    less: "簡単に",
+    sources: "もっと読む",
   },
   category: { suffix: "シミュレーター" },
   cat: {

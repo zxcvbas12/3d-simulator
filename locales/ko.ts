@@ -46,6 +46,9 @@ export const ko = {
     spec: "치수",
     loading: "3D 불러오는 중…",
     loadError: "3D를 불러오지 못했어요",
+    more: "자세히",
+    less: "간단히",
+    sources: "더 읽기",
   },
   category: { suffix: " 시뮬레이터" },
   cat: {
