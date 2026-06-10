@@ -1,7 +1,7 @@
 import type { Dict } from "./ko";
 
 export const zh: Dict = {
-  nav: { home: "首页", about: "简介", learn: "学习方式", intent: "创作初衷" },
+  nav: { home: "首页", about: "简介", learn: "学习方式", intent: "创作初衷", menu: "菜单" },
   sidebar: { title: "分类" },
   hero: {
     eyebrow: "INTERACTIVE 3D · 学习工具",
@@ -41,6 +41,11 @@ export const zh: Dict = {
     reset: "重置",
     layerLabel: "第{n}层",
     spec: "尺寸",
+    zoomIn: "放大",
+    zoomOut: "缩小",
+    sliderLabel: "拆解 / 组装",
+    canvasLabel: "3D 模型 — 拖动或方向键旋转",
+    close: "关闭",
     loading: "正在加载 3D…",
     loadError: "无法加载 3D 模型",
     more: "详细",

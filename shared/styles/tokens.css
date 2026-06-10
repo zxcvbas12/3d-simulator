@@ -24,3 +24,22 @@
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --sans: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
+
+/* 키보드 포커스 링 — 마우스 클릭에는 안 보이고 키보드 이동에만 표시 */
+:where(button, a, input, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 모션 접근성 — 시스템이 동작 줄이기를 원하면 등장/전환 애니메이션을 끈다
+   (3D 쪽 자동 회전은 엔진에서 같은 미디어 쿼리로 끈다) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useAppStore } from "../state/store";
+import { useT } from "../i18n";
 import type { ModelDef } from "./model";
 
 const HIGHLIGHT = 0x2a4d8f;
@@ -106,6 +107,15 @@ export function SceneContents({ model }: { model: ModelDef }) {
     if (lineParams) lineParams.threshold = 0.05;
   }, []);
 
+  // 접근성 — 캔버스를 포커스 가능한 조작 영역으로 (스크린리더 라벨은 언어 따라 갱신)
+  const t = useT();
+  useEffect(() => {
+    const el = gl.domElement;
+    el.tabIndex = 0;
+    el.setAttribute("role", "application");
+    el.setAttribute("aria-label", t.viewer.canvasLabel);
+  }, [gl, t]);
+
   // 입력: 마우스 드래그=회전, 휠/핀치=줌(독립), 탭=선택
   useEffect(() => {
     const el = gl.domElement;
@@ -148,6 +158,17 @@ export function SceneContents({ model }: { model: ModelDef }) {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       setZoom(clampZoom(useAppStore.getState().zoom * (1 + e.deltaY * 0.0012)));
+    };
+    // 키보드 회전 — 캔버스 포커스 후 화살표 키 (줌·분해는 버튼·슬라이더가 키보드 대응)
+    const onKey = (e: KeyboardEvent) => {
+      const step = 0.12;
+      if (e.key === "ArrowLeft") theta.current += step;
+      else if (e.key === "ArrowRight") theta.current -= step;
+      else if (e.key === "ArrowUp") phi.current = clampPhi(phi.current - step);
+      else if (e.key === "ArrowDown") phi.current = clampPhi(phi.current + step);
+      else return;
+      e.preventDefault();
+      invalidate();
     };
 
     const tDist = (e: TouchEvent) => {
@@ -198,6 +219,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
     el.addEventListener("wheel", onWheel, { passive: false });
+    el.addEventListener("keydown", onKey);
     el.addEventListener("touchstart", onTStart, { passive: false });
     el.addEventListener("touchmove", onTMove, { passive: false });
     el.addEventListener("touchend", onTEnd, { passive: false });
@@ -206,6 +228,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
       el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("keydown", onKey);
       el.removeEventListener("touchstart", onTStart);
       el.removeEventListener("touchmove", onTMove);
       el.removeEventListener("touchend", onTEnd);
