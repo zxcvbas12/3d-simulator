@@ -16,6 +16,7 @@ function makeViewer(loadModel: () => Promise<{ default: unknown }>): LazyExoticC
 
 const REGISTRY: Record<string, LazyExoticComponent<ComponentType>> = {
   "semiconductor/hbm": makeViewer(() => import("../../../semiconductor/hbm/model")),
+  "semiconductor/gpu": makeViewer(() => import("../../../semiconductor/gpu/model")),
   "semiconductor/cpu": makeViewer(() => import("../../../semiconductor/cpu/model")),
 };
 
