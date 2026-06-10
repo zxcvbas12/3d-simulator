@@ -149,6 +149,25 @@
   line-height: 1.35;
   margin-bottom: 14px;
 }
+/* 부품 치수 readout (계측기 톤) */
+.v-panel-spec {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-family: var(--mono);
+}
+.v-panel-spec .v-spec-label {
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.v-panel-spec .v-spec-val {
+  font-size: 12px;
+  color: #cfe0ff;
+  letter-spacing: 0.3px;
+}
 .v-panel-body {
   font-size: 13.5px;
   line-height: 1.75;

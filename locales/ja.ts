@@ -30,6 +30,8 @@ export const ja: Dict = {
     viewerLbl: "3Dビューア領域",
     viewerNote: "実際のサイトではここでモデルを回転・分解・学習します。",
     startLearn: "学習を始める",
+    overview: "概要",
+    specs: "主な仕様",
   },
   viewer: {
     assemble: "組立",
@@ -38,6 +40,7 @@ export const ja: Dict = {
     autoRotate: "自動回転",
     reset: "リセット",
     layerLabel: "{n}番目の層",
+    spec: "寸法",
   },
   category: { suffix: "シミュレーター" },
   cat: {

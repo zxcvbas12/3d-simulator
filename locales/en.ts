@@ -30,6 +30,8 @@ export const en: Dict = {
     viewerLbl: "3D viewer area",
     viewerNote: "In the live site, you rotate, explode and learn the model here.",
     startLearn: "Start learning",
+    overview: "Overview",
+    specs: "Key specs",
   },
   viewer: {
     assemble: "Assembled",
@@ -38,6 +40,7 @@ export const en: Dict = {
     autoRotate: "Auto-rotate",
     reset: "Reset",
     layerLabel: "Layer {n}",
+    spec: "Dimensions",
   },
   category: { suffix: " simulators" },
   cat: {

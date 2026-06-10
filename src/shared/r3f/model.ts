@@ -10,10 +10,12 @@ import type { Lang } from "@locales/index";
 export type LocalizedText = Record<Lang, string>;
 export type LocalizedList = Record<Lang, string[]>;
 
-/** 부품 하나의 설명(다국어). 패널: 태그 · 제목 · 한 줄 요약(lead) · 자세히(detail) · 핵심 항목(facts). */
+/** 부품 하나의 설명(다국어). 패널: 태그 · 제목 · 치수(spec) · 한 줄 요약(lead) · 자세히(detail) · 핵심 항목(facts). */
 export interface PartInfo {
   tag: LocalizedText;
   title: LocalizedText;
+  /** 실제 치수 readout(언어 중립 표기, 예: "≈ 11 × 11 mm · t ≈ 50 μm"). */
+  spec?: string;
   lead: LocalizedText;
   detail: LocalizedText;
   facts: LocalizedList;

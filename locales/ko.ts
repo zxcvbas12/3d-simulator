@@ -33,6 +33,8 @@ export const ko = {
     viewerLbl: "3D 뷰어 영역",
     viewerNote: "실제 사이트에서는 여기에서 모델을 회전·분해·학습합니다.",
     startLearn: "학습 시작",
+    overview: "개요",
+    specs: "주요 사양",
   },
   viewer: {
     assemble: "조립",
@@ -41,6 +43,7 @@ export const ko = {
     autoRotate: "자동 회전",
     reset: "초기화",
     layerLabel: "{n}번째 층",
+    spec: "치수",
   },
   category: { suffix: " 시뮬레이터" },
   cat: {

@@ -144,6 +144,25 @@ function ModelView({ model }: { model: ModelEntry }) {
         <StatusBadge status={model.status} />
       </div>
       <p className="md-desc">{model.desc[lang]}</p>
+      {model.overview && (
+        <div className="md-overview">
+          <div className="md-block-title mono">{t.model.overview}</div>
+          <p>{model.overview[lang]}</p>
+        </div>
+      )}
+      {model.specs && (
+        <div className="md-specs">
+          <div className="md-block-title mono">{t.model.specs}</div>
+          <dl>
+            {model.specs.map((s, i) => (
+              <div className="spec-row" key={i}>
+                <dt>{s.label[lang]}</dt>
+                <dd className="mono">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
     </>
   );
 }

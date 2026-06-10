@@ -8,6 +8,7 @@ import type { PartInfoMap } from "@app/shared/r3f/model";
 export const cpuInfo: PartInfoMap = {
   ihs: {
     tag: { ko: "HEAT SPREADER", en: "HEAT SPREADER", ja: "HEAT SPREADER", zh: "HEAT SPREADER" },
+    spec: "≈ 40 × 40 mm · Ni-plated Cu",
     title: {
       ko: "통합 히트 스프레더 (IHS)",
       en: "Integrated Heat Spreader (IHS)",
@@ -35,6 +36,7 @@ export const cpuInfo: PartInfoMap = {
   },
   tim: {
     tag: { ko: "THERMAL", en: "THERMAL", ja: "THERMAL", zh: "THERMAL" },
+    spec: "t ≈ 50 μm (paste / solder)",
     title: {
       ko: "TIM · 열전달 물질",
       en: "TIM · Thermal Interface Material",
@@ -62,6 +64,7 @@ export const cpuInfo: PartInfoMap = {
   },
   ccd: {
     tag: { ko: "COMPUTE CHIPLET", en: "COMPUTE CHIPLET", ja: "COMPUTE CHIPLET", zh: "COMPUTE CHIPLET" },
+    spec: "≈ 70 mm² (≈ 8 × 9 mm) · 5 nm",
     title: {
       ko: "컴퓨트 칩렛 (CCD)",
       en: "Compute Chiplet (CCD)",
@@ -89,6 +92,7 @@ export const cpuInfo: PartInfoMap = {
   },
   iod: {
     tag: { ko: "I/O DIE", en: "I/O DIE", ja: "I/O DIE", zh: "I/O DIE" },
+    spec: "≈ 120 mm² (≈ 11 × 11 mm) · 6 nm",
     title: { ko: "I/O 다이 (IOD)", en: "I/O Die (IOD)", ja: "I/O ダイ (IOD)", zh: "I/O 裸片 (IOD)" },
     lead: {
       ko: "칩렛들과 메모리·외부 장치를 잇는 “허브” 다이예요.",
@@ -111,6 +115,7 @@ export const cpuInfo: PartInfoMap = {
   },
   substrate: {
     tag: { ko: "SUBSTRATE", en: "SUBSTRATE", ja: "SUBSTRATE", zh: "SUBSTRATE" },
+    spec: "≈ 40 × 40 mm · multilayer organic",
     title: {
       ko: "패키지 기판 (Substrate)",
       en: "Package Substrate",
@@ -138,6 +143,7 @@ export const cpuInfo: PartInfoMap = {
   },
   lga: {
     tag: { ko: "PACKAGE I/O", en: "PACKAGE I/O", ja: "PACKAGE I/O", zh: "PACKAGE I/O" },
+    spec: "1,000+ lands · pitch < 1 mm",
     title: {
       ko: "LGA 랜드 (접점)",
       en: "LGA Lands (Contacts)",

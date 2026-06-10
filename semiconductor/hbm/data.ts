@@ -7,6 +7,7 @@ import type { PartInfoMap } from "@app/shared/r3f/model";
 export const hbmInfo: PartInfoMap = {
   substrate: {
     tag: { ko: "SUBSTRATE", en: "SUBSTRATE", ja: "SUBSTRATE", zh: "SUBSTRATE" },
+    spec: "≈ 55 × 55 mm · multilayer organic",
     title: {
       ko: "패키지 기판 (Package Substrate)",
       en: "Package Substrate",
@@ -34,6 +35,7 @@ export const hbmInfo: PartInfoMap = {
   },
   interposer: {
     tag: { ko: "INTERPOSER", en: "INTERPOSER", ja: "INTERPOSER", zh: "INTERPOSER" },
+    spec: "Si · t ≈ 100 μm",
     title: {
       ko: "실리콘 인터포저 (Interposer)",
       en: "Silicon Interposer",
@@ -61,6 +63,7 @@ export const hbmInfo: PartInfoMap = {
   },
   base: {
     tag: { ko: "LOGIC DIE", en: "LOGIC DIE", ja: "LOGIC DIE", zh: "LOGIC DIE" },
+    spec: "≈ 11 × 11 mm · logic",
     title: {
       ko: "베이스 다이 (Base / Logic Die)",
       en: "Base / Logic Die",
@@ -88,6 +91,7 @@ export const hbmInfo: PartInfoMap = {
   },
   dram: {
     tag: { ko: "DRAM DIE", en: "DRAM DIE", ja: "DRAM DIE", zh: "DRAM DIE" },
+    spec: "≈ 11 × 11 mm · t ≈ 50 μm",
     title: { ko: "DRAM 다이 (DRAM Die)", en: "DRAM Die", ja: "DRAM ダイ", zh: "DRAM 裸片" },
     lead: {
       ko: "실제로 데이터를 저장하는 메모리 셀이 빼곡히 들어 있는 층이에요.",
@@ -110,6 +114,7 @@ export const hbmInfo: PartInfoMap = {
   },
   tsv: {
     tag: { ko: "CORE TECH", en: "CORE TECH", ja: "CORE TECH", zh: "CORE TECH" },
+    spec: "∅ ≈ 10 μm · pitch ≈ 40 μm",
     title: {
       ko: "TSV · 실리콘 관통 전극",
       en: "TSV · Through-Silicon Via",
@@ -137,6 +142,7 @@ export const hbmInfo: PartInfoMap = {
   },
   microbump: {
     tag: { ko: "BONDING", en: "BONDING", ja: "BONDING", zh: "BONDING" },
+    spec: "∅ ≈ 25 μm · pitch ≈ 45 μm",
     title: {
       ko: "마이크로 범프 (Micro Bump)",
       en: "Micro Bump",
@@ -164,6 +170,7 @@ export const hbmInfo: PartInfoMap = {
   },
   bga: {
     tag: { ko: "PACKAGE I/O", en: "PACKAGE I/O", ja: "PACKAGE I/O", zh: "PACKAGE I/O" },
+    spec: "pitch ≈ 1 mm",
     title: {
       ko: "BGA 솔더 볼 (Solder Balls)",
       en: "BGA Solder Balls",

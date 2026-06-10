@@ -28,6 +28,12 @@ export function InfoPanel({ model }: { model: ModelDef }) {
               : info.tag[lang]}
           </div>
           <h2 className="v-panel-title">{info.title[lang]}</h2>
+          {info.spec && (
+            <div className="v-panel-spec">
+              <span className="v-spec-label">{t.viewer.spec}</span>
+              <span className="v-spec-val">{info.spec}</span>
+            </div>
+          )}
           <div className="v-panel-body">
             <p className="lead">{info.lead[lang]}</p>
             <p className="detail">{info.detail[lang]}</p>

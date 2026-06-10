@@ -30,6 +30,8 @@ export const zh: Dict = {
     viewerLbl: "3D查看区域",
     viewerNote: "在正式网站中，你将在此旋转、拆解并学习模型。",
     startLearn: "开始学习",
+    overview: "概述",
+    specs: "主要规格",
   },
   viewer: {
     assemble: "组装",
@@ -38,6 +40,7 @@ export const zh: Dict = {
     autoRotate: "自动旋转",
     reset: "重置",
     layerLabel: "第{n}层",
+    spec: "尺寸",
   },
   category: { suffix: "模拟器" },
   cat: {
