@@ -16,7 +16,7 @@ export function InfoPanel({ model }: { model: ModelDef }) {
 
   return (
     <div className={`v-panel${selected ? " open" : ""}`}>
-      <button className="v-panel-close" onClick={() => select(null)} aria-label="close">
+      <button className="v-panel-close" onClick={() => select(null)} aria-label={t.viewer.close}>
         ×
       </button>
       <div className="v-panel-accent" />

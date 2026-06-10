@@ -1,7 +1,7 @@
 import type { Dict } from "./ko";
 
 export const ja: Dict = {
-  nav: { home: "ホーム", about: "概要", learn: "学び方", intent: "制作意図" },
+  nav: { home: "ホーム", about: "概要", learn: "学び方", intent: "制作意図", menu: "メニュー" },
   sidebar: { title: "カテゴリー" },
   hero: {
     eyebrow: "INTERACTIVE 3D · 学習ツール",
@@ -41,6 +41,11 @@ export const ja: Dict = {
     reset: "リセット",
     layerLabel: "{n}番目の層",
     spec: "寸法",
+    zoomIn: "拡大",
+    zoomOut: "縮小",
+    sliderLabel: "分解・組み立て",
+    canvasLabel: "3Dモデル — ドラッグまたは矢印キーで回転",
+    close: "閉じる",
   },
   category: { suffix: "シミュレーター" },
   cat: {

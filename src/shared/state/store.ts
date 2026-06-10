@@ -8,6 +8,10 @@ import type { Lang } from "@locales/index";
 const LANG_KEY = "strata.lang";
 const SUPPORTED: readonly Lang[] = ["ko", "en", "ja", "zh"];
 
+/** 모션 접근성 — 시스템이 동작 줄이기를 원하면 자동 회전 등 스스로 움직이는 연출을 끈다. */
+export const prefersReducedMotion =
+  typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 function initLang(): Lang {
   try {
     const saved = localStorage.getItem(LANG_KEY) as Lang | null;
@@ -70,7 +74,7 @@ export const useAppStore = create<AppState>((set) => ({
   select: (selected) => set({ selected }),
 
   autoRotate: false,
-  toggleAutoRotate: () => set((s) => ({ autoRotate: !s.autoRotate })),
+  toggleAutoRotate: () => set((s) => ({ autoRotate: !prefersReducedMotion && !s.autoRotate })),
 
   resetNonce: 0,
   reset: () =>

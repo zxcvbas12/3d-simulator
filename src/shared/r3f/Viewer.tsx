@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Stats } from "@react-three/drei";
 import { useAppStore } from "../state/store";
 import { SceneContents } from "./SceneContents";
 import { ViewerChrome } from "../ui/ViewerChrome";
@@ -12,6 +13,9 @@ import "@shared/styles/viewer.css";
  * 회전(드래그) · 독립 줌(스크롤/핀치/＋－) · 분해(슬라이더, stagger+ease) · 선택 + 정보 패널.
  * frameloop="demand"로 온디맨드 렌더(자동회전 중엔 always). Three.js 의존이라 ModelView가 lazy 로드.
  */
+/** FPS 측정 오버레이(stats.js, drei 동봉) — `?stats`로 켠다. 성능 예산 점검용, 프로덕션 UI 아님. */
+const SHOW_STATS = typeof location !== "undefined" && new URLSearchParams(location.search).has("stats");
+
 export default function Viewer({ model }: { model: ModelDef }) {
   const autoRotate = useAppStore((s) => s.autoRotate);
 
@@ -29,6 +33,7 @@ export default function Viewer({ model }: { model: ModelDef }) {
         gl={{ antialias: true, alpha: true }}
       >
         <SceneContents model={model} />
+        {SHOW_STATS && <Stats />}
       </Canvas>
       <ViewerChrome />
       <InfoPanel model={model} />

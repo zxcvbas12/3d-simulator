@@ -1,7 +1,7 @@
 import type { Dict } from "./ko";
 
 export const en: Dict = {
-  nav: { home: "Home", about: "About", learn: "Learning", intent: "Intent" },
+  nav: { home: "Home", about: "About", learn: "Learning", intent: "Intent", menu: "Menu" },
   sidebar: { title: "Categories" },
   hero: {
     eyebrow: "INTERACTIVE 3D · LEARNING TOOL",
@@ -41,6 +41,11 @@ export const en: Dict = {
     reset: "Reset",
     layerLabel: "Layer {n}",
     spec: "Dimensions",
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    sliderLabel: "Explode / assemble",
+    canvasLabel: "3D model — drag or use arrow keys to rotate",
+    close: "Close",
   },
   category: { suffix: " simulators" },
   cat: {

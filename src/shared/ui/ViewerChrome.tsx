@@ -1,4 +1,4 @@
-import { useAppStore } from "../state/store";
+import { prefersReducedMotion, useAppStore } from "../state/store";
 import { useT } from "../i18n";
 
 const clampZoom = (z: number) => Math.max(0.42, Math.min(2.4, z));
@@ -17,15 +17,31 @@ export function ViewerChrome() {
   return (
     <>
       <div className="v-topright">
-        <button className="v-btn" title="확대" onClick={() => setZoom(clampZoom(zoom * 0.85))}>
+        <button
+          className="v-btn"
+          title={t.viewer.zoomIn}
+          aria-label={t.viewer.zoomIn}
+          onClick={() => setZoom(clampZoom(zoom * 0.85))}
+        >
           ＋
         </button>
-        <button className="v-btn" title="축소" onClick={() => setZoom(clampZoom(zoom * 1.18))}>
+        <button
+          className="v-btn"
+          title={t.viewer.zoomOut}
+          aria-label={t.viewer.zoomOut}
+          onClick={() => setZoom(clampZoom(zoom * 1.18))}
+        >
           －
         </button>
-        <button className={`v-btn${autoRotate ? " on" : ""}`} onClick={toggleAutoRotate}>
-          {t.viewer.autoRotate}
-        </button>
+        {!prefersReducedMotion && (
+          <button
+            className={`v-btn${autoRotate ? " on" : ""}`}
+            aria-pressed={autoRotate}
+            onClick={toggleAutoRotate}
+          >
+            {t.viewer.autoRotate}
+          </button>
+        )}
         <button className="v-btn" onClick={reset}>
           {t.viewer.reset}
         </button>
@@ -38,6 +54,7 @@ export function ViewerChrome() {
             type="range"
             min={0}
             max={100}
+            aria-label={t.viewer.sliderLabel}
             value={Math.round(explodeT * 100)}
             onChange={(e) => setExplodeT(Number(e.target.value) / 100)}
           />

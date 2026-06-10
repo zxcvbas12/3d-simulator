@@ -21,7 +21,7 @@ export function Nav() {
   return (
     <nav>
       <div className="nav-in">
-        <button className="sb-toggle" onClick={toggleDrawer} aria-label="menu">
+        <button className="sb-toggle" onClick={toggleDrawer} aria-label={t.nav.menu}>
           ☰
         </button>
         <div className="brand" onClick={goHome}>

@@ -4,7 +4,7 @@
  * 일부 값에는 <br> 등 HTML이 들어있어 렌더 시 innerHTML로 주입한다(우리 정적 문구만, 사용자 입력 아님).
  */
 export const ko = {
-  nav: { home: "홈", about: "소개", learn: "학습 구조", intent: "제작자 의도" },
+  nav: { home: "홈", about: "소개", learn: "학습 구조", intent: "제작자 의도", menu: "메뉴" },
   sidebar: { title: "카테고리" },
   hero: {
     eyebrow: "INTERACTIVE 3D · 학습 도구",
@@ -44,6 +44,11 @@ export const ko = {
     reset: "초기화",
     layerLabel: "{n}번째 층",
     spec: "치수",
+    zoomIn: "확대",
+    zoomOut: "축소",
+    sliderLabel: "분해·조립",
+    canvasLabel: "3D 모델 — 드래그 또는 화살표 키로 회전",
+    close: "닫기",
   },
   category: { suffix: " 시뮬레이터" },
   cat: {
