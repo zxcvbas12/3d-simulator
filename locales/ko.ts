@@ -44,6 +44,8 @@ export const ko = {
     reset: "초기화",
     layerLabel: "{n}번째 층",
     spec: "치수",
+    loading: "3D 불러오는 중…",
+    loadError: "3D를 불러오지 못했어요",
   },
   category: { suffix: " 시뮬레이터" },
   cat: {

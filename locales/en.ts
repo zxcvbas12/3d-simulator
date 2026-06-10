@@ -41,6 +41,8 @@ export const en: Dict = {
     reset: "Reset",
     layerLabel: "Layer {n}",
     spec: "Dimensions",
+    loading: "Loading 3D…",
+    loadError: "Couldn't load the 3D model",
   },
   category: { suffix: " simulators" },
   cat: {

@@ -41,6 +41,8 @@ export const zh: Dict = {
     reset: "重置",
     layerLabel: "第{n}层",
     spec: "尺寸",
+    loading: "正在加载 3D…",
+    loadError: "无法加载 3D 模型",
   },
   category: { suffix: "模拟器" },
   cat: {

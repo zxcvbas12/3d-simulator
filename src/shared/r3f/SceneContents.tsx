@@ -83,6 +83,12 @@ export function SceneContents({ model }: { model: ModelDef }) {
     }
   }, [selected, invalidate]);
 
+  // 언마운트 시 강조 복원 — 재질이 module 싱글톤이라, 복원 안 하면 모델 재방문 때 잔상이 남는다.
+  useEffect(() => {
+    return () => restoreHighlight();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 절차적 환경맵(PBR 금속 반사) — 전 모델 공통
   useEffect(() => {
     const env = makeEnvTexture();
@@ -289,6 +295,16 @@ export function SceneContents({ model }: { model: ModelDef }) {
 
     // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이를 스택 높이에 맞춤.
     model.update?.({ t: curT.current, groups: partRefs.current });
+
+    // 분해 중에는 인스턴스 행렬이 바뀔 수 있으니, 인스턴스 메시의 캐시된 경계구를 무효화한다.
+    // (최신 three는 boundingSphere를 캐시 → 안 하면 늘어난 TSV 등 동적 인스턴스가 클릭 적중 실패.
+    //  엔진이 일괄 처리하므로 개별 모델이 신경 쓰지 않아도 된다.)
+    if (animating) {
+      groupRef.current?.traverse((o) => {
+        const im = o as THREE.InstancedMesh;
+        if (im.isInstancedMesh) im.boundingSphere = null;
+      });
+    }
 
     // 카메라 자동 프레이밍 + 독립 줌
     const grp = groupRef.current;

@@ -41,6 +41,8 @@ export const ja: Dict = {
     reset: "リセット",
     layerLabel: "{n}番目の層",
     spec: "寸法",
+    loading: "3Dを読み込み中…",
+    loadError: "3Dモデルを読み込めませんでした",
   },
   category: { suffix: "シミュレーター" },
   cat: {
