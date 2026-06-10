@@ -8,20 +8,22 @@
 브랜드명은 임시로 **STRATA** (자리표시). 확정되면 토큰/문구 한 곳에서 바꾼다.
 목표: **전문성(정확함) · 멋있는 일관된 디자인 · 프로페셔널한 구조 · 부드러운 성능.** 단, 1인 유지보수가 가능하도록 과설계는 피한다.
 
-## 현재 상태 (중요)
-**R3F 전환(진행 순서 1~7단계)은 완료됐다.** React 셸·공통 엔진 `<Viewer>`·HBM/CPU/GPU 모델·성능/접근성 패스까지 동작한다.
-지금은 **8단계 — 사이트 폴리시**: 당분간 새 모델 추가보다 ① 공통 페이지 콘텐츠 확충 ② 디자인 폴리시(웹폰트·상태 디자인·푸터) ③ 성능·메타 정비를 우선한다.
-- 동작하는 셸·엔진·모델은 갈아엎지 않는다. 콘텐츠·스타일·상태 화면을 **보강**한다.
-- 상세 계획은 폴더별 CLAUDE.md에 있다: `pages/`(페이지 콘텐츠 설계) · `src/shared/`(디자인·성능 구현) · `locales/`(문구 키 규칙).
+## 현재 상태 (중요 — 새 세션은 여기부터)
+**진행 순서 1~8단계 완료.** 지금 동작하는 것: React 셸 · 공통 엔진 `<Viewer>` · 모델 3종(HBM/GPU/CPU, 학습 가능) · 디자인 토큰+웹폰트 · 공통 페이지 콘텐츠(4개 언어) · 푸터·상태 디자인 · 메타/OG · Lighthouse 95/100/100/100(컨테이너 측정).
+다음은 **9단계 — 확장과 배포**(아래 진행 순서 참고). 어떤 작업이든:
+- **동작하는 셸·엔진·모델·콘텐츠를 갈아엎지 않는다. 보강한다.**
+- **콘텐츠 레벨 구분을 지킨다**: 공통 페이지 = 분야 중립 / 분야 소개·추천 순서 = 카탈로그 `CategoryEntry.intro/guide` / 모델 개요·사양 = 카탈로그 / 부품 설명 = 모델 `data.ts`. (상세: `pages/CLAUDE.md`)
+- 상세 지침은 영역별 CLAUDE.md에 있다(아래 메모리 구조).
 
 ---
 
 ## 메모리 구조 (꼭 이해할 것)
-클로드 코드는 작업 폴더 기준으로 **상위의 모든 `CLAUDE.md`를 읽는다.** 3단계:
+클로드 코드는 작업 폴더 기준으로 **상위의 모든 `CLAUDE.md`를 읽는다.**
 - **루트(이 파일)** — 공통 (스택·디자인 시스템·성능·접근성·콘텐츠 구조·워크플로우).
-- **카테고리 `CLAUDE.md`** — 그 분야 전반.
-- **모델 `CLAUDE.md`** — 개별 모델 구조·색·동작.
+- **영역 `CLAUDE.md`** — `pages/`(공통 페이지 콘텐츠 설계) · `locales/`(다국어 키 규칙) · `src/shared/`(디자인·성능 구현 + **성능 예산표**).
+- **카테고리 `CLAUDE.md`** — 그 분야 전반. / **모델 `CLAUDE.md`** — 개별 모델 구조·색·동작.
 공통은 위로, 특수는 아래로. 충돌 시 더 구체적인(아래) 파일 우선. 중복 기재 금지.
+사람용 문서는 따로 `README.md`(루트·카테고리·모델)에 있다 — 지침은 CLAUDE.md, 설명은 README.
 
 ---
 
@@ -33,35 +35,41 @@
   - 3D는 **`React.lazy` + 동적 import로 지연 로드**. 홈·콘텐츠 화면에는 3D 번들이 안 실리게.
 - **상태**: 가벼운 전역 상태 **zustand**로 UI ↔ 3D 공유(현재 분해값·선택 부품·언어).
 - **라우팅**: 페이지가 늘면 **react-router**. 지금은 최소로.
-- **스타일**: CSS + 디자인 토큰(아래). Tailwind를 쓰면 토큰을 config로. 무거운 UI 프레임워크 금지.
-- **다국어**: 지금은 **locales 키 구조부터** 잡는다(텍스트 하드코딩 금지). URL 다국어 라우팅(`/ko`, `/en`)은 필요해지면 추가.
+- **스타일**: 순수 CSS + 디자인 토큰(아래). 무거운 UI 프레임워크 금지.
+- **다국어**: 자체 i18n 운영 중 — `locales/` 키-값 사전, **ko가 타입 기준(Dict)**, 사용자 노출 텍스트 하드코딩 금지(규칙: `locales/CLAUDE.md`). URL 다국어 라우팅(`/ko`, `/en`)은 필요해지면 추가.
 - **Astro/Next**: 지금은 **쓰지 않는다.** 사이트가 커지고 SEO·다국어 라우팅이 본격 필요해지면 그때 이전을 검토(엔진·컴포넌트 개념은 그대로 이어짐).
 - **배포**: Vercel 또는 Netlify.
 새 라이브러리는 임의 추가 금지. 필요하면 먼저 이유를 설명하고 승인받는다.
 
 ---
 
-## 폴더 구조 (Vite + React)
+## 폴더 구조 (실제 현행)
 ```
 3d-simulator/
-  CLAUDE.md
-  index.html
+  CLAUDE.md  README.md
+  index.html               # 메타/OG/파비콘 포함
+  public/                  # favicon.svg · og.png · robots.txt
   src/
-    main.tsx               # 진입점
-    App.tsx                # 셸: 상단 네비 + 2단계 사이드바 + 본문 라우팅
+    main.tsx               # 진입점 + 웹폰트 로드
+    App.tsx                # 셸: 상단 네비 + 사이드바 + 본문 + 푸터
     shared/
-      r3f/                 # 공통 3D 엔진: <Viewer>, 카메라/컨트롤, 분해 로직, 레이캐스트 선택, 인스턴싱
-      ui/                  # 사이드바, 정보 패널, 상단 네비, 언어 전환 (React)
-      styles/              # 디자인 토큰(색·타입·간격·모션) — 단일 출처
-      state/               # zustand 스토어 (분해값·선택부품·언어)
-    locales/               # ko / en / ja / zh ...
-    content/               # 모델 설명 텍스트(다국어), 출처/참고 메타
-  semiconductor/ space/ automotive/ appliance/ aviation/ medical/ energy/ robotics/
-    <category>/CLAUDE.md
-    <category>/<model>/    # CLAUDE.md + model.tsx(R3F 형상) + data.ts(설명)
+      CLAUDE.md            # 디자인·성능 구현 지침 + 성능 예산표
+      r3f/                 # 공통 3D 엔진: Viewer · SceneContents(분해/카메라/피킹/키보드) ·
+                           #   model.ts(ModelDef 계약) · registry.tsx(모델 lazy 등록) · textures.ts(절차 텍스처 캐시)
+      ui/                  # Nav · Sidebar · views · InfoPanel · ViewerChrome · Footer · ErrorBoundary · motifs
+      state/               # zustand — store(언어·분해·선택·줌) · route(화면 라우팅)
+  shared/
+    config.ts              # 브랜드명 단일 소스
+    catalog.ts             # 카탈로그 — 카테고리(intro/guide) + 모델(이름·개요·specs), 다국어
+    styles/                # tokens.css(토큰 단일 출처) · shell.css · viewer.css
+  locales/                 # CLAUDE.md + ko/en/ja/zh.ts — ko가 타입 기준(Dict)
+  pages/CLAUDE.md          # 공통 페이지 콘텐츠 설계(홈·소개·학습 구조·제작자 의도·푸터)
+  docs/screenshots/        # README용 화면 캡처
+  semiconductor/ space/ ... # 카테고리: CLAUDE.md·README.md + <모델>/(model.tsx·data.ts·CLAUDE.md·README.md)
 ```
-(기존 폴더가 이와 다르면, 클로드 코드가 현재 구조를 점검한 뒤 이 방향으로 점진 정리한다. 한 번에 옮기지 말 것.)
-**원칙**: 모델마다 다른 건 `model.tsx`(형상)·`data.ts`(설명)뿐. 회전·줌·분해·사이드바·패널은 전부 `shared/`.
+**원칙**: 모델마다 다른 건 `model.tsx`(형상)·`data.ts`(부품 설명)뿐. 회전·줌·분해·선택·패널은 전부 공통 엔진.
+**새 모델 추가 = 3곳**: ① `<카테고리>/<모델>/model.tsx + data.ts` ② `src/shared/r3f/registry.tsx` 한 줄 ③ `shared/catalog.ts` 한 항목(이름·개요·specs). 새 분야 첫 모델이면 카탈로그 `intro`(+`guide`)와 카테고리 CLAUDE.md부터.
+(루트 `shared/scene·interaction·model.ts·ui/panel.ts`는 바닐라 시절 레거시 — 미사용. 새 코드에서 참조 금지.)
 
 ---
 
@@ -94,12 +102,12 @@ DRAM 등 같은 종류 부품은 클릭 시 "몇 번째"인지 표시.
 
 ## 디자인 시스템 (단일 출처, 반드시 준수)
 **컨셉**: 정밀 계측기(precision instrument) 느낌의 절제된 다크 테크 미감. Apple 제품 페이지·Linear 톤.
-- **토큰화**: 색·간격·타입 스케일·라운드·모션(easing/duration)을 `shared/styles` 토큰으로. 하드코딩 색·픽셀 금지.
+- **토큰화(구현됨)**: 색·간격(`--sp-*`)·타입 스케일(`--fs-*`)·라운드(`--r-*`)·모션(`--dur*`/`--ease`)이 `shared/styles/tokens.css`에 있다. **하드코딩 색·픽셀 금지 — 새 스타일은 반드시 토큰으로.**
 - **색**: 배경 = 거의 검정 네이비 라디얼(#04060c~#1b2438). 포인트 = 블루(#6f9bff)·구리(#c97b34)·골드(#e6b53c).
-- **타이포그래피**: 실제 웹폰트(self-host/Fontshare 등) — 제목·라벨·수치는 테크니컬 그로테스크/모노, 본문은 깔끔한 산세리프 + 한글 폰트.
-- **모션 언어**: 통일된 easing·duration, staggered 등장, 절제된 전환.
-- **상태 디자인**: 로딩(3D 로더/스켈레톤)·빈 화면·에러까지.
-- **레퍼런스 시안**: `homepage-mockup-v2.html`(사이트 구조·룩), `hbm-3d-space.html`(모델 룩·인터랙션). R3F/React로 이식.
+- **타이포그래피(확정·도입됨)**: 제목 = Space Grotesk(`--display`), 수치·라벨 = JetBrains Mono(`--mono`), 본문·한글 = Pretendard Variable(`--sans`, 동적 서브셋). self-host(npm 패키지, `main.tsx`에서 로드). 폰트를 바꿀 땐 토큰 스택만 수정.
+- **모션 언어**: 통일된 easing·duration(토큰), staggered 등장, 절제된 전환. `prefers-reduced-motion` 시 전부 꺼짐(전역 규칙).
+- **상태 디자인(구현됨 — 회귀 금지)**: 3D 로딩 스켈레톤 · 에러 바운더리 · 빈 카테고리 안내 · 푸터.
+- **레퍼런스 시안**: `homepage-mockup-v2.html` · `hbm-3d-space.html` — **이식 완료, 참고용으로만 유지**(수정 금지·새 기능의 출발점 아님).
 
 ### 절대 하지 말 것 (AI 사이트 티 방지)
 보라색 그라데이션·흰 배경 파스텔 / 둥근 이모지 남발 / 과한 그림자·네온 / Inter·Roboto·Arial 같은 흔한 폰트 / 정보 없는 카드·배지 떡칠.
@@ -110,19 +118,19 @@ DRAM 등 같은 종류 부품은 클릭 시 "몇 번째"인지 표시.
 - **온디맨드 렌더링**: R3F `frameloop="demand"` — 화면이 변할 때만. 버벅임·발열 최대 개선.
 - **3D 지연 로드**: `React.lazy`/동적 import로 모델 화면에서만 3D 번들 로드.
 - **인스턴싱**: 반복 요소(범프·TSV·볼)는 `<Instances>`. 정적 메시는 병합 고려.
-- **텍스처 예산**: 절차적 텍스처는 1~2개 생성해 재사용(다이마다 새로 만들지 말 것). 해상도 최소화, 가능하면 아틀라스.
-- **라이팅**: 그림자 대신 환경맵 기반(우주 셸). 픽셀비율 저사양 1.5 캡.
-- **정리**: 모델 전환 시 R3F 자동 dispose에 의존하되, 수동 생성 리소스는 직접 해제.
-- **모션 접근성**: `prefers-reduced-motion`이면 부유·자동회전·큰 전환 끔.
-- **측정**: stats.js로 FPS, Lighthouse로 로드. 예산 초과 시 멈추고 최적화.
+- **텍스처 예산(구현됨)**: 절차적 텍스처는 `src/shared/r3f/textures.ts`의 파라미터별 캐시를 통해서만 생성 — 같은 무늬는 모델·부품이 몇 개든 1장.
+- **라이팅**: 그림자 대신 환경맵 기반(우주 셸). 픽셀비율 1.5 캡.
+- **정리**: 모듈 스코프 형상·텍스처는 의도된 영속(재진입 재사용) — dispose 하지 않는다. 모델 안에서 새로 만드는 일회성 리소스만 직접 해제.
+- **모션 접근성(구현됨)**: `prefers-reduced-motion`이면 자동회전·전환 끔.
+- **측정**: 모델 화면 `?stats`로 FPS(실기기), Lighthouse로 로드. **수치·예산표는 `src/shared/CLAUDE.md`에 기록·갱신.** 예산 초과 시 멈추고 최적화.
 - **(나중) 실제 GLTF 도입 시** Draco/meshopt, KTX2.
 
 ---
 
 ## 접근성 / SEO / 국제화
-- 시맨틱 HTML, 키보드 내비·포커스 링, 명도 대비, 3D에 대한 텍스트 설명.
-- (Astro 이전 후) 페이지별 메타·OG·사이트맵·정적 생성. 지금은 메타 기본만.
-- 출시 단계에 애널리틱스 + 에러 모니터링.
+- **구현됨(회귀 금지)**: 키보드 회전(화살표)·`:focus-visible` 포커스 링·컨트롤 ARIA 라벨(다국어)·명도 대비(Lighthouse A11y 100)·한국어 `word-break: keep-all`.
+- **구현됨**: 메타/OG/파비콘/robots.txt 기본(`index.html`·`public/`). og:url은 도메인 확정 후.
+- (Astro 이전 후) 페이지별 메타·사이트맵·정적 생성. 출시 단계에 애널리틱스 + 에러 모니터링.
 
 ---
 
@@ -138,24 +146,18 @@ DRAM 등 같은 종류 부품은 클릭 시 "몇 번째"인지 표시.
 
 ---
 
-## 진행 순서 (R3F 전환 기준)
-1. **현황 점검** — 지금 폴더의 스택·구조·진행도 파악, 새 지침과 차이 정리(코드 수정 전).
-2. **React + R3F 추가** — React, @react-three/fiber, @react-three/drei, zustand 설치. 기존 바닐라 Three.js 코드를 R3F로 이식할 계획 수립.
-3. **디자인 토큰 + 앱 셸** — 토큰(색·타입·모션), 상단 네비 + 2단계 사이드바 + 공통 페이지(소개/학습 구조/제작자 의도), locales 키 구조.
-4. **공통 R3F 엔진(<Viewer>)** — 회전·줌·분해(방향 파라미터)·선택·온디맨드 렌더를 더미 모델로 검증.
-5. **HBM 이식** — `semiconductor/hbm/`. `hbm-3d-space.html`을 R3F로 옮김(품질 기준).
-6. **GPU/CPU**로 엔진 재사용·평면 분해 검증 → 확장.
-7. **성능 패스(예산·측정) + 접근성**, 이후 필요 시 Astro 이전 + SEO/애널리틱스.
-8. **사이트 폴리시 (현재 단계)** — 순서대로:
-   a) **기준선 측정** — Lighthouse·번들 크기를 기록해 개선 전후를 비교(수치는 `src/shared/CLAUDE.md` 예산표에 갱신).
-   b) **디자인 시스템 강화** — 웹폰트 도입, 토큰 확장(간격·타입 스케일·모션), 상태 디자인(3D 로딩 스켈레톤·에러·빈 화면), 푸터.
-   c) **공통 페이지 콘텐츠 확충** — 홈·소개·학습 구조·제작자 의도를 섹션 단위로 설계해 채움(`pages/CLAUDE.md`).
-   d) **메타/OG 기본 + 성능 재측정** — title/description/OG/파비콘, 폰트 로딩 최적화, a)와 비교.
+## 진행 순서
+**1~8단계 완료** — ① 현황 점검 ② React+R3F 전환 ③ 토큰+앱 셸 ④ 공통 엔진 `<Viewer>` ⑤ HBM ⑥ GPU/CPU(평면·혼합 분해) ⑦ 성능+접근성 패스 ⑧ 사이트 폴리시(기준선 측정 → 디자인 강화·웹폰트 → 페이지 콘텐츠 → 메타/OG + 재측정, Lighthouse 95/100/100/100).
+
+9. **확장 + 배포 (다음 단계)** — 우선순위는 제작자가 정한다. 착수 전 무엇을 할지 확인받을 것. 후보:
+   a) **배포** — Vercel/Netlify 연결 → 실배포 URL에서 Lighthouse·실기기 FPS 재측정(`src/shared/CLAUDE.md` 예산표 갱신) → 도메인 확정 후 `og:url` 추가.
+   b) **새 모델/카테고리** — 추가 절차는 "폴더 구조"의 3곳 규칙. 새 분야 첫 모델이면 카탈로그 `intro/guide` + 카테고리 CLAUDE.md부터. 모델 품질 기준은 HBM.
+   c) **기존 모델 보강** — `data.ts`에 `sources`(더 읽기 링크) 채우기 — 패널은 이미 지원. HBM 단면/층수 옵션, GPU 스택 수 옵션(각 모델 CLAUDE.md의 "남은 보강" 참고).
+   d) **(필요해지면)** Astro 이전 + SEO/애널리틱스 — 사이트가 커지고 검색 유입이 중요해질 때.
 각 단계 끝나면 다음으로 넘어가기 전 확인받는다.
 
 ---
 
-## 참고 자료 (이미 만들어 둔 것)
-- `hbm-3d-space.html` — 동작하는 HBM 3D 분해도(우주 셸·독립 줌·상세 패널·BGA/배선/각인/TSV). **모델 품질 기준.** (바닐라 Three.js)
-- `homepage-mockup-v2.html` — 사이트 구조·디자인 시안(2단계 사이드바·공통 페이지·다국어).
-둘 다 바닐라다. **R3F/React로 이식**하되 알맹이(형상·분해·룩)는 재활용한다.
+## 참고 자료
+- `hbm-3d-space.html` · `homepage-mockup-v2.html` — 바닐라 시안. **이식 완료 — 룩 레퍼런스로만 유지.** 새 기능은 여기서 출발하지 말고 현행 React/R3F 코드를 기준으로.
+- 모델 품질 기준은 현행 `semiconductor/hbm/`(코드)이다.
