@@ -122,6 +122,7 @@ function CategoryView() {
   const category = useRoute((s) => s.category);
   const openModel = useRoute((s) => s.openModel);
   const list = modelsOf(category);
+  const cat = CATEGORIES.find((c) => c.id === category);
   return (
     <>
       <div className="sec-head">
@@ -131,6 +132,14 @@ function CategoryView() {
         </div>
         <div className="count mono">{String(list.length).padStart(2, "0")}</div>
       </div>
+      {cat && <p className="cat-intro">{cat.intro[lang]}</p>}
+      {/* 분야 종속 학습 안내는 여기(카테고리)에만 — 공통 페이지에는 두지 않는다 */}
+      {cat?.guide && (
+        <div className="cat-guide">
+          <span className="g-label mono">{t.category.guide}</span>
+          <p>{cat.guide[lang]}</p>
+        </div>
+      )}
       {list.every((m) => m.status !== "live") && <p className="none-live">{t.card.noneLive}</p>}
       <div className="grid">
         {list.map((m, i) => {
