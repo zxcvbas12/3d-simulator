@@ -28,6 +28,10 @@ export type LocalizedText = Record<Lang, string>;
 export interface CategoryEntry {
   id: CategoryId; // 폴더명 + i18n cat.* 키와 동일
   thumb: ThumbType;
+  /** 분야 한 줄 소개 — 카테고리 화면 헤더 아래 노출. */
+  intro: LocalizedText;
+  /** 그 분야의 추천 학습 순서(있으면 카테고리 화면에 콜아웃). 사이트 공통 페이지에는 분야 종속 안내를 두지 않는다. */
+  guide?: LocalizedText;
 }
 
 /** 모델 전체 사양 한 줄 (라벨은 다국어, 값은 단위 포함 수치로 언어 중립). */
@@ -50,14 +54,68 @@ export interface ModelEntry {
 }
 
 export const CATEGORIES: CategoryEntry[] = [
-  { id: "semiconductor", thumb: "layers" },
-  { id: "space", thumb: "orbit" },
-  { id: "automotive", thumb: "cells" },
-  { id: "appliance", thumb: "coil" },
-  { id: "aviation", thumb: "blades" },
-  { id: "medical", thumb: "wave" },
-  { id: "energy", thumb: "cells" },
-  { id: "robotics", thumb: "joint" },
+  { id: "semiconductor", thumb: "layers",
+    intro: {
+      ko: "손톱만 한 칩 안에서 일어나는 일 — 쌓고(적층), 잇고(패키징), 나누는(칩렛) 구조를 다룹니다.",
+      en: "What happens inside a fingernail-sized chip — structures that stack, connect and split.",
+      ja: "爪ほどのチップの中で起きること — 積む（積層）、つなぐ（パッケージング）、分ける（チップレット）構造を扱います。",
+      zh: "指甲大小的芯片内部 — 堆叠、互连与拆分（芯粒）的结构。",
+    },
+    guide: {
+      ko: "추천 순서 — HBM → GPU → CPU. 쌓는 구조(HBM)를 먼저 이해하면, 그것을 프로세서 옆에 두는 이유(GPU)와 칩을 나누는 이유(CPU)가 자연스럽게 이어집니다.",
+      en: "Suggested order — HBM → GPU → CPU. Understand stacking first (HBM), and why it sits beside a processor (GPU) and why chips are split (CPU) follow naturally.",
+      ja: "おすすめ順 — HBM → GPU → CPU。積む構造（HBM）を先に理解すれば、プロセッサの隣に置く理由（GPU）とチップを分ける理由（CPU）が自然につながります。",
+      zh: "推荐顺序 — HBM → GPU → CPU。先理解堆叠结构（HBM），再看为何放在处理器旁（GPU）、为何拆分芯片（CPU），脉络自然贯通。",
+    } },
+  { id: "space", thumb: "orbit",
+    intro: {
+      ko: "로켓 엔진부터 인공위성까지 — 극한 환경을 견디는 기계의 구조를 다룹니다.",
+      en: "From rocket engines to satellites — machines built to survive extreme environments.",
+      ja: "ロケットエンジンから人工衛星まで — 極限環境に耐える機械の構造を扱います。",
+      zh: "从火箭发动机到人造卫星 — 为极端环境而生的机械结构。",
+    } },
+  { id: "automotive", thumb: "cells",
+    intro: {
+      ko: "배터리 팩부터 내연기관까지 — 바퀴를 굴리는 동력의 구조를 다룹니다.",
+      en: "From battery packs to combustion engines — the structures that put power on wheels.",
+      ja: "バッテリーパックから内燃機関まで — 車輪を回す動力の構造を扱います。",
+      zh: "从电池组到内燃机 — 驱动车轮的动力结构。",
+    } },
+  { id: "appliance", thumb: "coil",
+    intro: {
+      ko: "컴프레서·모터·마그네트론 — 매일 쓰는 가전 속 핵심 부품을 다룹니다.",
+      en: "Compressors, motors, magnetrons — the core parts inside everyday appliances.",
+      ja: "コンプレッサー・モーター・マグネトロン — 毎日使う家電の中核部品を扱います。",
+      zh: "压缩机、电机、磁控管 — 日常家电中的核心部件。",
+    } },
+  { id: "aviation", thumb: "blades",
+    intro: {
+      ko: "제트 엔진과 날개 — 항공기를 띄우고 움직이는 구조를 다룹니다.",
+      en: "Jet engines and wings — the structures that lift and move an aircraft.",
+      ja: "ジェットエンジンと主翼 — 航空機を飛ばし動かす構造を扱います。",
+      zh: "喷气发动机与机翼 — 让飞机起飞与前行的结构。",
+    } },
+  { id: "medical", thumb: "wave",
+    intro: {
+      ko: "MRI부터 인슐린 펌프까지 — 몸을 진단하고 치료하는 기기를 다룹니다.",
+      en: "From MRI to insulin pumps — devices that diagnose and treat the body.",
+      ja: "MRI からインスリンポンプまで — 体を診断し治療する機器を扱います。",
+      zh: "从 MRI 到胰岛素泵 — 诊断与治疗身体的设备。",
+    } },
+  { id: "energy", thumb: "cells",
+    intro: {
+      ko: "배터리 셀·태양광·풍력 — 에너지를 만들고 저장하는 구조를 다룹니다.",
+      en: "Battery cells, solar, wind — structures that make and store energy.",
+      ja: "電池セル・太陽光・風力 — エネルギーを作り蓄える構造を扱います。",
+      zh: "电芯、太阳能、风电 — 制造与储存能源的结构。",
+    } },
+  { id: "robotics", thumb: "joint",
+    intro: {
+      ko: "액추에이터·로봇 손·라이다 — 로봇을 움직이고 감지하게 하는 부품을 다룹니다.",
+      en: "Actuators, robot hands, LiDAR — the parts that make robots move and sense.",
+      ja: "アクチュエータ・ロボットハンド・LiDAR — ロボットを動かし感知させる部品を扱います。",
+      zh: "执行器、机械手、激光雷达 — 让机器人运动与感知的部件。",
+    } },
 ];
 
 export const MODELS: ModelEntry[] = [

@@ -34,7 +34,7 @@ export const en: Dict = {
   model: {
     back: "← Back",
     viewerLbl: "3D viewer area",
-    viewerNote: "In the live site, you rotate, explode and learn the model here.",
+    viewerNote: "This model is in the works. Once it's ready, you'll rotate and explode it right here.",
     startLearn: "Start learning",
     overview: "Overview",
     specs: "Key specs",
@@ -70,7 +70,7 @@ export const en: Dict = {
     trust3Title: "Plain words first",
     trust3Desc: "Every explanation starts with a one-line summary, then moves into precise terms and principles. No background required.",
   },
-  category: { suffix: " simulators" },
+  category: { suffix: " simulators", guide: "Suggested path" },
   cat: {
     semiconductor: "Semiconductor",
     space: "Space",
@@ -92,7 +92,7 @@ export const en: Dict = {
         },
         {
           heading: "Who it's for",
-          body: "Students exploring technical fields and careers,<br>engineers who want a quick grasp of a neighbouring discipline,<br>and anyone curious about the HBM and chiplets in the news.<br><br>No background needed — every explanation starts in plain words.",
+          body: "Students exploring technical fields and careers,<br>engineers who want a quick grasp of a neighbouring discipline,<br>and anyone curious about what's inside the technology in the news.<br><br>No background needed — every explanation starts in plain words.",
         },
         {
           heading: "What makes it different",
@@ -118,11 +118,11 @@ export const en: Dict = {
         },
         {
           heading: "From plain words to precise figures",
-          body: "Explanations start with analogies and plain language, then move into real terms and numbers — “the metal lid that spreads heat” comes before “Ni-plated copper IHS”. If it gets heavy, reading just the summaries still carries you through.",
+          body: "Explanations start with analogies and plain language, then move into real terms and numbers — “the metal lid that spreads heat” comes before exact part names, materials and dimensions. If it gets heavy, reading just the summaries still carries you through.",
         },
         {
-          heading: "Suggested order",
-          body: "For semiconductors we suggest HBM → GPU → CPU. Once you understand stacking (HBM), why it sits beside a processor (the GPU package) and why chips are split small (CPU chiplets) follow naturally. New categories will ship with the same kind of suggested path.",
+          heading: "A suggested path per field",
+          body: "Every field has an order in which its models make the most sense. Each field page shows a “Suggested path” at the top — if you're not sure where to start, just follow it.",
         },
       ],
     },
