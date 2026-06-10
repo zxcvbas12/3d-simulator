@@ -24,6 +24,12 @@ export const en: Dict = {
     soon: "Coming soon",
     explore: "Explore",
     catSub: "Models to learn by taking apart",
+    noneLive: "No models are ready to explore here yet — coming soon.",
+  },
+  footer: {
+    tagline: "A learning tool for taking technology apart in 3D.",
+    siteHead: "Site",
+    disclaimer: "Simplified models for education",
   },
   model: {
     back: "← Back",

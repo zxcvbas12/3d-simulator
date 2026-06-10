@@ -24,6 +24,12 @@ export const zh: Dict = {
     soon: "即将推出",
     explore: "探索",
     catSub: "通过拆解学习的模型",
+    noneLive: "暂无可学习的模型——即将推出。",
+  },
+  footer: {
+    tagline: "通过 3D 拆解学习技术产品的教育工具。",
+    siteHead: "网站",
+    disclaimer: "用于教育的简化模型",
   },
   model: {
     back: "← 返回",

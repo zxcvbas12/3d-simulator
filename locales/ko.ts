@@ -27,6 +27,12 @@ export const ko = {
     soon: "준비 중",
     explore: "탐구하기",
     catSub: "분해하며 배우는 모델",
+    noneLive: "아직 학습 가능한 모델이 없습니다 — 준비 중이에요.",
+  },
+  footer: {
+    tagline: "기술 제품을 3D로 분해하며 배우는 교육 도구.",
+    siteHead: "사이트",
+    disclaimer: "교육 목적의 단순화된 모델입니다",
   },
   model: {
     back: "← 뒤로",

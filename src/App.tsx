@@ -2,6 +2,7 @@ import { useRoute } from "./shared/state/route";
 import { Nav } from "./shared/ui/Nav";
 import { Sidebar } from "./shared/ui/Sidebar";
 import { MainView } from "./shared/ui/views";
+import { Footer } from "./shared/ui/Footer";
 
 /**
  * 앱 셸 — 상단 네비 + 2단계 사이드바 + 본문 라우팅 + 모바일 드로어.
@@ -20,6 +21,7 @@ export default function App() {
         <Sidebar />
         <main className="main">
           <MainView />
+          <Footer />
         </main>
       </div>
     </>

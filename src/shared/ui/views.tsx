@@ -52,7 +52,8 @@ function Home() {
         </div>
       </header>
       <section className="how">
-        <h3>{t.how.title}</h3>
+        {/* h1 다음 단계 헤딩(h2) — 룩은 기존 라벨 그대로 (heading-order 접근성) */}
+        <h2 className="how-title">{t.how.title}</h2>
         <div className="steps">
           <div className="step">
             <div className="n">01</div>
@@ -90,6 +91,7 @@ function CategoryView() {
         </div>
         <div className="count mono">{String(list.length).padStart(2, "0")}</div>
       </div>
+      {list.every((m) => m.status !== "live") && <p className="none-live">{t.card.noneLive}</p>}
       <div className="grid">
         {list.map((m, i) => {
           const live = m.status === "live";

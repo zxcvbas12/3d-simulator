@@ -24,6 +24,12 @@ export const ja: Dict = {
     soon: "準備中",
     explore: "見る",
     catSub: "分解して学ぶモデル",
+    noneLive: "学習できるモデルはまだありません — 準備中です。",
+  },
+  footer: {
+    tagline: "技術製品を3Dで分解しながら学ぶ学習ツール。",
+    siteHead: "サイト",
+    disclaimer: "教育目的の簡略化モデルです",
   },
   model: {
     back: "← 戻る",
