@@ -216,8 +216,7 @@ function update({ groups }: ViewerFrameCtx) {
     tsvMesh.setMatrixAt(i, _m);
   }
   tsvMesh.instanceMatrix.needsUpdate = true;
-  // 인스턴스 행렬(길이)이 바뀌었으니 레이캐스트용 경계구를 무효화 → 펼친 TSV도 클릭 적중 보장
-  tsvMesh.boundingSphere = null;
+  // (레이캐스트용 경계구 무효화는 엔진이 분해 중 일괄 처리한다 — SceneContents 참고)
 }
 
 export const hbmModel: ModelDef = { parts, info: hbmInfo, extras: <primitive object={tsvMesh} />, update };

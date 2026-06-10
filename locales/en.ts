@@ -46,6 +46,11 @@ export const en: Dict = {
     sliderLabel: "Explode / assemble",
     canvasLabel: "3D model — drag or use arrow keys to rotate",
     close: "Close",
+    loading: "Loading 3D…",
+    loadError: "Couldn't load the 3D model",
+    more: "Details",
+    less: "Less",
+    sources: "Further reading",
   },
   category: { suffix: " simulators" },
   cat: {

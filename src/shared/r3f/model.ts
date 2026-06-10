@@ -19,6 +19,8 @@ export interface PartInfo {
   lead: LocalizedText;
   detail: LocalizedText;
   facts: LocalizedList;
+  /** 더 읽기 — 표준·백서·문헌 링크(신뢰 레이어). 라벨은 언어 중립, url 외부 링크. */
+  sources?: { label: string; url: string }[];
 }
 
 export type PartInfoMap = Record<string, PartInfo>;

@@ -92,6 +92,7 @@ export const hbmInfo: PartInfoMap = {
   dram: {
     tag: { ko: "DRAM DIE", en: "DRAM DIE", ja: "DRAM DIE", zh: "DRAM DIE" },
     spec: "≈ 11 × 11 mm · t ≈ 50 μm",
+    sources: [{ label: "Wikipedia · High Bandwidth Memory", url: "https://en.wikipedia.org/wiki/High_Bandwidth_Memory" }],
     title: { ko: "DRAM 다이 (DRAM Die)", en: "DRAM Die", ja: "DRAM ダイ", zh: "DRAM 裸片" },
     lead: {
       ko: "실제로 데이터를 저장하는 메모리 셀이 빼곡히 들어 있는 층이에요.",
@@ -115,6 +116,7 @@ export const hbmInfo: PartInfoMap = {
   tsv: {
     tag: { ko: "CORE TECH", en: "CORE TECH", ja: "CORE TECH", zh: "CORE TECH" },
     spec: "∅ ≈ 10 μm · pitch ≈ 40 μm",
+    sources: [{ label: "Wikipedia · Through-silicon via", url: "https://en.wikipedia.org/wiki/Through-silicon_via" }],
     title: {
       ko: "TSV · 실리콘 관통 전극",
       en: "TSV · Through-Silicon Via",

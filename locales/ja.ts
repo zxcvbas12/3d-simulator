@@ -46,6 +46,11 @@ export const ja: Dict = {
     sliderLabel: "分解・組み立て",
     canvasLabel: "3Dモデル — ドラッグまたは矢印キーで回転",
     close: "閉じる",
+    loading: "3Dを読み込み中…",
+    loadError: "3Dモデルを読み込めませんでした",
+    more: "詳しく",
+    less: "簡単に",
+    sources: "もっと読む",
   },
   category: { suffix: "シミュレーター" },
   cat: {

@@ -6,6 +6,7 @@ import { useAppStore } from "../state/store";
 import { useRoute, type PageId } from "../state/route";
 import { useT } from "../i18n";
 import { Thumb, Stack } from "./motifs";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 function StatusBadge({ status }: { status: Status }) {
   const t = useT();
@@ -129,9 +130,12 @@ function ModelView({ model }: { model: ModelEntry }) {
       </button>
       {live ? (
         // live 모델: 카탈로그 id에 맞는 모델 뷰어를 lazy 로드 (model.tsx 없으면 더미 폴백).
-        <Suspense fallback={<div className="viewer viewer--live" />}>
-          <ModelViewer />
-        </Suspense>
+        // 에러 경계 + 로딩 폴백 — 모델 결함/로드 실패가 앱 전체를 깨지 않게(키=model.id로 이동 시 리셋).
+        <ErrorBoundary key={model.id} fallback={<div className="viewer viewer-status mono">{t.viewer.loadError}</div>}>
+          <Suspense fallback={<div className="viewer viewer-status mono">{t.viewer.loading}</div>}>
+            <ModelViewer />
+          </Suspense>
+        </ErrorBoundary>
       ) : (
         <div className="viewer">
           <div className="lbl mono">{t.model.viewerLbl}</div>

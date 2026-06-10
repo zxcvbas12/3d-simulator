@@ -49,6 +49,11 @@ export const ko = {
     sliderLabel: "분해·조립",
     canvasLabel: "3D 모델 — 드래그 또는 화살표 키로 회전",
     close: "닫기",
+    loading: "3D 불러오는 중…",
+    loadError: "3D를 불러오지 못했어요",
+    more: "자세히",
+    less: "간단히",
+    sources: "더 읽기",
   },
   category: { suffix: " 시뮬레이터" },
   cat: {
