@@ -16,6 +16,7 @@ function makeViewer(loadModel: () => Promise<{ default: unknown }>): LazyExoticC
 
 const REGISTRY: Record<string, LazyExoticComponent<ComponentType>> = {
   "semiconductor/hbm": makeViewer(() => import("../../../semiconductor/hbm/model")),
+  "semiconductor/cpu": makeViewer(() => import("../../../semiconductor/cpu/model")),
 };
 
 /** 검증용 더미 — model.tsx가 아직 없는 live 모델의 폴백. */

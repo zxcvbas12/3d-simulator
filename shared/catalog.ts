@@ -62,9 +62,9 @@ export const MODELS: ModelEntry[] = [
   { cat: "semiconductor", id: "gpu", status: "soon", thumb: "layers",
     name: { ko: "GPU 패키지", en: "GPU Package", ja: "GPUパッケージ", zh: "GPU封装" },
     desc: { ko: "그래픽 처리 장치 구조", en: "Graphics processor anatomy", ja: "GPUの構造", zh: "图形处理器结构" } },
-  { cat: "semiconductor", id: "cpu", status: "soon", thumb: "layers",
-    name: { ko: "CPU 다이", en: "CPU Die", ja: "CPUダイ", zh: "CPU裸片" },
-    desc: { ko: "중앙 처리 장치 내부", en: "Inside a processor", ja: "プロセッサ内部", zh: "处理器内部" } },
+  { cat: "semiconductor", id: "cpu", status: "live", thumb: "layers",
+    name: { ko: "CPU 칩렛 패키지", en: "CPU Chiplet Package", ja: "CPUチップレット", zh: "CPU芯粒封装" },
+    desc: { ko: "여러 칩렛을 모은 구조", en: "Multiple chiplets in one package", ja: "複数チップレット構成", zh: "多芯粒封装结构" } },
 
   // ── 우주 ──
   { cat: "space", id: "rocket-engine", status: "soon", thumb: "orbit",

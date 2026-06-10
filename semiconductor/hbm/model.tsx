@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import { makeDieTexture, makeRoutingTexture, makeBaseTexture } from "@app/shared/r3f/textures";
 import { hbmInfo } from "./data";
 
 /**
  * HBM 모델 — hbm-3d-space.html의 형상·절차적 텍스처·PBR·인스턴싱을 R3F ModelDef로 이식.
  * 회전·줌·분해·선택·정보패널·환경맵은 공통 <Viewer> 엔진이 처리한다.
- * 형상은 module 로드 시 THREE 객체로 한 번 빌드하고 <primitive>로 꽂는다(텍스처도 1회 생성·공유).
+ * 형상은 module 로드 시 THREE 객체로 한 번 빌드하고 <primitive>로 꽂는다(텍스처는 공용 모듈에서 1회 생성).
  *
  * 구조(아래→위): 패키지 기판 · 인터포저 · 베이스(로직) 다이 · DRAM ×8 · TSV(스택 관통) · 마이크로 범프 · BGA 볼.
  */
@@ -15,125 +16,6 @@ const SPREAD = 2.6; // 분해 강도
 const DRAM_HALF = 0.15;
 const BASE_HALF = 0.21;
 const DRAM_N = 8;
-
-// ── 절차적 텍스처 (module 로드 시 1회) ───────────────────────────
-function makeDieTexture(hue: number, topDie: boolean): THREE.CanvasTexture {
-  const s = 512;
-  const c = document.createElement("canvas");
-  c.width = c.height = s;
-  const x = c.getContext("2d")!;
-  x.fillStyle = `hsl(${hue},42%,15%)`;
-  x.fillRect(0, 0, s, s);
-  const pad = 28,
-    cells = 8,
-    gap = 6,
-    cw = (s - pad * 2 - gap * (cells - 1)) / cells;
-  for (let i = 0; i < cells; i++)
-    for (let j = 0; j < cells; j++) {
-      const bx = pad + i * (cw + gap),
-        by = pad + j * (cw + gap);
-      x.fillStyle = `hsla(${hue},44%,${20 + Math.random() * 8}%,.85)`;
-      x.fillRect(bx, by, cw, cw);
-      x.strokeStyle = `hsla(${hue},60%,62%,.16)`;
-      x.lineWidth = 1;
-      x.strokeRect(bx, by, cw, cw);
-      x.strokeStyle = `hsla(${hue},55%,60%,.07)`;
-      for (let k = 4; k < cw; k += 4) {
-        x.beginPath();
-        x.moveTo(bx, by + k);
-        x.lineTo(bx + cw, by + k);
-        x.stroke();
-      }
-    }
-  x.fillStyle = `hsla(${hue},50%,30%,.6)`;
-  x.fillRect(0, s / 2 - 7, s, 14);
-  x.strokeStyle = `hsla(${hue},70%,70%,.25)`;
-  x.strokeRect(0, s / 2 - 7, s, 14);
-  for (let i = 0; i < 160; i++) {
-    x.fillStyle = `hsla(${hue},55%,72%,${Math.random() * 0.5})`;
-    x.fillRect(Math.random() * s, Math.random() * s, 2, 2);
-  }
-  if (topDie) {
-    x.fillStyle = "rgba(220,232,255,.55)";
-    x.font = "bold 30px monospace";
-    x.fillText("HBM", 30, s - 46);
-    x.font = "18px monospace";
-    x.fillStyle = "rgba(180,200,235,.4)";
-    x.fillText("K4ZAH08 · 8H", 30, s - 22);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 4;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-function makeRoutingTexture(base: string, line: string, density: number): THREE.CanvasTexture {
-  const s = 512;
-  const c = document.createElement("canvas");
-  c.width = c.height = s;
-  const x = c.getContext("2d")!;
-  x.fillStyle = base;
-  x.fillRect(0, 0, s, s);
-  x.lineWidth = 1;
-  for (let i = 0; i < density; i++) {
-    x.strokeStyle = line.replace("A", (0.05 + Math.random() * 0.22).toFixed(2));
-    x.beginPath();
-    let px = Math.random() * s,
-      py = Math.random() * s;
-    x.moveTo(px, py);
-    const segs = 2 + Math.floor(Math.random() * 3);
-    for (let k = 0; k < segs; k++) {
-      if (Math.random() < 0.5) px += (Math.random() - 0.5) * 120;
-      else py += (Math.random() - 0.5) * 120;
-      x.lineTo(px, py);
-    }
-    x.stroke();
-  }
-  for (let i = 0; i < 24; i++)
-    for (let j = 0; j < 24; j++) {
-      if (Math.random() < 0.4) continue;
-      x.fillStyle = line.replace("A", (0.1 + Math.random() * 0.3).toFixed(2));
-      x.fillRect(8 + i * 21, 8 + j * 21, 3, 3);
-    }
-  const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 4;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-function makeBaseTexture(): THREE.CanvasTexture {
-  const s = 512;
-  const c = document.createElement("canvas");
-  c.width = c.height = s;
-  const x = c.getContext("2d")!;
-  x.fillStyle = "#1b2533";
-  x.fillRect(0, 0, s, s);
-  const blocks = [
-    [24, 24, 200, 150],
-    [250, 24, 238, 150],
-    [24, 200, 150, 288],
-    [200, 200, 288, 160],
-    [200, 380, 288, 108],
-  ];
-  blocks.forEach((b) => {
-    x.fillStyle = "rgba(90,130,200,.16)";
-    x.fillRect(b[0], b[1], b[2], b[3]);
-    x.strokeStyle = "rgba(140,180,255,.28)";
-    x.lineWidth = 1.5;
-    x.strokeRect(b[0], b[1], b[2], b[3]);
-    for (let k = 8; k < b[2]; k += 8) {
-      x.strokeStyle = "rgba(120,160,230,.06)";
-      x.beginPath();
-      x.moveTo(b[0] + k, b[1]);
-      x.lineTo(b[0] + k, b[1] + b[3]);
-      x.stroke();
-    }
-  });
-  const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 4;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
 
 // ── 재질 (6면 멀티머티리얼, +y 윗면에 텍스처) ────────────────────
 function side(color: number, rough: number, metal: number, env: number) {
@@ -173,7 +55,7 @@ function baseMats() {
   ];
 }
 function dramMats(hue: number, col: number, topDie: boolean) {
-  const tex = makeDieTexture(hue, topDie);
+  const tex = makeDieTexture(hue, topDie ? ["HBM", "K4ZAH08 · 8H"] : undefined);
   return [
     side(col, 0.45, 0.4, 0.9),
     side(col, 0.45, 0.4, 0.9),
