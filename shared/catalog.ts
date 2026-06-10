@@ -149,7 +149,7 @@ export const MODELS: ModelEntry[] = [
     },
     specs: [
       { label: { ko: "구조", en: "Structure", ja: "構造", zh: "结构" }, value: "GPU die + HBM ×4 (2.5D)" },
-      { label: { ko: "패키지", en: "Package size", ja: "パッケージ", zh: "封装尺寸" }, value: "≈ 55 × 55 mm" },
+      { label: { ko: "패키지", en: "Package size", ja: "パッケージ", zh: "封装尺寸" }, value: "≈ 70 × 70 mm" },
       { label: { ko: "연산 다이", en: "Compute die", ja: "演算ダイ", zh: "计算裸片" }, value: "≈ 800 mm² · 4 nm" },
       { label: { ko: "메모리", en: "Memory", ja: "メモリ", zh: "内存" }, value: "HBM ×4 · ≈ 1 TB/s each" },
       { label: { ko: "인터포저", en: "Interposer", ja: "インターポーザ", zh: "转接板" }, value: "Si · ≈ 2,500 mm²" },
