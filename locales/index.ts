@@ -20,9 +20,12 @@ const DICTS: Record<Lang, Dict> = { ko, en, ja, zh };
 const STORAGE_KEY = "strata.lang";
 
 function detectInitial(): Lang {
-  const saved = (typeof localStorage !== "undefined" && localStorage.getItem(STORAGE_KEY)) as Lang | null;
+  const saved = (typeof localStorage !== "undefined" &&
+    localStorage.getItem(STORAGE_KEY)) as Lang | null;
   if (saved && saved in DICTS) return saved;
-  const nav = (typeof navigator !== "undefined" ? navigator.language : "ko").slice(0, 2);
+  const nav = (
+    typeof navigator !== "undefined" ? navigator.language : "ko"
+  ).slice(0, 2);
   return (nav in DICTS ? nav : "ko") as Lang;
 }
 
