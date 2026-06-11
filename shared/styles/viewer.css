@@ -45,6 +45,42 @@
   color: #dce6ff;
 }
 
+/* 좌상단 모델 옵션 (층수·단면 등) — 라벨 + 값 필 그룹 */
+.v-topleft {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  z-index: 3;
+  max-width: 36%;
+}
+.v-opt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.v-opt-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.v-opt-vals {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.v-btn-sm {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: var(--r-sm);
+  letter-spacing: 0.5px;
+}
+
 /* 하단 슬라이더 + 힌트 */
 .v-bottom {
   position: absolute;

@@ -50,6 +50,19 @@ export interface ViewerFrameCtx {
   dt: number;
   /** 자동 회전 중인지 — 구동 연출은 이때만(연속 렌더 보장 + reduced-motion이면 자동회전 자체가 차단됨). */
   autoRotate: boolean;
+  /** 모델 옵션 선택값(옵션 id → 값 id). 미선택이면 키 없음 — 모델이 default로 폴백. */
+  options: Record<string, string>;
+}
+
+/** 모델 옵션 — 뷰어 좌상단에 필 토글로 노출(층수·단면 등 구성 전환). 반응은 모델 update 훅에서. */
+export interface ModelOption {
+  id: string;
+  /** 옵션 이름(다국어). */
+  label: LocalizedText;
+  /** 선택지 — 값 라벨은 언어 중립 짧은 표기("8-Hi", "×4", "ON"). */
+  values: { id: string; label: string }[];
+  /** 기본 값 id. */
+  default: string;
 }
 
 export interface ModelDef {
@@ -57,6 +70,8 @@ export interface ModelDef {
   info: PartInfoMap;
   /** 분해와 무관한 추가 메시(별도 그룹). 예: 스택을 관통하는 TSV. groupRef 안에 렌더돼 프레이밍·피킹에 포함된다. */
   extras?: ReactNode;
+  /** 모델 옵션(층수·단면 등). 있으면 뷰어에 토글 UI가 뜨고 선택값이 update의 options로 들어온다. */
+  options?: ModelOption[];
   /** 매 프레임 모델별 갱신(엔진이 부품 위치를 잡은 뒤 호출). 예: TSV 길이를 스택 높이에 맞춤. */
   update?: (ctx: ViewerFrameCtx) => void;
 }

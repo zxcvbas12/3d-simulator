@@ -31,11 +31,14 @@ export default function Viewer({ model }: { model: ModelDef }) {
         dpr={[1, 1.5]}
         camera={{ fov: 42, position: [5, 4, 7], near: 0.1, far: 1000 }}
         gl={{ antialias: true, alpha: true }}
+        onCreated={({ gl }) => {
+          gl.localClippingEnabled = true; // 단면(cutaway) 옵션용 — 평면 없으면 비용 없음
+        }}
       >
         <SceneContents model={model} />
         {SHOW_STATS && <Stats />}
       </Canvas>
-      <ViewerChrome />
+      <ViewerChrome model={model} />
       <InfoPanel model={model} />
     </div>
   );
