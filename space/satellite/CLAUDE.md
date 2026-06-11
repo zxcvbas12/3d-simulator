@@ -11,10 +11,10 @@
 
 로켓 엔진(발사) → 위성(궤도)으로 이어지는 흐름. 사이트 **첫 모듈형(중앙 버스 + 면별 부속)** 유형.
 
-## 공유 코어 (`space/satellite/core.tsx` + `core.ts`)
+## 공유 코어 (`space/satellite/parts.tsx` + `info.ts`)
 두 모델이 import해서 쓰는 공통 부품 빌더와 설명. **중복을 위로 모은다**(DRY, 1인 유지보수).
-- `core.tsx` 빌더: `buildBus()`·`buildSolarWing()`·`buildReactionWheels()`·`buildPropulsion()`·`buildBattery()`·`buildDish(params)` + 재질/엣지 헬퍼.
-- `core.ts` 설명: 공통 PartInfo 조각 `commonSatInfo`(bus·solar·adcs·propulsion·battery) — 각 모델 `data.ts`가 spread 후 자기 antenna·payload만 덧붙인다.
+- `parts.tsx` 빌더: `buildBus()`·`buildSolarWing()`·`buildReactionWheels()`·`buildPropulsion()`·`buildBattery()`·`buildDish(params)` + 재질/엣지 헬퍼.
+- `info.ts` 설명: 공통 PartInfo 조각 `commonSatInfo`(bus·solar·adcs·propulsion·battery) — 각 모델 `data.ts`가 spread 후 자기 antenna·payload만 덧붙인다.
 - **부품 간 재질 인스턴스 공유 금지**(강조 독립). 텍스처 map은 캐시 공유 OK.
 
 ## 구조 (7부품 · 중앙 버스 + 면별 부속)
@@ -61,8 +61,8 @@
 **공유 코어 1쌍 + 모델 2종(각 model.tsx+data.ts) + 공용 텍스처 2개 + 등록 2줄 + catalog 2 엔트리.**
 
 1. **`src/shared/r3f/textures.ts`** — `makeFoilTexture(hue)` + `makeSolarTexture()` 추가.
-2. **`space/satellite/core.tsx`** — 공통 빌더(버스·태양전지판·반작용 휠·추진·배터리·dish) + 재질/엣지 헬퍼. 지오메트리: Box(버스·패널)·Lathe(dish, 로켓 회전체 재사용)·Sphere(탱크)·Cone(노즐)·Cylinder(배럴·휠·배터리 셀).
-3. **`space/satellite/core.ts`** — 공통 `commonSatInfo`(bus·solar·adcs·propulsion·battery) 4언어.
+2. **`space/satellite/parts.tsx`** — 공통 빌더(버스·태양전지판·반작용 휠·추진·배터리·dish) + 재질/엣지 헬퍼. 지오메트리: Box(버스·패널)·Lathe(dish, 로켓 회전체 재사용)·Sphere(탱크)·Cone(노즐)·Cylinder(배럴·휠·배터리 셀).
+3. **`space/satellite/info.ts`** — 공통 `commonSatInfo`(bus·solar·adcs·propulsion·battery) 4언어.
 4. **`space/eo-satellite/{model.tsx,data.ts,CLAUDE.md}`** — 코어 import + 카메라 payload·dish antenna·LEO 배치/specs. `parts[]` 조립 → `export default`.
 5. **`space/comsat/{model.tsx,data.ts,CLAUDE.md}`** — 코어 import + 중계기 payload·반사판 ×2 antenna·GEO 배치/specs.
 6. **`src/shared/r3f/registry.tsx`** — `space/eo-satellite`·`space/comsat` 두 줄.
@@ -78,8 +78,8 @@
 
 ## 구현 TODO (순서대로)
 - [ ] 1. textures.ts — `makeFoilTexture`·`makeSolarTexture`.
-- [ ] 2. core.tsx — 공통 빌더 5종 + dish + 재질.
-- [ ] 3. core.ts — `commonSatInfo` 4언어.
+- [ ] 2. parts.tsx — 공통 빌더 5종 + dish + 재질.
+- [ ] 3. info.ts — `commonSatInfo` 4언어.
 - [ ] 4. eo-satellite — model.tsx(카메라+dish, LEO) + data.ts + CLAUDE.md.
 - [ ] 5. comsat — model.tsx(중계기+반사판×2, GEO) + data.ts + CLAUDE.md.
 - [ ] 6. registry 2줄 + catalog satellite→2 엔트리.
@@ -90,4 +90,4 @@
 - **7부품**: 공통 6 + **배터리** 추가(별 추적기는 ADCS 설명에 통합).
 
 ## 사용자 노출 문구
-전부 다국어로(`data.ts`/`core.ts`의 부품 설명 + `catalog`의 개요/사양). 하드코딩 금지.
+전부 다국어로(`data.ts`/`info.ts`의 부품 설명 + `catalog`의 개요/사양). 하드코딩 금지.
