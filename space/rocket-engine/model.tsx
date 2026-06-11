@@ -101,8 +101,8 @@ function buildChamber() {
   ];
   g.add(new THREE.Mesh(new THREE.LatheGeometry(pts, 56), copperWall()));
   const glow = new THREE.Mesh(
-    new THREE.TorusGeometry(0.6, 0.05, 8, 40),
-    mat(0x3a1e0e, 0.5, 0.3, 0.6, { emissive: 0xe0902a, emissiveIntensity: 0.5 }),
+    new THREE.TorusGeometry(0.6, 0.045, 8, 40),
+    mat(0x32190b, 0.55, 0.3, 0.5, { emissive: 0xa8531a, emissiveIntensity: 0.22 }),
   );
   glow.position.y = 0.03;
   glow.rotation.x = Math.PI / 2;
@@ -165,7 +165,7 @@ function buildTurbopump() {
   // 가스 발생기(터빈 구동) — 측면 소형 구리 실린더, 절제된 발광
   const gg = new THREE.Mesh(
     new THREE.CylinderGeometry(0.16, 0.16, 0.46, 16),
-    mat(0xb06a38, 0.5, 0.78, 1.0, { emissive: 0xc05a18, emissiveIntensity: 0.3 }),
+    mat(0xb06a38, 0.5, 0.78, 1.0, { emissive: 0x9c4a16, emissiveIntensity: 0.2 }),
   );
   gg.position.set(0.46, 0.1, 0.0);
   g.add(gg);
