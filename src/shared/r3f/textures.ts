@@ -152,6 +152,43 @@ export function makeBaseTexture(): THREE.CanvasTexture {
   });
 }
 
+/** 재생냉각 채널(노즐·연소실 벽) — 원통에 감기는 촘촘한 세로 채널 + 미세 결. hue로 구리/강철 톤. */
+export function makeChannelTexture(hue: number): THREE.CanvasTexture {
+  return cached(`channel:${hue}`, () => {
+    const s = 512;
+    const c = document.createElement("canvas");
+    c.width = c.height = s;
+    const x = c.getContext("2d")!;
+    x.fillStyle = `hsl(${hue},38%,30%)`;
+    x.fillRect(0, 0, s, s);
+    const n = 64,
+      cw = s / n; // 세로 채널(원통 둘레 방향 = U)
+    for (let i = 0; i < n; i++) {
+      const cx = i * cw;
+      x.fillStyle = `hsla(${hue},34%,24%,1)`; // 채널 골(어두움)
+      x.fillRect(cx, 0, cw * 0.45, s);
+      x.fillStyle = `hsla(${hue},48%,46%,.9)`; // 리브 능선(밝음)
+      x.fillRect(cx + cw * 0.45, 0, cw * 0.55, s);
+      x.strokeStyle = `hsla(${hue},60%,72%,.18)`; // 하이라이트
+      x.lineWidth = 1;
+      x.beginPath();
+      x.moveTo(cx + cw * 0.7, 0);
+      x.lineTo(cx + cw * 0.7, s);
+      x.stroke();
+    }
+    // 세로를 가로지르는 미세 용접/제조 결
+    for (let i = 0; i < 90; i++) {
+      const y = Math.random() * s;
+      x.strokeStyle = `hsla(${hue},30%,${Math.random() < 0.5 ? 18 : 60}%,${Math.random() * 0.08})`;
+      x.beginPath();
+      x.moveTo(0, y);
+      x.lineTo(s, y + (Math.random() - 0.5) * 2);
+      x.stroke();
+    }
+    return c;
+  });
+}
+
 /** 브러시드 메탈(히트 스프레더 IHS) — 옅은 실버 + 미세 가로 결. */
 export function makeBrushedMetalTexture(): THREE.CanvasTexture {
   return cached("brushed", () => {

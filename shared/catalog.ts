@@ -175,9 +175,24 @@ export const MODELS: ModelEntry[] = [
     ] },
 
   // ── 우주 ──
-  { cat: "space", id: "rocket-engine", status: "soon", thumb: "orbit",
+  { cat: "space", id: "rocket-engine", status: "live", thumb: "orbit",
     name: { ko: "로켓 엔진", en: "Rocket Engine", ja: "ロケットエンジン", zh: "火箭发动机" },
-    desc: { ko: "추진 시스템 단면", en: "Propulsion cutaway", ja: "推進システム断面", zh: "推进系统剖面" } },
+    desc: { ko: "액체 추진 엔진 구조", en: "Liquid engine anatomy", ja: "液体エンジンの構造", zh: "液体发动机结构" },
+    overview: {
+      ko: "액체 로켓 엔진은 연료와 산화제를 펌프로 고압으로 밀어 넣고, 인젝터로 안개처럼 뿜어 섞은 뒤 연소실에서 태웁니다. 그렇게 만든 고온·고압 가스를 노즐로 초음속까지 가속해 뒤로 내뿜고, 그 반작용으로 추력을 얻습니다(작용·반작용). 3,000 K가 넘는 가스로부터 벽을 지키기 위해 차가운 연료를 벽 속 채널로 먼저 돌리는 재생냉각을 쓰고, 엔진 전체를 짐벌로 기울여 비행 방향을 잡습니다. 이 모델은 가스 발생기 사이클의 LOX/케로신 엔진을 대표값으로 일반화해, 터보펌프·인젝터·연소실·노즐·짐벌을 분해해 봅니다.",
+      en: "A liquid rocket engine pumps fuel and oxidizer in at high pressure, sprays them into a fine mist through the injector, and burns them in the combustion chamber. The resulting hot, high-pressure gas is accelerated to supersonic speed through the nozzle and thrown backward — the reaction pushes the engine forward (action–reaction). To protect the walls from gas above 3,000 K, cold fuel is first run through channels in the walls (regenerative cooling), and the whole engine tilts on a gimbal to steer the flight. This model generalizes a gas-generator LOX/kerosene engine into representative values and takes apart the turbopump, injector, chamber, nozzle and gimbal.",
+      ja: "液体ロケットエンジンは、燃料と酸化剤をポンプで高圧で押し込み、インジェクタで霧状に噴いて混ぜ、燃焼室で燃やします。生じた高温・高圧ガスをノズルで超音速まで加速して後方へ噴出し、その反作用で推力を得ます（作用・反作用）。3,000 K を超えるガスから壁を守るため、冷たい燃料を壁内のチャンネルに先に流す再生冷却を用い、エンジン全体をジンバルで傾けて飛行方向を制御します。本モデルはガスジェネレータサイクルの LOX/ケロシンエンジンを代表値で一般化し、ターボポンプ・インジェクタ・燃焼室・ノズル・ジンバルを分解します。",
+      zh: "液体火箭发动机用泵把燃料和氧化剂高压压入，经喷注器喷成细雾混合，再在燃烧室中燃烧。所产生的高温高压燃气经喷管加速到超音速并向后喷出，其反作用把发动机向前推（作用与反作用）。为保护壁体免受超过 3,000 K 燃气的侵蚀，先让冷燃料流过壁内通道（再生冷却），并通过万向架倾斜整台发动机来操控飞行方向。本模型将燃气发生器循环的 LOX/煤油发动机一般化为代表值，逐件分解涡轮泵、喷注器、燃烧室、喷管与万向架。",
+    },
+    specs: [
+      { label: { ko: "추력 (해면)", en: "Thrust (SL)", ja: "推力 (海面)", zh: "推力 (海平面)" }, value: "≈ 845 kN" },
+      { label: { ko: "비추력 Isp", en: "Specific impulse", ja: "比推力 Isp", zh: "比冲 Isp" }, value: "≈ 283 s SL / 312 s vac" },
+      { label: { ko: "연소압", en: "Chamber pressure", ja: "燃焼室圧", zh: "室压" }, value: "≈ 100 bar" },
+      { label: { ko: "추진제", en: "Propellant", ja: "推進剤", zh: "推进剂" }, value: "LOX / RP-1 · O/F ≈ 2.3" },
+      { label: { ko: "사이클", en: "Cycle", ja: "サイクル", zh: "循环" }, value: "Gas-generator" },
+      { label: { ko: "노즐 팽창비", en: "Nozzle ratio", ja: "ノズル膨張比", zh: "喷管膨胀比" }, value: "ε ≈ 16" },
+      { label: { ko: "전체 높이", en: "Overall height", ja: "全高", zh: "总高" }, value: "≈ 3.1 m" },
+    ] },
   { cat: "space", id: "satellite", status: "soon", thumb: "orbit",
     name: { ko: "인공위성", en: "Satellite", ja: "人工衛星", zh: "人造卫星" },
     desc: { ko: "궤도 위성 모듈", en: "Orbital satellite", ja: "軌道衛星", zh: "轨道卫星模块" } },
