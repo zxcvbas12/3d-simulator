@@ -17,7 +17,9 @@
 - **eo-satellite** — 지구관측 위성(LEO) · 상태: 학습 가능 — 사이트 첫 모듈형(버스+부속)
 - **comsat** — 통신 위성(GEO) · 상태: 학습 가능 — eo-satellite와 **공유 코어**(`satellite/parts.tsx`·`info.ts`) 사용
 - `satellite/`는 모델이 아니라 위 두 위성의 **공유 코어 폴더**(등록 안 됨). 가족 지침은 `satellite/CLAUDE.md`.
-- (예정) reentry-capsule — catalog에 `soon`으로 등재됨
+- **reentry-capsule** — 재진입 캡슐(유인) · 상태: 학습 가능 — 무딘 원뿔 + 구형 차폐막 동심 껍질. **발사→궤도→귀환** 서사 완성
+
+> space 카테고리 4모델(rocket-engine·eo-satellite·comsat·reentry-capsule) 모두 학습 가능.
 
 ## 메모
 - 공통 동작(회전/줌/분해/정보패널/사이드바)은 `../shared/`를 그대로 재사용한다.
