@@ -5,3 +5,8 @@ dist/
 
 # Claude Code 로컬(머신별) 설정 — 공유하지 않음
 .claude/settings.local.json
+
+# Vercel — 프로젝트 링크 + 액세스 토큰(절대 커밋 금지)
+.vercel/
+.vercel_token
+.vercel
