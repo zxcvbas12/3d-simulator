@@ -281,6 +281,62 @@ export function makeSolarTexture(): THREE.CanvasTexture {
   });
 }
 
+/** 융제(ablative) 열 차폐막 — 구리/브론즈 베이스 + 동심 세그먼트 + 탄화 얼룩·균열. hue로 톤. */
+export function makeAblativeTexture(hue: number): THREE.CanvasTexture {
+  return cached(`ablative:${hue}`, () => {
+    const s = 512;
+    const c = document.createElement("canvas");
+    c.width = c.height = s;
+    const x = c.getContext("2d")!;
+    x.fillStyle = `hsl(${hue},45%,38%)`;
+    x.fillRect(0, 0, s, s);
+    const cx = s / 2,
+      cy = s / 2;
+    for (let r = 20; r < s * 0.72; r += 22) {
+      x.strokeStyle = `hsla(${hue},40%,22%,.5)`;
+      x.lineWidth = 2;
+      x.beginPath();
+      x.arc(cx, cy, r, 0, Math.PI * 2);
+      x.stroke();
+    }
+    for (let a = 0; a < 24; a++) {
+      const ang = (a / 24) * Math.PI * 2;
+      x.strokeStyle = `hsla(${hue},38%,20%,.32)`;
+      x.lineWidth = 1.5;
+      x.beginPath();
+      x.moveTo(cx, cy);
+      x.lineTo(cx + Math.cos(ang) * s, cy + Math.sin(ang) * s);
+      x.stroke();
+    }
+    for (let i = 0; i < 120; i++) {
+      const rr = 8 + Math.random() * 30;
+      x.fillStyle = `hsla(${hue - 6},25%,${8 + Math.random() * 12}%,${0.06 + Math.random() * 0.14})`;
+      x.beginPath();
+      x.arc(Math.random() * s, Math.random() * s, rr, 0, Math.PI * 2);
+      x.fill();
+    }
+    for (let i = 0; i < 70; i++) {
+      x.strokeStyle = `hsla(${hue},20%,10%,${0.1 + Math.random() * 0.2})`;
+      x.lineWidth = Math.random() < 0.3 ? 1.6 : 0.8;
+      let px = Math.random() * s,
+        py = Math.random() * s;
+      x.beginPath();
+      x.moveTo(px, py);
+      for (let k = 0; k < 3; k++) {
+        px += (Math.random() - 0.5) * 70;
+        py += (Math.random() - 0.5) * 70;
+        x.lineTo(px, py);
+      }
+      x.stroke();
+    }
+    for (let i = 0; i < 60; i++) {
+      x.fillStyle = `hsla(${hue + 8},60%,55%,${Math.random() * 0.25})`;
+      x.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+    }
+    return c;
+  });
+}
+
 /** 브러시드 메탈(히트 스프레더 IHS) — 옅은 실버 + 미세 가로 결. */
 export function makeBrushedMetalTexture(): THREE.CanvasTexture {
   return cached("brushed", () => {

@@ -229,9 +229,25 @@ export const MODELS: ModelEntry[] = [
       { label: { ko: "안테나", en: "Antenna", ja: "アンテナ", zh: "天线" }, value: "reflector ∅ ≈ 2.5 m ×2 · Ku/Ka" },
       { label: { ko: "궤도", en: "Orbit", ja: "軌道", zh: "轨道" }, value: "GEO 35,786 km" },
     ] },
-  { cat: "space", id: "reentry-capsule", status: "soon", thumb: "orbit",
+  { cat: "space", id: "reentry-capsule", status: "live", thumb: "orbit",
     name: { ko: "재진입 캡슐", en: "Reentry Capsule", ja: "再突入カプセル", zh: "返回舱" },
-    desc: { ko: "대기권 재진입 구조", en: "Atmospheric reentry", ja: "大気圏再突入", zh: "大气层返回" } },
+    desc: { ko: "유인 귀환 캡슐 구조", en: "Crewed return capsule", ja: "有人帰還カプセル", zh: "载人返回舱" },
+    overview: {
+      ko: "재진입 캡슐은 궤도에서 지구로 사람을 살려 데려오는 \"귀환\" 단계의 우주선입니다. 시속 28,000 km로 대기에 부딪히며 3,000°C에 가까운 불덩이를 만나지만, 무딘 몸체가 충격파를 앞으로 밀어 열의 대부분을 떼어내고, 바닥의 융제(ablative) 열 차폐막이 일부러 타며 남은 열을 가져갑니다. 감속은 추력이 아니라 대기가 맡고, 마지막 몇 km만 낙하산이 부드럽게 마무리합니다. 바깥의 열보호 껍질(차폐막·백셸) 안에 1기압을 유지하는 여압 동체와 좌석이 있어, 수 g의 충격으로부터 승무원을 지킵니다. 발사(로켓 엔진)·궤도(위성)에 이은 우주 여정의 마지막 조각입니다.",
+      en: "A reentry capsule is the \"return\" stage that brings people home from orbit alive. It slams into the atmosphere at 28,000 km/h and meets a fireball near 3,000°C, but its blunt body pushes the shock wave ahead to shed most of the heat, while the ablative heat shield on the base deliberately chars away to carry off the rest. The braking is done by the atmosphere, not by thrust — only the final few kilometers are finished gently by parachutes. Inside the outer thermal shells (heat shield and backshell) sit a pressure vessel holding one atmosphere and couches that protect the crew from several g. It is the final piece of the journey after launch (rocket engine) and orbit (satellites).",
+      ja: "再突入カプセルは、軌道から人を生きて連れ帰る「帰還」段階の宇宙船です。時速 28,000 km で大気に突入し 3,000°C 近い火球に遭いますが、鈍い形が衝撃波を前へ押して熱の大半を逃がし、底の融除（ablative）ヒートシールドがわざと焦げて残りの熱を持ち去ります。減速は推力でなく大気が担い、最後の数 km だけ落下傘が柔らかく仕上げます。外側の熱防護殻（シールド・バックシェル）の内に 1 気圧を保つ与圧構体と座席があり、数 g の衝撃から乗員を守ります。打ち上げ（ロケットエンジン）・軌道（衛星）に続く宇宙の旅の最後の一片です。",
+      zh: "返回舱是把人从轨道安全带回地球的“返回”阶段航天器。它以时速 28,000 km 撞入大气，遭遇接近 3,000°C 的火球，但钝体把激波推到前方带走大部分热量，底部的烧蚀（ablative）热盾则故意焦化带走其余热量。减速由大气而非推力完成——只有最后几公里由降落伞柔和收尾。外层热防护壳（热盾与后壳）之内是维持 1 个大气压的增压舱体与座椅，保护乘员免受数 g 冲击。这是继发射（火箭发动机）、入轨（卫星）之后太空旅程的最后一块拼图。",
+    },
+    specs: [
+      { label: { ko: "구조", en: "Structure", ja: "構造", zh: "结构" }, value: "blunt cone capsule" },
+      { label: { ko: "베이스", en: "Base ∅", ja: "ベース径", zh: "底径" }, value: "≈ 5 m" },
+      { label: { ko: "높이", en: "Height", ja: "全高", zh: "高度" }, value: "≈ 3.3 m" },
+      { label: { ko: "질량", en: "Mass", ja: "質量", zh: "质量" }, value: "≈ 9 t" },
+      { label: { ko: "승무원", en: "Crew", ja: "乗員", zh: "乘员" }, value: "3–4" },
+      { label: { ko: "재진입 속도", en: "Entry speed", ja: "進入速度", zh: "再入速度" }, value: "≈ 7.8 km/s (LEO)" },
+      { label: { ko: "열차폐", en: "Heat shield", ja: "熱防護", zh: "热防护" }, value: "ablative" },
+      { label: { ko: "감속", en: "Descent", ja: "減速", zh: "减速" }, value: "atmosphere + parachutes" },
+    ] },
 
   // ── 자동차 ──
   { cat: "automotive", id: "ev-battery", status: "soon", thumb: "cells",
