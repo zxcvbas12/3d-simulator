@@ -18,6 +18,9 @@ export interface RouteState {
   model: ModelEntry | null;
   drawerOpen: boolean;
 
+  /** 사용자 피드백 모달 — 푸터 링크·플로팅 버튼이 연다. 화면 라우팅과 독립. */
+  feedbackOpen: boolean;
+
   goHome: () => void;
   goPage: (id: PageId) => void;
   openCategory: (cat: CategoryId) => void;
@@ -26,6 +29,8 @@ export interface RouteState {
 
   toggleDrawer: () => void;
   closeDrawer: () => void;
+  openFeedback: () => void;
+  closeFeedback: () => void;
 }
 
 export const useRoute = create<RouteState>((set) => ({
@@ -33,6 +38,7 @@ export const useRoute = create<RouteState>((set) => ({
   category: "semiconductor",
   model: null,
   drawerOpen: false,
+  feedbackOpen: false,
 
   goHome: () => set({ view: "home", model: null, drawerOpen: false }),
   goPage: (id) => set({ view: id, model: null, drawerOpen: false }),
@@ -42,4 +48,6 @@ export const useRoute = create<RouteState>((set) => ({
 
   toggleDrawer: () => set((s) => ({ drawerOpen: !s.drawerOpen })),
   closeDrawer: () => set({ drawerOpen: false }),
+  openFeedback: () => set({ feedbackOpen: true, drawerOpen: false }),
+  closeFeedback: () => set({ feedbackOpen: false }),
 }));

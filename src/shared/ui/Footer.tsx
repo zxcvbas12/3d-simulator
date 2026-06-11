@@ -11,6 +11,7 @@ export function Footer() {
   const t = useT();
   const goPage = useRoute((s) => s.goPage);
   const openCategory = useRoute((s) => s.openCategory);
+  const openFeedback = useRoute((s) => s.openFeedback);
 
   return (
     <footer className="footer">
@@ -28,6 +29,7 @@ export function Footer() {
             {t.nav[p]}
           </button>
         ))}
+        <button onClick={openFeedback}>{t.feedback.open}</button>
       </div>
       <div className="f-col f-cats">
         <div className="f-head">{t.sidebar.title}</div>

@@ -53,6 +53,16 @@
 | SEO | 82 | **100** | meta description + robots.txt |
 - 홈 전송량 80→241 KiB (폰트 101 KiB + 콘텐츠·CSS). 환경 주의: 컨테이너 측정 — 실배포 후 실기기로 재확인.
 
+## 사용자 피드백 (Feedback) — 구현 완료
+- **목적**: 1인 운영자가 아이디어·버그를 모으는 창구. **백엔드 없음** — 폼이 Web3Forms로 POST → 운영자 메일(`wlgh0123456@gmail.com`)로 전송.
+- **구성**: `ui/Feedback.tsx`(우하단 플로팅 버튼 `.fb-fab` + 모달) · 푸터 링크(`Footer.tsx`, `t.feedback.open`) · 둘 다 `route.ts`의 `feedbackOpen`/`openFeedback`/`closeFeedback`로 같은 모달을 연다. `App.tsx`에 `<Feedback/>` 1회 마운트.
+- **맥락 자동첨부**: 보던 화면(모델 `cat/id`·이름)·언어·페이지 URL·뷰포트 크기를 함께 전송 → 메일 제목 `[STRATA] 유형 · 화면`. 분류가 쉬움.
+- **스팸**: 허니팟(`.fb-hp`, 채워지면 조용히 성공 처리). 이메일은 액세스 키 뒤에 숨겨져 노출 안 됨.
+- **키**: `VITE_WEB3FORMS_ACCESS_KEY`(공개값·비밀 아님). 로컬은 `.env.local`, 배포는 Vercel 환경변수. 키 없으면 `t.feedback.unconfigured` 안내(운영자만 봄). 가이드: `.env.example`.
+- **문구·스타일**: 전부 `locales`의 `feedback.*` 4언어 + `shell.css`의 `.fb-*`(토큰만). 모달은 접근성(role=dialog·aria-modal·ESC·포커스 트랩·스크롤 잠금·포커스 복귀).
+- 폼 백엔드 교체(예: Formspree) 시 `Feedback.tsx`의 endpoint·필드명만 바꾸면 됨.
+
 ## 지키던 것 (회귀 금지)
 - `frameloop="demand"` 온디맨드 렌더 / dpr 1.5 캡 / 3D lazy 로드 / 절차적 텍스처 캐시(`r3f/textures.ts`) / `prefers-reduced-motion` 처리 / 키보드 회전·포커스 링·ARIA 라벨.
 - 새 UI 문구는 전부 locales 키. 새 색·간격·모션 값은 전부 토큰.
+- 피드백 폼은 백엔드 없이 Web3Forms — curl 폴링 금지 원칙(봇 챌린지)과 별개로, 폼 키는 공개값이라 커밋해도 무방하나 env로 관리.
