@@ -69,6 +69,7 @@
 ```
 **원칙**: 모델마다 다른 건 `model.tsx`(형상)·`data.ts`(부품 설명)뿐. 회전·줌·분해·선택·패널은 전부 공통 엔진.
 **새 모델 추가 = 3곳**: ① `<카테고리>/<모델>/model.tsx + data.ts` ② `src/shared/r3f/registry.tsx` 한 줄 ③ `shared/catalog.ts` 한 항목(이름·개요·specs). 새 분야 첫 모델이면 카탈로그 `intro`(+`guide`)와 카테고리 CLAUDE.md부터.
+**모델 가족(공유 코어) 패턴**: 한 분야에서 형상·부품을 크게 공유하는 변형이 2개 이상이면(예: `space/satellite/` → `eo-satellite`·`comsat`), 공통을 `<카테고리>/<가족>/` 폴더의 **`parts.tsx`(빌더)+`info.ts`(공통 PartInfo 조각)**로 모으고, 각 변형의 `model.tsx`/`data.ts`가 import해 자기 고유 부품만 덧붙인다. 가족 폴더 자체는 **모델이 아니며 registry·catalog에 등록하지 않는다**(등록은 변형들만). 부품 간 재질 인스턴스는 공유 금지(강조 독립), 텍스처 map 캐시는 공유 OK.
 (루트 `shared/scene·interaction·model.ts·ui/panel.ts`는 바닐라 시절 레거시 — 미사용. 새 코드에서 참조 금지.)
 
 ---
