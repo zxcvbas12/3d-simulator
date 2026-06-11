@@ -4,16 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- 브랜드명(STRATA)은 임시 자리표시. 표시 텍스트는 이후 i18n/config에서 일원화한다.
-       메타는 기본만(루트 지침) — 페이지별 메타·사이트맵은 Astro 이전 때. og:url은 도메인 확정 후. -->
+       메타는 기본만(루트 지침) — 페이지별 메타·사이트맵은 Astro 이전 때.
+       og:url·canonical은 Vercel 프로덕션 도메인으로 확정(2026-06). 커스텀 도메인 붙이면 갱신. -->
   <title>STRATA — 3D 학습 시뮬레이터</title>
-  <meta name="description" content="기술 제품을 3D 분해도로 회전·분해하며 배우는 교육 도구. 부품을 클릭하면 역할과 실제 치수를 설명합니다. 반도체(HBM·GPU·CPU)부터 시작합니다." />
+  <meta name="description" content="기술 제품을 3D 분해도로 회전·분해하며 배우는 교육 도구. 부품을 클릭하면 역할과 실제 치수를 설명합니다. 반도체(HBM·GPU·CPU)와 우주(로켓 엔진)부터 시작합니다." />
   <meta name="theme-color" content="#04060c" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href="https://3d-simulator-rouge.vercel.app/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="STRATA" />
+  <meta property="og:url" content="https://3d-simulator-rouge.vercel.app/" />
   <meta property="og:title" content="STRATA — 3D 학습 시뮬레이터" />
-  <meta property="og:description" content="기술 제품을 3D 분해도로 회전·분해하며 배우는 교육 도구. 반도체(HBM·GPU·CPU)부터 시작합니다." />
-  <meta property="og:image" content="/og.png" />
+  <meta property="og:description" content="기술 제품을 3D 분해도로 회전·분해하며 배우는 교육 도구. 반도체(HBM·GPU·CPU)와 우주(로켓 엔진)부터 시작합니다." />
+  <meta property="og:image" content="https://3d-simulator-rouge.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
 </head>
 <body>
   <div id="app"></div>

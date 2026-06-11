@@ -25,7 +25,11 @@
 
 ## 메타/OG — 구현 완료 (Astro 이전 전의 "기본만")
 - `index.html`: description·theme-color·OG(title/description/image)·SVG 파비콘(`public/favicon.svg`, 적층 판 모티프). `public/robots.txt` 허용.
-- OG 이미지 = `public/og.png`(1200×630, 홈 히어로 정적 캡처). **og:url은 도메인 확정 후 추가**, 페이지별 메타·사이트맵은 Astro 이전 때.
+- OG 이미지 = `public/og.png`(1200×630, 홈 히어로 정적 캡처). **og:url·canonical 추가됨**(Vercel 프로덕션 `https://3d-simulator-rouge.vercel.app`, og:image도 절대경로 + twitter:card). 커스텀 도메인 붙이면 갱신. 페이지별 메타·사이트맵은 Astro 이전 때.
+
+## 배포 (Vercel — 구현 완료)
+- 호스트 = **Vercel**. GitHub 저장소 연동 → **`main` push 시 자동 빌드·배포**(프리뷰는 브랜치/PR별 자동 URL). 설정은 `vercel.json`(framework vite · build `npm run build` · output `dist` · SPA fallback).
+- 프로덕션: `https://3d-simulator-rouge.vercel.app`. 토큰/`.vercel/`는 `.gitignore`로 차단(커밋 금지).
 - 본문 한국어 줄바꿈은 `word-break: keep-all`(index.css) — 단어 중간에서 꺾이지 않는다.
 
 ## 성능 예산표 (측정해서 갱신하는 곳)
