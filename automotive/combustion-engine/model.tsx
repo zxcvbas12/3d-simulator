@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef } from "@app/shared/r3f/model";
+import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture } from "@app/shared/r3f/textures";
 import { combustionEngineInfo } from "./data";
 
@@ -37,10 +37,18 @@ function addEdges(group: THREE.Group, mesh: THREE.Mesh, color: number, op = 0.45
 }
 
 // 4기통 배치 + 크랭크 위상(점화 1-3-4-2): 1·4 = 상사점(TDC), 2·3 = 하사점(BDC)
+// 기구학 상수 — 4행정 연출(update)과 정적 포즈가 같은 식을 쓴다.
 const CYL_X = [-1.65, -0.55, 0.55, 1.65];
-const PHASE = [1, -1, -1, 1]; // +1 = TDC
-const PISTON_Y = (i: number) => 0.4 + 0.22 * PHASE[i]; // 피스톤 중심(블록 로컬 y=0 기준)
-const PIN_Y = (i: number) => -1.05 + 0.18 * PHASE[i]; // 크랭크 핀 중심
+const PHASE = [1, -1, -1, 1]; // +1 = TDC (위상각 0), -1 = BDC (위상각 π)
+const CRANK_Y = -1.05; // 크랭크 중심
+const CRANK_R = 0.18; // 크랭크 반경(스트로크의 절반)
+const ROD_L = 1.2; // 커넥팅 로드 핀 간 길이(전 기통 동일)
+const PISTON_HALF = 0.25;
+/** 크랭크 각 a에서의 피스톤 핀(소단부) 높이 — 표준 슬라이더-크랭크 식. */
+const pinTopY = (a: number) => CRANK_Y + CRANK_R * Math.cos(a) + Math.sqrt(ROD_L * ROD_L - CRANK_R * Math.sin(a) * CRANK_R * Math.sin(a));
+const phaseAngle = (i: number) => (PHASE[i] === 1 ? 0 : Math.PI);
+const PISTON_Y = (i: number) => pinTopY(phaseAngle(i)) + PISTON_HALF; // 정적(θ=0) 피스톤 중심
+const PIN_Y = (i: number) => CRANK_Y + CRANK_R * PHASE[i]; // 정적 크랭크 핀 중심
 
 // ── 부품 빌더 ─────────────────────────────────────────────────────
 /** 밸브 커버 — 주조 알루미늄 덮개 + 오일 캡(장식). */
@@ -208,16 +216,15 @@ for (let i = 0; i < 4; i++) {
     layer: i + 1,
     node: <primitive object={buildPiston()} />,
   });
-  const top = PISTON_Y(i) - 0.25;
+  const top = PISTON_Y(i) - PISTON_HALF;
   const bottom = PIN_Y(i);
-  const len = top - bottom;
   parts.push({
     id: "conrod",
     base: [CYL_X[i], (top + bottom) / 2, 0],
     explode: [0, 1.7, 0],
     order: 0.58 + i * 0.03,
     layer: i + 1,
-    node: <primitive object={buildConrod(len)} />,
+    node: <primitive object={buildConrod(ROD_L)} />,
   });
 }
 parts.push(
@@ -225,5 +232,37 @@ parts.push(
   { id: "oilpan", base: [0, -1.62, 0], explode: [0, -2.6, 0], order: 1, node: <primitive object={buildOilpan()} /> },
 );
 
-export const combustionEngineModel: ModelDef = { parts, info: combustionEngineInfo };
+// ── 4행정 구동 연출: 자동 회전 중 크랭크가 돌고 피스톤이 왕복한다(슬라이더-크랭크 기구학) ──
+// 분해(t↑)하면 연출이 잦아들고 정적 위상 포즈로 복귀. 크랭크 회전만 분해 후에도 유지(회전부 표시).
+const PISTON_IDX = (i: number) => 4 + i * 2;
+const CONROD_IDX = (i: number) => 5 + i * 2;
+const CRANK_IDX = 12;
+let theta = 0;
+function update({ t, dt, autoRotate, groups }: ViewerFrameCtx) {
+  if (autoRotate) theta += dt * 2.6; // 느린 시연 속도
+  const crank = groups[CRANK_IDX];
+  if (crank) crank.rotation.x = theta;
+  const k = Math.max(0, 1 - t * 4); // 조립 상태에서만 풀 연출 (t>0.25부터 0)
+  for (let i = 0; i < 4; i++) {
+    const piston = groups[PISTON_IDX(i)];
+    const rod = groups[CONROD_IDX(i)];
+    if (!piston || !rod) continue;
+    if (k <= 0.001) {
+      rod.rotation.x = 0;
+      rod.position.z = 0;
+      continue; // 위치는 엔진이 이미 정적 포즈로 잡아 둠
+    }
+    const a = theta + phaseAngle(i);
+    const py = CRANK_Y + CRANK_R * Math.cos(a); // 크랭크 핀 y
+    const pz = CRANK_R * Math.sin(a); // 크랭크 핀 z (크랭크 회전과 동일 위상)
+    const dy = Math.sqrt(ROD_L * ROD_L - pz * pz);
+    const topY = py + dy; // 피스톤 핀 y
+    piston.position.y = piston.position.y * (1 - k) + (topY + PISTON_HALF) * k;
+    rod.position.y = rod.position.y * (1 - k) + ((topY + py) / 2) * k;
+    rod.position.z = (pz / 2) * k;
+    rod.rotation.x = Math.atan2(-pz, dy) * k; // 핀의 z 이동을 따라 살짝 기울어짐
+  }
+}
+
+export const combustionEngineModel: ModelDef = { parts, info: combustionEngineInfo, update };
 export default combustionEngineModel;

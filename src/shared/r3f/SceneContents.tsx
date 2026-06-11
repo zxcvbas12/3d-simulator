@@ -316,8 +316,8 @@ export function SceneContents({ model }: { model: ModelDef }) {
       g.position.set(p.base[0] + p.explode[0] * lt, p.base[1] + p.explode[1] * lt, p.base[2] + p.explode[2] * lt);
     }
 
-    // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이를 스택 높이에 맞춤.
-    model.update?.({ t: curT.current, groups: partRefs.current });
+    // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이 맞춤, 자동 회전 중 구동 연출(회전·왕복).
+    model.update?.({ t: curT.current, groups: partRefs.current, dt, autoRotate: useAppStore.getState().autoRotate });
 
     // 분해 중에는 인스턴스 행렬이 바뀔 수 있으니, 인스턴스 메시의 캐시된 경계구를 무효화한다.
     // (최신 three는 boundingSphere를 캐시 → 안 하면 늘어난 TSV 등 동적 인스턴스가 클릭 적중 실패.

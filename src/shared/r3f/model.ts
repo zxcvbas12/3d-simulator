@@ -46,6 +46,10 @@ export interface ViewerFrameCtx {
   t: number;
   /** parts와 같은 순서의 부품 그룹(엔진이 위치를 잡아둔 상태). */
   groups: (Object3D | null)[];
+  /** 직전 프레임 이후 경과 시간(초) — 구동 연출(회전·왕복)용. */
+  dt: number;
+  /** 자동 회전 중인지 — 구동 연출은 이때만(연속 렌더 보장 + reduced-motion이면 자동회전 자체가 차단됨). */
+  autoRotate: boolean;
 }
 
 export interface ModelDef {
