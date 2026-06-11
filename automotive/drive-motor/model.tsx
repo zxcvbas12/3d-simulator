@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture } from "@app/shared/r3f/textures";
+import { CUT_PLANE_Z, cutawayOption, setClipping } from "@app/shared/r3f/cutaway";
 import { driveMotorInfo } from "./data";
 
 /**
@@ -124,31 +125,38 @@ function buildWinding() {
   g.add(rods);
   return g;
 }
-/** 회전자 — 강철 원통 + 표면의 영구자석 슬래브(인스턴싱, 픽은 rotor 귀속) + 양끝 링. */
+/** 회전자 — 강철 원통 + 내장(IPM) V자 영구자석(인스턴싱, 픽은 rotor 귀속).
+ *  자석은 실제처럼 내부에 V자로 묻혀 있어 양 끝면의 V 단면과 단면(cutaway) 옵션으로 보인다. */
 function buildRotor() {
   const g = new THREE.Group();
   const core = makeAxialCyl(0.88, 0.88, 2.5, side(0x39424e, 0.42, 0.75, 1.0));
   g.add(core);
   addEdges(g, core, 0x6a86a0, 0.45);
-  const magMat = side(0x232a33, 0.5, 0.6, 0.9);
-  const mags = new THREE.InstancedMesh(new THREE.BoxGeometry(2.3, 0.08, 0.42), magMat, 8);
+  // 8극 × V자 한 쌍(16개) — V 꼭짓점이 축쪽, 입이 표면쪽(전형적 IPM 배치)
+  const magMat = side(0x1d242e, 0.5, 0.55, 0.85);
+  const mags = new THREE.InstancedMesh(new THREE.BoxGeometry(2.52, 0.07, 0.36), magMat, 16);
   const m = new THREE.Matrix4();
-  const rot = new THREE.Matrix4();
-  const tr = new THREE.Matrix4();
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2;
-    rot.makeRotationX(a);
-    tr.makeTranslation(0, 0.86, 0);
-    m.multiplyMatrices(rot, tr);
-    mags.setMatrixAt(i, m);
+  const pole = new THREE.Matrix4();
+  const off = new THREE.Matrix4();
+  const tilt = new THREE.Matrix4();
+  let idx = 0;
+  for (let p = 0; p < 8; p++) {
+    pole.makeRotationX((p / 8) * Math.PI * 2);
+    for (const s of [-1, 1]) {
+      off.makeTranslation(0, 0.6, s * 0.17);
+      tilt.makeRotationX(-s * 0.55);
+      m.copy(pole).multiply(off).multiply(tilt);
+      mags.setMatrixAt(idx++, m);
+    }
   }
   mags.instanceMatrix.needsUpdate = true;
   mags.frustumCulled = false;
   g.add(mags);
+  // 작은 허브 링(끝면의 V 단면이 보이도록 축 주변만)
   for (const sx of [-1, 1]) {
-    const ring = makeAxialCyl(0.9, 0.9, 0.08, side(0xc6ccd6, 0.32, 0.9, 1.15));
-    ring.position.x = sx * 1.29;
-    g.add(ring);
+    const hub = makeAxialCyl(0.32, 0.32, 0.07, side(0xc6ccd6, 0.32, 0.9, 1.15));
+    hub.position.x = sx * 1.28;
+    g.add(hub);
   }
   return g;
 }
@@ -196,17 +204,26 @@ const parts: PartDef[] = [
   { id: "stator", base: [0, 0, 0], explode: [0, -1.1, 0], order: 0.9, node: <primitive object={buildStator()} /> },
 ];
 
+// ── 옵션: 단면(cutaway) — 고정자 슬롯·IPM V자 자석 배치가 드러난다 ──
+const options: ModelOption[] = [cutawayOption()];
+let lastCut: boolean | null = null;
+
 // ── 구동 연출: 자동 회전 중 회전자·샤프트가 실제로 돈다 (분해 상태에서도 — 회전부가 어디인지 보여줌) ──
 const ROTOR_IDX = 5;
 const SHAFT_IDX = 6;
 let spin = 0;
-function update({ dt, autoRotate, groups }: ViewerFrameCtx) {
+function update({ dt, autoRotate, groups, options: opts }: ViewerFrameCtx) {
   if (autoRotate) spin += dt * 2.4; // 느린 시연 속도(실제 회전수와 무관)
   const rotor = groups[ROTOR_IDX];
   const shaft = groups[SHAFT_IDX];
   if (rotor) rotor.rotation.x = spin;
   if (shaft) shaft.rotation.x = spin;
+  const cut = (opts["cut"] ?? "off") === "on";
+  if (cut !== lastCut) {
+    lastCut = cut;
+    setClipping(groups, cut ? [CUT_PLANE_Z] : null);
+  }
 }
 
-export const driveMotorModel: ModelDef = { parts, info: driveMotorInfo, update };
+export const driveMotorModel: ModelDef = { parts, info: driveMotorInfo, options, update };
 export default driveMotorModel;
