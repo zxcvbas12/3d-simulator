@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef } from "@app/shared/r3f/model";
+import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture, makeChannelTexture, makeRoutingTexture } from "@app/shared/r3f/textures";
 import { evBatteryInfo } from "./data";
 
@@ -46,13 +46,13 @@ function bmsMats() {
 function makeBox(w: number, h: number, d: number, mat: THREE.Material | THREE.Material[]) {
   return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
 }
-function addEdges(group: THREE.Group, mesh: THREE.Mesh, color: number, op = 0.45) {
+function addEdges(_group: THREE.Group, mesh: THREE.Mesh, color: number, op = 0.45) {
   const e = new THREE.LineSegments(
     new THREE.EdgesGeometry(mesh.geometry),
     new THREE.LineBasicMaterial({ color, transparent: true, opacity: op }),
   );
   e.raycast = () => {}; // 엣지 라인은 장식 — 픽 제외
-  group.add(e);
+  mesh.add(e); // 메시의 자식으로 — 위치·이동(2단계 분해)을 자동으로 따라간다
 }
 
 // 모듈 배열: 3열 × 2행
@@ -64,16 +64,21 @@ const CELL_H = 1.0;
 const CELL_D = 2.3;
 const MOD_Y = 1.0; // 셀/모듈 중심 높이 (냉각판 위)
 
+/** 2단계 분해(셀 벌리기)를 위해 모듈별 셀·단자·플레이트를 모아 둔다. */
+const moduleInternals: { cells: THREE.InstancedMesh; terms: THREE.InstancedMesh; plates: THREE.Mesh[] }[] = [];
+
 /** 모듈 하나 = 양옆 압축 엔드플레이트(픽: module) + 각형 셀 묶음(인스턴싱, 픽: cell). */
 function buildModule() {
   const g = new THREE.Group();
   // 엔드플레이트 ×2 (셀을 압축해 잡아 주는 금속판) — partId 없음 → 부모(module)로 픽 귀속
   const plateMat = side(0x8b929c, 0.4, 0.8, 1.1);
+  const plates: THREE.Mesh[] = [];
   for (const sx of [-1, 1]) {
     const p = makeBox(0.12, CELL_H + 0.16, CELL_D + 0.18, plateMat);
     p.position.x = sx * (CELL_N * CELL_W) / 2 + sx * 0.18;
     g.add(p);
     addEdges(g, p, 0xc6ccd6, 0.4);
+    plates.push(p);
   }
   // 각형 셀 ×CELL_N (인스턴싱)
   const cellMat = side(0x9fb6ad, 0.34, 0.7, 1.05); // 옅은 스틸 캔(에너지 톤 미세 그린)
@@ -99,6 +104,7 @@ function buildModule() {
   terms.frustumCulled = false;
   terms.raycast = () => {};
   g.add(terms);
+  moduleInternals.push({ cells, terms, plates });
   return g;
 }
 
@@ -185,5 +191,27 @@ parts.push(
   { id: "lid", base: [0, 1.95, 0], explode: [0, 4.0, 0], order: 1, node: <primitive object={buildLid()} /> },
 );
 
-export const evBatteryModel: ModelDef = { parts, info: evBatteryInfo };
+// ── 2단계 분해: 모듈이 자리를 잡은 분해 후반(t>0.6)에 셀·단자·플레이트가 추가로 벌어진다 ──
+const _m = new THREE.Matrix4();
+const CELL_START = -((CELL_N - 1) * CELL_W) / 2;
+function update({ t }: ViewerFrameCtx) {
+  let sub = Math.max(0, Math.min(1, (t - 0.6) / 0.4));
+  sub = sub < 0.5 ? 2 * sub * sub : 1 - Math.pow(-2 * sub + 2, 2) / 2; // easeInOutQuad
+  const f = 1 + sub * 0.95;
+  for (const mod of moduleInternals) {
+    for (let i = 0; i < CELL_N; i++) {
+      const x = (CELL_START + i * CELL_W) * f;
+      _m.makeTranslation(x, 0, 0);
+      mod.cells.setMatrixAt(i, _m);
+      _m.makeTranslation(x, CELL_H / 2 + 0.04, CELL_D / 2 - 0.3);
+      mod.terms.setMatrixAt(i, _m);
+    }
+    mod.cells.instanceMatrix.needsUpdate = true;
+    mod.terms.instanceMatrix.needsUpdate = true;
+    mod.plates[0].position.x = (-(CELL_N * CELL_W) / 2 - 0.18) * f;
+    mod.plates[1].position.x = ((CELL_N * CELL_W) / 2 + 0.18) * f;
+  }
+}
+
+export const evBatteryModel: ModelDef = { parts, info: evBatteryInfo, update };
 export default evBatteryModel;

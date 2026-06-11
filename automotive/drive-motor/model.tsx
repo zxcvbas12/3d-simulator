@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef } from "@app/shared/r3f/model";
+import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture } from "@app/shared/r3f/textures";
 import { driveMotorInfo } from "./data";
 
@@ -196,5 +196,17 @@ const parts: PartDef[] = [
   { id: "stator", base: [0, 0, 0], explode: [0, -1.1, 0], order: 0.9, node: <primitive object={buildStator()} /> },
 ];
 
-export const driveMotorModel: ModelDef = { parts, info: driveMotorInfo };
+// ── 구동 연출: 자동 회전 중 회전자·샤프트가 실제로 돈다 (분해 상태에서도 — 회전부가 어디인지 보여줌) ──
+const ROTOR_IDX = 5;
+const SHAFT_IDX = 6;
+let spin = 0;
+function update({ dt, autoRotate, groups }: ViewerFrameCtx) {
+  if (autoRotate) spin += dt * 2.4; // 느린 시연 속도(실제 회전수와 무관)
+  const rotor = groups[ROTOR_IDX];
+  const shaft = groups[SHAFT_IDX];
+  if (rotor) rotor.rotation.x = spin;
+  if (shaft) shaft.rotation.x = spin;
+}
+
+export const driveMotorModel: ModelDef = { parts, info: driveMotorInfo, update };
 export default driveMotorModel;
