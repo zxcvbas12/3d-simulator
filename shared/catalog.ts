@@ -80,6 +80,12 @@ export const CATEGORIES: CategoryEntry[] = [
       en: "From battery packs to combustion engines — the structures that put power on wheels.",
       ja: "バッテリーパックから内燃機関まで — 車輪を回す動力の構造を扱います。",
       zh: "从电池组到内燃机 — 驱动车轮的动力结构。",
+    },
+    guide: {
+      ko: "추천 순서 — EV 배터리 → 구동 모터. 에너지를 저장하는 곳(배터리)을 먼저 보면, 그 전기를 회전력으로 바꾸는 곳(모터)이 자연스럽게 이어집니다 — 전기 동력계 한 쌍.",
+      en: "Suggested order — EV Battery → Drive Motor. See where energy is stored first (the battery), and where it becomes rotation (the motor) follows naturally — one electric powertrain pair.",
+      ja: "おすすめ順 — EV バッテリー → 駆動モーター。エネルギーを蓄える場所（バッテリー）を先に見れば、その電気を回転力に変える場所（モーター）が自然につながります — 電動パワートレインの一対。",
+      zh: "推荐顺序 — EV 电池 → 驱动电机。先看储存能量之处（电池），再看把电变成旋转之处（电机），脉络自然贯通——电动动力系统的一对。",
     } },
   { id: "appliance", thumb: "coil",
     intro: {
@@ -271,9 +277,24 @@ export const MODELS: ModelEntry[] = [
   { cat: "automotive", id: "combustion-engine", status: "soon", thumb: "cells",
     name: { ko: "내연기관 엔진", en: "Combustion Engine", ja: "内燃エンジン", zh: "内燃机" },
     desc: { ko: "4행정 작동 원리", en: "Four-stroke cycle", ja: "4ストロークの原理", zh: "四冲程原理" } },
-  { cat: "automotive", id: "drive-motor", status: "soon", thumb: "cells",
+  { cat: "automotive", id: "drive-motor", status: "live", thumb: "cells",
     name: { ko: "구동 모터", en: "Drive Motor", ja: "駆動モーター", zh: "驱动电机" },
-    desc: { ko: "전기 구동 장치", en: "Electric drive unit", ja: "電動駆動装置", zh: "电力驱动装置" } },
+    desc: { ko: "전기 구동 장치", en: "Electric drive unit", ja: "電動駆動装置", zh: "电力驱动装置" },
+    overview: {
+      ko: "전기차의 구동 모터는 배터리의 전기를 바퀴를 돌리는 회전력으로 바꿉니다. 대부분 영구자석 동기 모터(PMSM)예요 — 움직이지 않는 고정자의 구리 권선에 3상 전류를 흘려 회전하는 자기장을 만들면, 영구자석이 박힌 회전자가 그 자기장을 따라 돕니다. 회전력은 중심 샤프트를 타고 감속기를 거쳐 바퀴로 나가고, 베어링·엔드캡이 1mm도 안 되는 회전자-고정자 간격(공극)을 지킵니다. EV 배터리 모델과 이어 보면 ‘저장 → 구동’의 전기 동력계가 완성됩니다.",
+      en: "An EV's drive motor turns the battery's electricity into the rotation that drives the wheels. Most are permanent magnet synchronous motors (PMSM): three-phase current in the stationary stator's copper windings creates a rotating magnetic field, and the magnet-studded rotor chases it. Torque leaves through the central shaft via a reduction gear to the wheels, while bearings and end shields preserve the sub-millimeter air gap between rotor and stator. Viewed after the EV Battery model, it completes the 'store → drive' electric powertrain.",
+      ja: "EV の駆動モーターは、バッテリーの電気を車輪を回す回転力に変えます。多くは永久磁石同期モーター（PMSM）です — 動かないステーターの銅巻線に三相電流を流して回転磁界を作ると、永久磁石を埋め込んだローターがそれを追って回ります。回転力は中心のシャフトから減速機を経て車輪へ伝わり、ベアリングとエンドシールドが 1mm 未満のエアギャップを守ります。EV バッテリーモデルと続けて見ると『蓄える → 駆動する』の電動パワートレインが完成します。",
+      zh: "电动车的驱动电机把电池的电能变成驱动车轮的旋转力。多数是永磁同步电机（PMSM）——静止定子的铜绕组通入三相电流产生旋转磁场，嵌着永磁体的转子便追随其转动。扭矩经中心转轴、减速器传至车轮，轴承与端盖维持转子与定子之间不足 1 毫米的气隙。与 EV 电池模型连起来看，便构成“储能 → 驱动”的电动动力系统。",
+    },
+    specs: [
+      { label: { ko: "유형", en: "Type", ja: "方式", zh: "类型" }, value: "PMSM (IPM)" },
+      { label: { ko: "출력", en: "Power", ja: "出力", zh: "功率" }, value: "≈ 150–300 kW" },
+      { label: { ko: "최고 회전수", en: "Max speed", ja: "最高回転数", zh: "最高转速" }, value: "≈ 16,000 rpm" },
+      { label: { ko: "구동 전류", en: "Drive", ja: "駆動電流", zh: "驱动电流" }, value: "3-phase AC (inverter)" },
+      { label: { ko: "자석", en: "Magnets", ja: "磁石", zh: "磁体" }, value: "NdFeB (rare-earth)" },
+      { label: { ko: "냉각", en: "Cooling", ja: "冷却", zh: "冷却" }, value: "water jacket / oil" },
+      { label: { ko: "출력 전달", en: "Output", ja: "出力伝達", zh: "输出" }, value: "shaft → ≈9:1 reduction" },
+    ] },
 
   // ── 가전 ──
   { cat: "appliance", id: "cooling-compressor", status: "soon", thumb: "coil",
