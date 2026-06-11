@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeDieTexture, makeRoutingTexture, makeBaseTexture } from "@app/shared/r3f/textures";
+import { CUT_PLANE_Z, cutawayOption, setClipping } from "@app/shared/r3f/cutaway";
 import { hbmInfo } from "./data";
 
 /**
@@ -228,31 +229,11 @@ const options: ModelOption[] = [
     ],
     default: String(DEFAULT_N),
   },
-  {
-    id: "cut",
-    label: { ko: "단면", en: "Cutaway", ja: "断面", zh: "剖面" },
-    values: [
-      { id: "off", label: "OFF" },
-      { id: "on", label: "ON" },
-    ],
-    default: "off",
-  },
+  cutawayOption(),
 ];
-const cutPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0); // z>0 절반 제거 → 내부 단면
 const engravedMats: Record<number, THREE.Material> = {};
 let lastN = -1;
 let lastCut: boolean | null = null;
-
-function applyClipping(groups: ViewerFrameCtx["groups"], on: boolean) {
-  const planes = on ? [cutPlane] : null;
-  const visit = (o: THREE.Object3D) => {
-    const mat = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
-    if (!mat) return;
-    for (const m of Array.isArray(mat) ? mat : [mat]) m.clippingPlanes = planes;
-  };
-  for (const g of groups) g?.traverse(visit);
-  visit(tsvMesh);
-}
 
 function update({ groups, options: opts }: ViewerFrameCtx) {
   // 층수 옵션 — 표시 층 전환 + 최상층 각인 이동 (변경 시에만)
@@ -266,11 +247,11 @@ function update({ groups, options: opts }: ViewerFrameCtx) {
       if (mats) mats[2] = i === n - 1 ? (engravedMats[n] ??= engravedTopMat(n)) : dramPlainTops[i];
     }
   }
-  // 단면 옵션 — 전 재질에 클리핑 평면 적용/해제 (변경 시에만)
+  // 단면 옵션 — 전 재질에 클리핑 평면 적용/해제 (변경 시에만, 공용 헬퍼)
   const cut = (opts["cut"] ?? "off") === "on";
   if (cut !== lastCut) {
     lastCut = cut;
-    applyClipping(groups, cut);
+    setClipping([...groups, tsvMesh], cut ? [CUT_PLANE_Z] : null);
   }
   // TSV — 보이는 최상층까지 관통하며 분해 높이를 따라 늘어난다
   const base = groups[2];

@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture } from "@app/shared/r3f/textures";
+import { CUT_PLANE_Z, cutawayOption, setClipping } from "@app/shared/r3f/cutaway";
 import { combustionEngineInfo } from "./data";
 
 /**
@@ -232,13 +233,22 @@ parts.push(
   { id: "oilpan", base: [0, -1.62, 0], explode: [0, -2.6, 0], order: 1, node: <primitive object={buildOilpan()} /> },
 );
 
+// ── 옵션: 단면(cutaway) — 보어 속 피스톤·연소실이 드러난다(4행정 연출과 조합 가능) ──
+const options: ModelOption[] = [cutawayOption()];
+let lastCut: boolean | null = null;
+
 // ── 4행정 구동 연출: 자동 회전 중 크랭크가 돌고 피스톤이 왕복한다(슬라이더-크랭크 기구학) ──
 // 분해(t↑)하면 연출이 잦아들고 정적 위상 포즈로 복귀. 크랭크 회전만 분해 후에도 유지(회전부 표시).
 const PISTON_IDX = (i: number) => 4 + i * 2;
 const CONROD_IDX = (i: number) => 5 + i * 2;
 const CRANK_IDX = 12;
 let theta = 0;
-function update({ t, dt, autoRotate, groups }: ViewerFrameCtx) {
+function update({ t, dt, autoRotate, groups, options: opts }: ViewerFrameCtx) {
+  const cut = (opts["cut"] ?? "off") === "on";
+  if (cut !== lastCut) {
+    lastCut = cut;
+    setClipping(groups, cut ? [CUT_PLANE_Z] : null);
+  }
   if (autoRotate) theta += dt * 2.6; // 느린 시연 속도
   const crank = groups[CRANK_IDX];
   if (crank) crank.rotation.x = theta;
@@ -264,5 +274,5 @@ function update({ t, dt, autoRotate, groups }: ViewerFrameCtx) {
   }
 }
 
-export const combustionEngineModel: ModelDef = { parts, info: combustionEngineInfo, update };
+export const combustionEngineModel: ModelDef = { parts, info: combustionEngineInfo, options, update };
 export default combustionEngineModel;

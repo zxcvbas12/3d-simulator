@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeBrushedMetalTexture, makeChannelTexture, makeRoutingTexture } from "@app/shared/r3f/textures";
 import { evBatteryInfo } from "./data";
 
@@ -64,10 +64,32 @@ const CELL_H = 1.0;
 const CELL_D = 2.3;
 const MOD_Y = 1.0; // 셀/모듈 중심 높이 (냉각판 위)
 
-/** 2단계 분해(셀 벌리기)를 위해 모듈별 셀·단자·플레이트를 모아 둔다. */
-const moduleInternals: { cells: THREE.InstancedMesh; terms: THREE.InstancedMesh; plates: THREE.Mesh[] }[] = [];
+/** 셀 형식 변형(각형/원통/파우치)과 2단계 분해를 위해 모듈별 내부를 모아 둔다.
+ *  rec.base = 인스턴스 기준 위치 — 2단계 분해 때 x를 배율로 벌린다. */
+type CellRec = { im: THREE.InstancedMesh; base: [number, number, number][] };
+type CellVariant = { grp: THREE.Group; recs: CellRec[] };
+const moduleInternals: { plates: THREE.Mesh[]; variants: Record<string, CellVariant> }[] = [];
 
-/** 모듈 하나 = 양옆 압축 엔드플레이트(픽: module) + 각형 셀 묶음(인스턴싱, 픽: cell). */
+function makeInstanced(
+  geo: THREE.BufferGeometry,
+  mat: THREE.Material,
+  base: [number, number, number][],
+  pickable: boolean,
+): CellRec {
+  const im = new THREE.InstancedMesh(geo, mat, base.length);
+  const m = new THREE.Matrix4();
+  base.forEach(([x, y, z], i) => {
+    m.makeTranslation(x, y, z);
+    im.setMatrixAt(i, m);
+  });
+  im.instanceMatrix.needsUpdate = true;
+  im.frustumCulled = false;
+  if (pickable) im.userData.partId = "cell";
+  else im.raycast = () => {};
+  return { im, base };
+}
+
+/** 모듈 하나 = 양옆 압축 엔드플레이트(픽: module) + 셀 묶음(형식 옵션: 각형/원통/파우치, 픽: cell). */
 function buildModule() {
   const g = new THREE.Group();
   // 엔드플레이트 ×2 (셀을 압축해 잡아 주는 금속판) — partId 없음 → 부모(module)로 픽 귀속
@@ -80,31 +102,75 @@ function buildModule() {
     addEdges(g, p, 0xc6ccd6, 0.4);
     plates.push(p);
   }
-  // 각형 셀 ×CELL_N (인스턴싱)
-  const cellMat = side(0x9fb6ad, 0.34, 0.7, 1.05); // 옅은 스틸 캔(에너지 톤 미세 그린)
-  const cells = new THREE.InstancedMesh(new THREE.BoxGeometry(CELL_W * 0.86, CELL_H, CELL_D), cellMat, CELL_N);
-  const m = new THREE.Matrix4();
   const start = -((CELL_N - 1) * CELL_W) / 2;
-  for (let i = 0; i < CELL_N; i++) {
-    m.makeTranslation(start + i * CELL_W, 0, 0);
-    cells.setMatrixAt(i, m);
+  const xs = Array.from({ length: CELL_N }, (_, i) => start + i * CELL_W);
+  const variants: Record<string, CellVariant> = {};
+
+  // ① 각형(prismatic, 기본) — 금속 캔 + 상단 골드 단자
+  {
+    const grp = new THREE.Group();
+    const cells = makeInstanced(
+      new THREE.BoxGeometry(CELL_W * 0.86, CELL_H, CELL_D),
+      side(0x9fb6ad, 0.34, 0.7, 1.05),
+      xs.map((x) => [x, 0, 0]),
+      true,
+    );
+    const terms = makeInstanced(
+      new THREE.CylinderGeometry(0.07, 0.07, 0.08, 10),
+      side(0xe6b53c, 0.3, 1.0, 1.1),
+      xs.map((x) => [x, CELL_H / 2 + 0.04, CELL_D / 2 - 0.3]),
+      false,
+    );
+    grp.add(cells.im, terms.im);
+    g.add(grp);
+    variants["prism"] = { grp, recs: [cells, terms] };
   }
-  cells.instanceMatrix.needsUpdate = true;
-  cells.frustumCulled = false;
-  cells.userData.partId = "cell";
-  g.add(cells);
-  // 셀 상단 단자(골드) — 장식, 픽 제외(부모 귀속)
-  const termMat = side(0xe6b53c, 0.3, 1.0, 1.1);
-  const terms = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.07, 0.08, 10), termMat, CELL_N);
-  for (let i = 0; i < CELL_N; i++) {
-    m.makeTranslation(start + i * CELL_W, CELL_H / 2 + 0.04, CELL_D / 2 - 0.3);
-    terms.setMatrixAt(i, m);
+  // ② 원통(cylindrical) — 2열 × CELL_N, 상단 골드 양극 캡
+  {
+    const grp = new THREE.Group();
+    const pos: [number, number, number][] = [];
+    for (const z of [-0.58, 0.58]) for (const x of xs) pos.push([x, 0, z]);
+    const cans = makeInstanced(
+      new THREE.CylinderGeometry(0.19, 0.19, CELL_H, 16),
+      side(0xaab4be, 0.32, 0.85, 1.1),
+      pos,
+      true,
+    );
+    const caps = makeInstanced(
+      new THREE.CylinderGeometry(0.08, 0.08, 0.05, 10),
+      side(0xe6b53c, 0.3, 1.0, 1.1),
+      pos.map(([x, , z]) => [x, CELL_H / 2 + 0.025, z]),
+      false,
+    );
+    grp.add(cans.im, caps.im);
+    grp.visible = false;
+    g.add(grp);
+    variants["cyl"] = { grp, recs: [cans, caps] };
   }
-  terms.instanceMatrix.needsUpdate = true;
-  terms.frustumCulled = false;
-  terms.raycast = () => {};
-  g.add(terms);
-  moduleInternals.push({ cells, terms, plates });
+  // ③ 파우치(pouch) — 얇고 부드러운 직사각 팩 + 상단 탭
+  {
+    const grp = new THREE.Group();
+    const n = CELL_N + 1;
+    const startP = -((n - 1) * 0.36) / 2;
+    const xsP = Array.from({ length: n }, (_, i) => startP + i * 0.36);
+    const packs = makeInstanced(
+      new THREE.BoxGeometry(0.28, CELL_H * 0.94, CELL_D * 0.94),
+      side(0x93a0b5, 0.6, 0.3, 0.8),
+      xsP.map((x) => [x, 0, 0]),
+      true,
+    );
+    const tabs = makeInstanced(
+      new THREE.BoxGeometry(0.16, 0.06, 0.3),
+      side(0xc9b06a, 0.4, 0.9, 1.05),
+      xsP.map((x) => [x, (CELL_H * 0.94) / 2 + 0.03, CELL_D / 2 - 0.45]),
+      false,
+    );
+    grp.add(packs.im, tabs.im);
+    grp.visible = false;
+    g.add(grp);
+    variants["pouch"] = { grp, recs: [packs, tabs] };
+  }
+  moduleInternals.push({ plates, variants });
   return g;
 }
 
@@ -191,27 +257,43 @@ parts.push(
   { id: "lid", base: [0, 1.95, 0], explode: [0, 4.0, 0], order: 1, node: <primitive object={buildLid()} /> },
 );
 
-// ── 2단계 분해: 모듈이 자리를 잡은 분해 후반(t>0.6)에 셀·단자·플레이트가 추가로 벌어진다 ──
+// ── 옵션: 셀 형식(각형/원통/파우치) — 같은 모듈 자리에 다른 셀 패키징을 보여준다 ──
+const options: ModelOption[] = [
+  {
+    id: "celltype",
+    label: { ko: "셀 형식", en: "Cell type", ja: "セル形式", zh: "电芯形式" },
+    values: [
+      { id: "prism", label: "PRISM" },
+      { id: "cyl", label: "CYL" },
+      { id: "pouch", label: "POUCH" },
+    ],
+    default: "prism",
+  },
+];
+
+// ── 2단계 분해 + 셀 형식 반영: 분해 후반(t>0.6)에 활성 형식의 셀·플레이트가 추가로 벌어진다 ──
 const _m = new THREE.Matrix4();
-const CELL_START = -((CELL_N - 1) * CELL_W) / 2;
-function update({ t }: ViewerFrameCtx) {
+function update({ t, options: opts }: ViewerFrameCtx) {
+  const type = opts["celltype"] ?? "prism";
   let sub = Math.max(0, Math.min(1, (t - 0.6) / 0.4));
   sub = sub < 0.5 ? 2 * sub * sub : 1 - Math.pow(-2 * sub + 2, 2) / 2; // easeInOutQuad
   const f = 1 + sub * 0.95;
   for (const mod of moduleInternals) {
-    for (let i = 0; i < CELL_N; i++) {
-      const x = (CELL_START + i * CELL_W) * f;
-      _m.makeTranslation(x, 0, 0);
-      mod.cells.setMatrixAt(i, _m);
-      _m.makeTranslation(x, CELL_H / 2 + 0.04, CELL_D / 2 - 0.3);
-      mod.terms.setMatrixAt(i, _m);
+    for (const [key, variant] of Object.entries(mod.variants)) {
+      variant.grp.visible = key === type;
+      if (key !== type) continue;
+      for (const rec of variant.recs) {
+        rec.base.forEach(([x, y, z], i) => {
+          _m.makeTranslation(x * f, y, z);
+          rec.im.setMatrixAt(i, _m);
+        });
+        rec.im.instanceMatrix.needsUpdate = true;
+      }
     }
-    mod.cells.instanceMatrix.needsUpdate = true;
-    mod.terms.instanceMatrix.needsUpdate = true;
     mod.plates[0].position.x = (-(CELL_N * CELL_W) / 2 - 0.18) * f;
     mod.plates[1].position.x = ((CELL_N * CELL_W) / 2 + 0.18) * f;
   }
 }
 
-export const evBatteryModel: ModelDef = { parts, info: evBatteryInfo, update };
+export const evBatteryModel: ModelDef = { parts, info: evBatteryInfo, options, update };
 export default evBatteryModel;

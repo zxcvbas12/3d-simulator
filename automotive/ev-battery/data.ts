@@ -79,14 +79,14 @@ export const evBatteryInfo: PartInfoMap = {
   },
   cell: {
     tag: { ko: "CELL", en: "CELL", ja: "CELL", zh: "CELL" },
-    spec: "prismatic Li-ion · ≈ 3.7 V",
+    spec: "Li-ion · ≈ 3.7 V (prism / cyl / pouch)",
     sources: [{ label: "Wikipedia · Lithium-ion battery", url: "https://en.wikipedia.org/wiki/Lithium-ion_battery" }],
     title: { ko: "배터리 셀 (Cell)", en: "Battery Cell", ja: "バッテリーセル", zh: "电芯" },
     lead: {
-      ko: "실제로 전기를 저장하는 가장 작은 단위예요. 여기서는 각형(prismatic) 셀입니다.",
-      en: "The smallest unit that actually stores energy — here, a prismatic cell.",
-      ja: "実際に電気を蓄える最小単位。ここでは角形（prismatic）セルです。",
-      zh: "真正储存电能的最小单元——这里是方形（prismatic）电芯。",
+      ko: "실제로 전기를 저장하는 가장 작은 단위예요. 좌상단 옵션에서 각형·원통·파우치 형태를 바꿔볼 수 있어요.",
+      en: "The smallest unit that actually stores energy — switch between prismatic, cylindrical and pouch shapes in the top-left option.",
+      ja: "実際に電気を蓄える最小単位。左上のオプションで角形・円筒・パウチを切り替えられます。",
+      zh: "真正储存电能的最小单元——可在左上角选项中切换方形、圆柱与软包形态。",
     },
     detail: {
       ko: "한 셀의 전압은 약 3.7 V로 낮아, 차를 움직일 수백 V를 만들려면 셀을 직렬로 길게 잇습니다. 용량을 늘리려면 병렬로도 잇고요. 모양은 각형·원통형·파우치형이 있는데, 각형은 단단한 금속 캔에 담겨 쌓기 좋고 구조가 튼튼합니다.",
