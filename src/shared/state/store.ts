@@ -47,7 +47,11 @@ export interface AppState {
   autoRotate: boolean;
   toggleAutoRotate: () => void;
 
-  /** 회전·줌·분해·선택 전체 초기화. resetNonce로 엔진(카메라 각도)에 신호. */
+  /** 모델 옵션 선택값(옵션 id → 값 id). 모델 진입/초기화 때 비워져 각 옵션의 default로 돌아간다. */
+  modelOpts: Record<string, string>;
+  setModelOpt: (id: string, value: string) => void;
+
+  /** 회전·줌·분해·선택·옵션 전체 초기화. resetNonce로 엔진(카메라 각도)에 신호. */
   resetNonce: number;
   reset: () => void;
 }
@@ -76,6 +80,9 @@ export const useAppStore = create<AppState>((set) => ({
   autoRotate: false,
   toggleAutoRotate: () => set((s) => ({ autoRotate: !prefersReducedMotion && !s.autoRotate })),
 
+  modelOpts: {},
+  setModelOpt: (id, value) => set((s) => ({ modelOpts: { ...s.modelOpts, [id]: value } })),
+
   resetNonce: 0,
   reset: () =>
     set((s) => ({
@@ -83,6 +90,7 @@ export const useAppStore = create<AppState>((set) => ({
       zoom: 1,
       selected: null,
       autoRotate: false,
+      modelOpts: {},
       resetNonce: s.resetNonce + 1,
     })),
 }));

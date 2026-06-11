@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeDieTexture, makeRoutingTexture, makeBaseTexture } from "@app/shared/r3f/textures";
 import { hbmInfo } from "./data";
 
@@ -8,14 +8,16 @@ import { hbmInfo } from "./data";
  * 회전·줌·분해·선택·정보패널·환경맵은 공통 <Viewer> 엔진이 처리한다.
  * 형상은 module 로드 시 THREE 객체로 한 번 빌드하고 <primitive>로 꽂는다(텍스처는 공용 모듈에서 1회 생성).
  *
- * 구조(아래→위): 패키지 기판 · 인터포저 · 베이스(로직) 다이 · DRAM ×8 · TSV(스택 관통) · 마이크로 범프 · BGA 볼.
+ * 구조(아래→위): 패키지 기판 · 인터포저 · 베이스(로직) 다이 · DRAM ×8~16 · TSV(스택 관통) · 마이크로 범프 · BGA 볼.
+ * 옵션: 층수(8/12/16-Hi — 16층을 미리 만들어 표시 전환, TSV·각인·프레이밍 자동 추종) · 단면(cutaway, 클리핑 평면).
  */
 
 const CY = 1.55; // 분해 피벗(높이)
 const SPREAD = 2.6; // 분해 강도
 const DRAM_HALF = 0.15;
 const BASE_HALF = 0.21;
-const DRAM_N = 8;
+const DRAM_MAX = 16; // 사전 빌드 층수(최대) — 표시 층수는 옵션으로 8/12/16
+const DEFAULT_N = 8;
 
 // ── 재질 (6면 멀티머티리얼, +y 윗면에 텍스처) ────────────────────
 function side(color: number, rough: number, metal: number, env: number) {
@@ -54,8 +56,8 @@ function baseMats() {
     side(0x222d3a, 0.5, 0.35, 0.8),
   ];
 }
-function dramMats(hue: number, col: number, topDie: boolean) {
-  const tex = makeDieTexture(hue, topDie ? ["HBM", "K4ZAH08 · 8H"] : undefined);
+function dramMats(hue: number, col: number) {
+  const tex = makeDieTexture(hue, undefined);
   return [
     side(col, 0.45, 0.4, 0.9),
     side(col, 0.45, 0.4, 0.9),
@@ -64,6 +66,11 @@ function dramMats(hue: number, col: number, topDie: boolean) {
     side(col, 0.45, 0.4, 0.9),
     side(col, 0.45, 0.4, 0.9),
   ];
+}
+/** 최상층(각인) 윗면 재질 — 층수 옵션마다 각인 문구가 다르다(텍스처는 파라미터별 캐시 1장). */
+function engravedTopMat(n: number) {
+  const tex = makeDieTexture(212, ["HBM", `K4ZAH08 · ${n}H`]);
+  return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.38, metalness: 0.55, envMapIntensity: 0.9 });
 }
 
 // ── 빌더 ─────────────────────────────────────────────────────────
@@ -149,11 +156,16 @@ function buildBase() {
   addBumps(g, 3.2, 0.42 / 2);
   return g;
 }
+const dramMeshes: THREE.Mesh[] = []; // 층수 옵션에 따라 윗면 각인을 옮기기 위한 참조
+const dramPlainTops: THREE.Material[] = [];
 function buildDram(i: number) {
   const g = new THREE.Group();
   const col = new THREE.Color().setHSL(0.58, 0.5, 0.4 + i * 0.012).getHex();
   const edge = new THREE.Color().setHSL(0.58, 0.7, 0.72).getHex();
-  const m = makeBox(3.2, 0.3, 3.2, dramMats(212, col, i === DRAM_N - 1));
+  const mats = dramMats(212, col);
+  const m = makeBox(3.2, 0.3, 3.2, mats);
+  dramMeshes[i] = m;
+  dramPlainTops[i] = mats[2];
   g.add(m);
   addEdges(g, m, edge, 0.5);
   addBumps(g, 3.2, 0.3 / 2);
@@ -162,7 +174,7 @@ function buildDram(i: number) {
 
 // ── 부품 조립 ────────────────────────────────────────────────────
 const offset = (cy: number): [number, number, number] => [0, (cy - CY) * SPREAD, 0];
-const MAXY = 1.14 + 0.3 * (DRAM_N - 1); // 최상단 DRAM 높이 = stagger 정규화 기준
+const MAXY = 1.14 + 0.3 * (DRAM_MAX - 1); // 최상단 DRAM 높이 = stagger 정규화 기준
 const order = (cy: number) => cy / MAXY;
 
 const parts: PartDef[] = [
@@ -170,7 +182,8 @@ const parts: PartDef[] = [
   { id: "interposer", base: [0, 0.4, 0], explode: offset(0.4), order: order(0.4), node: <primitive object={buildInterposer()} /> },
   { id: "base", base: [0, 0.78, 0], explode: offset(0.78), order: order(0.78), node: <primitive object={buildBase()} /> },
 ];
-for (let i = 0; i < DRAM_N; i++) {
+const DRAM_PART0 = parts.length; // 첫 DRAM 부품 인덱스(=3)
+for (let i = 0; i < DRAM_MAX; i++) {
   const cy = 1.14 + 0.3 * i;
   parts.push({
     id: "dram",
@@ -203,9 +216,65 @@ const _v = new THREE.Vector3();
 const _q = new THREE.Quaternion();
 const _s = new THREE.Vector3();
 
-function update({ groups }: ViewerFrameCtx) {
+// ── 옵션: 층수(표시 전환) + 단면(클리핑) ──────────────────────────
+const options: ModelOption[] = [
+  {
+    id: "stack",
+    label: { ko: "층수", en: "Stack height", ja: "層数", zh: "层数" },
+    values: [
+      { id: "8", label: "8-Hi" },
+      { id: "12", label: "12-Hi" },
+      { id: "16", label: "16-Hi" },
+    ],
+    default: String(DEFAULT_N),
+  },
+  {
+    id: "cut",
+    label: { ko: "단면", en: "Cutaway", ja: "断面", zh: "剖面" },
+    values: [
+      { id: "off", label: "OFF" },
+      { id: "on", label: "ON" },
+    ],
+    default: "off",
+  },
+];
+const cutPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0); // z>0 절반 제거 → 내부 단면
+const engravedMats: Record<number, THREE.Material> = {};
+let lastN = -1;
+let lastCut: boolean | null = null;
+
+function applyClipping(groups: ViewerFrameCtx["groups"], on: boolean) {
+  const planes = on ? [cutPlane] : null;
+  const visit = (o: THREE.Object3D) => {
+    const mat = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+    if (!mat) return;
+    for (const m of Array.isArray(mat) ? mat : [mat]) m.clippingPlanes = planes;
+  };
+  for (const g of groups) g?.traverse(visit);
+  visit(tsvMesh);
+}
+
+function update({ groups, options: opts }: ViewerFrameCtx) {
+  // 층수 옵션 — 표시 층 전환 + 최상층 각인 이동 (변경 시에만)
+  const n = parseInt(opts["stack"] ?? String(DEFAULT_N), 10);
+  if (n !== lastN) {
+    lastN = n;
+    for (let i = 0; i < DRAM_MAX; i++) {
+      const g = groups[DRAM_PART0 + i];
+      if (g) g.visible = i < n;
+      const mats = dramMeshes[i]?.material as THREE.Material[] | undefined;
+      if (mats) mats[2] = i === n - 1 ? (engravedMats[n] ??= engravedTopMat(n)) : dramPlainTops[i];
+    }
+  }
+  // 단면 옵션 — 전 재질에 클리핑 평면 적용/해제 (변경 시에만)
+  const cut = (opts["cut"] ?? "off") === "on";
+  if (cut !== lastCut) {
+    lastCut = cut;
+    applyClipping(groups, cut);
+  }
+  // TSV — 보이는 최상층까지 관통하며 분해 높이를 따라 늘어난다
   const base = groups[2];
-  const top = groups[parts.length - 1];
+  const top = groups[DRAM_PART0 + lastN - 1];
   if (!base || !top) return;
   const bBottom = base.position.y - BASE_HALF;
   const tTop = top.position.y + DRAM_HALF;
@@ -216,8 +285,10 @@ function update({ groups }: ViewerFrameCtx) {
     tsvMesh.setMatrixAt(i, _m);
   }
   tsvMesh.instanceMatrix.needsUpdate = true;
-  // (레이캐스트용 경계구 무효화는 엔진이 분해 중 일괄 처리한다 — SceneContents 참고)
+  tsvMesh.boundingBox = null; // 길이가 바뀌므로 프레이밍·픽 경계 무효화
+  tsvMesh.boundingSphere = null;
+  // (분해 중 인스턴스 경계 무효화는 엔진도 일괄 처리한다 — SceneContents 참고)
 }
 
-export const hbmModel: ModelDef = { parts, info: hbmInfo, extras: <primitive object={tsvMesh} />, update };
+export const hbmModel: ModelDef = { parts, info: hbmInfo, extras: <primitive object={tsvMesh} />, options, update };
 export default hbmModel;

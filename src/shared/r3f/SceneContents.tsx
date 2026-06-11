@@ -6,6 +6,7 @@ import { useT } from "../i18n";
 import type { ModelDef } from "./model";
 
 const HIGHLIGHT = 0x2a4d8f;
+const _objBox = new THREE.Box3(); // 프레이밍용 임시(보이는 메시 단위 경계)
 
 /** 절차적 환경맵 — 금속(PBR) 반사용. 창문 같은 밝은 띠로 계측기 느낌의 하이라이트를 만든다. */
 function makeEnvTexture(): THREE.Texture {
@@ -49,6 +50,7 @@ export function SceneContents({ model }: { model: ModelDef }) {
   const zoom = useAppStore((s) => s.zoom);
   const selected = useAppStore((s) => s.selected);
   const resetNonce = useAppStore((s) => s.resetNonce);
+  const modelOpts = useAppStore((s) => s.modelOpts);
   const select = useAppStore((s) => s.select);
   const setZoom = useAppStore((s) => s.setZoom);
 
@@ -64,10 +66,10 @@ export function SceneContents({ model }: { model: ModelDef }) {
   const box = useRef(new THREE.Box3());
   const sphere = useRef(new THREE.Sphere());
 
-  // 분해값/줌 변경 → 데맨드 루프 깨우기
+  // 분해값/줌/모델 옵션 변경 → 데맨드 루프 깨우기
   useEffect(() => {
     invalidate();
-  }, [explodeT, zoom, invalidate]);
+  }, [explodeT, zoom, modelOpts, invalidate]);
 
   // 초기화 → 카메라 각도 복귀
   useEffect(() => {
@@ -278,9 +280,17 @@ export function SceneContents({ model }: { model: ModelDef }) {
     raycaster.current.setFromCamera(pointer.current, camera);
     const hits = raycaster.current.intersectObject(grp, true);
     // 박스·엣지 라인·인스턴스 무엇을 맞히든, partId를 가진 가장 가까운 조상으로 부품을 찾는다.
+    // 옵션으로 숨긴(visible=false) 부품은 건너뛴다 — three 레이캐스트는 visible을 따지지 않는다.
     let part: THREE.Object3D | null = null;
     for (const h of hits) {
+      let hidden = false;
       let o: THREE.Object3D | null = h.object;
+      while (o) {
+        if (!o.visible) hidden = true;
+        o = o.parent;
+      }
+      if (hidden) continue;
+      o = h.object;
       while (o && o.userData.partId === undefined) o = o.parent;
       if (o) {
         part = o;
@@ -316,8 +326,9 @@ export function SceneContents({ model }: { model: ModelDef }) {
       g.position.set(p.base[0] + p.explode[0] * lt, p.base[1] + p.explode[1] * lt, p.base[2] + p.explode[2] * lt);
     }
 
-    // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이 맞춤, 자동 회전 중 구동 연출(회전·왕복).
-    model.update?.({ t: curT.current, groups: partRefs.current, dt, autoRotate: useAppStore.getState().autoRotate });
+    // 모델별 프레임 갱신(부품 위치를 잡은 뒤). 예: TSV 길이 맞춤, 구동 연출, 옵션(층수·단면) 반영.
+    const st = useAppStore.getState();
+    model.update?.({ t: curT.current, groups: partRefs.current, dt, autoRotate: st.autoRotate, options: st.modelOpts });
 
     // 분해 중에는 인스턴스 행렬이 바뀔 수 있으니, 인스턴스 메시의 캐시된 경계구를 무효화한다.
     // (최신 three는 boundingSphere를 캐시 → 안 하면 늘어난 TSV 등 동적 인스턴스가 클릭 적중 실패.
@@ -325,7 +336,10 @@ export function SceneContents({ model }: { model: ModelDef }) {
     if (animating) {
       groupRef.current?.traverse((o) => {
         const im = o as THREE.InstancedMesh;
-        if (im.isInstancedMesh) im.boundingSphere = null;
+        if (im.isInstancedMesh) {
+          im.boundingSphere = null;
+          im.boundingBox = null; // 프레이밍(보이는 부품 경계 합산)도 같은 이유로 무효화
+        }
       });
     }
 
@@ -334,7 +348,29 @@ export function SceneContents({ model }: { model: ModelDef }) {
     if (grp) {
       // 방금 바꾼 부품 위치를 즉시 반영(R3F는 useFrame 이후 매트릭스를 갱신하므로 한 프레임 지연 방지)
       grp.updateMatrixWorld(true);
-      box.current.setFromObject(grp);
+      // 보이는 부품만 프레이밍 — 옵션으로 숨긴 부품(예: HBM 9~16층)이 카메라 거리를 키우지 않게.
+      // (Box3.setFromObject는 visible을 따지지 않으므로 traverseVisible로 직접 모은다.)
+      box.current.makeEmpty();
+      grp.traverseVisible((o) => {
+        const im = o as THREE.InstancedMesh;
+        if (im.isInstancedMesh) {
+          // 인스턴스 메시는 지오메트리가 아니라 인스턴스 전체 경계를 쓴다
+          if (!im.boundingBox) im.computeBoundingBox();
+          if (im.boundingBox) {
+            _objBox.copy(im.boundingBox).applyMatrix4(o.matrixWorld);
+            box.current.union(_objBox);
+          }
+          return;
+        }
+        const geo = (o as THREE.Mesh).geometry;
+        if (!geo) return;
+        if (!geo.boundingBox) geo.computeBoundingBox();
+        if (geo.boundingBox) {
+          _objBox.copy(geo.boundingBox).applyMatrix4(o.matrixWorld);
+          box.current.union(_objBox);
+        }
+      });
+      if (box.current.isEmpty()) box.current.setFromObject(grp);
       box.current.getBoundingSphere(sphere.current);
       const c = sphere.current.center;
       const radius = sphere.current.radius || 1;

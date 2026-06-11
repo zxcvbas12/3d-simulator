@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ModelDef, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
+import type { ModelDef, ModelOption, PartDef, ViewerFrameCtx } from "@app/shared/r3f/model";
 import { makeDieTexture, makeRoutingTexture, makeBrushedMetalTexture } from "@app/shared/r3f/textures";
 import { gpuInfo } from "./data";
 
@@ -210,12 +210,50 @@ const parts: PartDef[] = [
   { id: "lid", base: [0, 1.76, 0], explode: [0, 3.9, 0], order: 1, node: <primitive object={buildLid()} /> },
 ];
 
-// ── 2단계 분해: 스택이 자리를 잡은 분해 후반에 내부 층이 벌어진다 ──
+// ── 옵션: HBM 스택 수(×4/×2) + 리드(베어 다이 보기) ────────────────
+const options: ModelOption[] = [
+  {
+    id: "stacks",
+    label: { ko: "HBM 스택", en: "HBM stacks", ja: "HBM スタック", zh: "HBM 堆栈" },
+    values: [
+      { id: "4", label: "×4" },
+      { id: "2", label: "×2" },
+    ],
+    default: "4",
+  },
+  {
+    id: "lid",
+    label: { ko: "리드(덮개)", en: "Lid", ja: "リッド", zh: "上盖" },
+    values: [
+      { id: "on", label: "ON" },
+      { id: "off", label: "OFF" },
+    ],
+    default: "on",
+  },
+];
+const HBM_PART0 = 3; // parts에서 첫 HBM 스택 인덱스 (substrate·interposer·gpudie 다음)
+const LID_IDX = HBM_PART0 + HBM_POS.length;
+
+// ── 2단계 분해 + 옵션 반영 ────────────────────────────────────────
 function update({ t }: ViewerFrameCtx) {
   let sub = Math.max(0, Math.min(1, (t - 0.6) / 0.4));
   sub = sub < 0.5 ? 2 * sub * sub : 1 - Math.pow(-2 * sub + 2, 2) / 2; // easeInOutQuad
   for (const l of stackLayers) l.obj.position.y = l.baseY + (l.idx + 1) * sub * 0.2;
 }
+function updateWithOptions(ctx: ViewerFrameCtx) {
+  update(ctx);
+  const { groups, options: opts } = ctx;
+  // 스택 ×2 = +z 쪽 한 쌍 숨김(HBM_POS의 z=+1.55 — 인덱스 1·3). ×4 = 전부 표시.
+  const four = (opts["stacks"] ?? "4") === "4";
+  for (let i = 0; i < HBM_POS.length; i++) {
+    const g = groups[HBM_PART0 + i];
+    if (g) g.visible = four || HBM_POS[i][1] < 0;
+  }
+  // 리드 OFF = 베어 다이 보기(데이터센터 GPU에 흔한 외형)
+  const lidOn = (opts["lid"] ?? "on") === "on";
+  const lid = groups[LID_IDX];
+  if (lid) lid.visible = lidOn;
+}
 
-export const gpuModel: ModelDef = { parts, info: gpuInfo, update };
+export const gpuModel: ModelDef = { parts, info: gpuInfo, options, update: updateWithOptions };
 export default gpuModel;
