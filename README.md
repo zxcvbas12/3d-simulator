@@ -5,6 +5,8 @@
 
 > **STRATA**는 임시 브랜드명(자리표시)입니다. [`shared/config.ts`](shared/config.ts) 한 곳에서 바꿀 수 있습니다.
 
+🟢 **라이브**: **<https://3d-simulator-rouge.vercel.app>** — Vercel에 배포되어 `main` push마다 자동 갱신됩니다.
+
 ## 미리보기
 
 | 홈 | GPU 패키지 — 분해 + 정보 패널 |
@@ -27,7 +29,9 @@
 
 8개 카테고리(반도체 · 우주 · 자동차 · 가전 · 항공 · 의료기기 · 에너지 · 로보틱스)로 시작하며, 카테고리와 모델은 계속 늘어납니다. 다국어(**KO / EN / 日 / 中**)를 지원합니다.
 
-## 현재 제공 모델 (학습 가능)
+## 현재 제공 모델 (학습 가능) — 7종
+
+### 반도체 (Semiconductor) — 적층 · 패키징 · 칩렛
 
 | 모델 | 폴더 | 보여주는 것 |
 |---|---|---|
@@ -35,7 +39,16 @@
 | **GPU 패키지** | [`semiconductor/gpu/`](semiconductor/gpu/) | 연산 다이 + HBM ×4 2.5D 패키지 — "왜 옆에 두는가" |
 | **CPU 칩렛 패키지** | [`semiconductor/cpu/`](semiconductor/cpu/) | 칩렛 분할 구조 — "왜 나누는가" |
 
-자세한 구조·부품 설명은 각 모델 폴더의 README 참고.
+### 우주 (Space) — 발사 → 궤도 → 귀환
+
+| 모델 | 폴더 | 보여주는 것 |
+|---|---|---|
+| **로켓 엔진** | [`space/rocket-engine/`](space/rocket-engine/) | 액체 엔진(가스발생기 · LOX/RP-1) — 추력은 어떻게 생기나 |
+| **지구관측 위성** | [`space/eo-satellite/`](space/eo-satellite/) | 저궤도 버스 + 관측 카메라 — 전력·자세·통신·추진·열 |
+| **통신 위성** | [`space/comsat/`](space/comsat/) | 정지궤도 버스 + 중계기·반사판 — 위성과 **같은 버스 코어 공유** |
+| **재진입 캡슐** | [`space/reentry-capsule/`](space/reentry-capsule/) | 무딘 원뿔 + 융제 차폐막 — 어떻게 안 타고 귀환하나 |
+
+자세한 구조·부품 설명은 각 모델 폴더의 README / CLAUDE.md 참고.
 
 ---
 
@@ -46,6 +59,7 @@
 - **3D**: [React Three Fiber](https://r3f.docs.pmnd.rs/) + [@react-three/drei](https://drei.docs.pmnd.rs/) (엔진은 Three.js)
 - **스타일**: 순수 CSS + 디자인 토큰(CSS 변수) — UI 프레임워크 없음
 - **다국어**: 가벼운 자체 i18n (`locales/`의 키-값 사전, 한국어가 타입 기준)
+- **배포**: [Vercel](https://vercel.com/) — GitHub 연동, `main` push 시 자동 빌드·배포([`vercel.json`](vercel.json))
 
 ## 시작하기
 
@@ -87,7 +101,12 @@ npm run preview  # 빌드 결과 미리보기
   pages/                     # 공통 페이지(소개·학습 구조·제작자 의도) 콘텐츠 지침
   semiconductor/             # ── 카테고리 (README + CLAUDE.md)
     hbm/  gpu/  cpu/         #     ── 모델: model.tsx(형상) + data.ts(부품 설명)
-  space/ automotive/ appliance/ aviation/ medical/ energy/ robotics/
+  space/                     # ── 카테고리
+    rocket-engine/           #     로켓 엔진
+    satellite/               #     위성 공유 코어(parts.tsx·info.ts — 모델 아님)
+    eo-satellite/ comsat/    #     위성 2종(코어 공유)
+    reentry-capsule/         #     재진입 캡슐
+  automotive/ appliance/ aviation/ medical/ energy/ robotics/  # (예정)
 ```
 
 각 폴더에는 두 종류의 문서가 있습니다:
@@ -126,8 +145,8 @@ Three.js와 뷰어는 모델을 열 때만 지연 로드되어 홈·콘텐츠 �
 ## 성능 / 접근성
 
 - **온디맨드 렌더** — `frameloop="demand"`: 화면이 변할 때만 그립니다(정지 상태 GPU 사용 0).
-- **지연 로드** — 3D 번들(three ≈184kB gzip)은 모델 화면에서만. 모델 청크는 개당 ≈8~9kB.
-- **인스턴싱** — 반복 요소(BGA·범프·TSV·랜드)는 InstancedMesh.
+- **지연 로드** — 3D 번들(three ≈184kB gzip)은 모델 화면에서만. 모델 청크는 개당 ≈4~14kB gzip(공유 코어를 쓰는 위성은 더 작음).
+- **인스턴싱** — 반복 요소(BGA·범프·TSV·태양전지 셀·RCS 노즐)는 InstancedMesh.
 - **텍스처 예산** — 절차적 텍스처는 파라미터별 1장 생성 후 캐시 공유.
 - **모션 접근성** — `prefers-reduced-motion`이면 전환 애니메이션·자동 회전을 끕니다.
 - **키보드/스크린리더** — 캔버스 포커스 + 화살표 키 회전, `:focus-visible` 포커스 링, 컨트롤 ARIA 라벨(다국어).
@@ -160,8 +179,10 @@ Three.js와 뷰어는 모델을 열 때만 지연 로드되어 홈·콘텐츠 �
 - [x] **5. HBM** — 바닐라 프로토타입(`hbm-3d-space.html`)을 R3F로 이식 (품질 기준)
 - [x] **6. CPU / GPU** — 평면·혼합 분해로 엔진 일반화 검증
 - [x] **7. 성능 패스 + 접근성** — 텍스처 캐시·측정 도구·reduced-motion·키보드·ARIA
-- [ ] **8. 사이트 폴리시 (진행 중)** — 공통 페이지 콘텐츠 확충 · 웹폰트/상태 디자인 · 메타/측정
-- [ ] 이후 — 카테고리 확장, 필요 시 Astro 이전 + SEO/애널리틱스
+- [x] **8. 사이트 폴리시** — 공통 페이지 콘텐츠 · 웹폰트 · 상태 디자인 · 메타/OG (Lighthouse 95/100/100/100)
+- [x] **9. 배포** — Vercel 연결, `main` push 자동 배포, og:url/canonical 확정
+- [x] **우주 카테고리** — 로켓 엔진 · 지구관측/통신 위성(공유 코어) · 재진입 캡슐 (발사→궤도→귀환)
+- [ ] 이후 — 카테고리 확장(자동차·항공·의료 등), 필요 시 Astro 이전 + SEO/애널리틱스
 
 ## 제작자
 
