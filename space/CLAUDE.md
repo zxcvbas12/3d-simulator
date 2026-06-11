@@ -13,8 +13,11 @@
 - **공통 용어**: 노즐(nozzle)·연소실(combustion chamber)·인젝터(injector)·터보펌프(turbopump)·재생냉각(regenerative cooling)·짐벌(gimbal)·추진제(propellant)·비추력(Isp) — locales에서 다국어 표기 통일.
 
 ## 이 카테고리의 모델 목록
-- **rocket-engine** — 로켓 엔진(액체, 가스발생기 LOX/RP-1) · 상태: 기획 완료(`rocket-engine/CLAUDE.md`), 구현 대기 — 카테고리 첫 모델·사이트 첫 회전체 형상
-- (예정) satellite · reentry-capsule — catalog에 `soon`으로 등재됨
+- **rocket-engine** — 로켓 엔진(액체, 가스발생기 LOX/RP-1) · 상태: 학습 가능 — 카테고리 첫 모델·사이트 첫 회전체 형상
+- **eo-satellite** — 지구관측 위성(LEO) · 상태: 학습 가능 — 사이트 첫 모듈형(버스+부속)
+- **comsat** — 통신 위성(GEO) · 상태: 학습 가능 — eo-satellite와 **공유 코어**(`satellite/parts.tsx`·`info.ts`) 사용
+- `satellite/`는 모델이 아니라 위 두 위성의 **공유 코어 폴더**(등록 안 됨). 가족 지침은 `satellite/CLAUDE.md`.
+- (예정) reentry-capsule — catalog에 `soon`으로 등재됨
 
 ## 메모
 - 공통 동작(회전/줌/분해/정보패널/사이드바)은 `../shared/`를 그대로 재사용한다.
