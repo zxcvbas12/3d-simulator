@@ -189,6 +189,98 @@ export function makeChannelTexture(hue: number): THREE.CanvasTexture {
   });
 }
 
+/** MLI 금박 단열재(위성 버스) — 따뜻한 골드 + 불규칙하게 구겨진 주름/패싯. hue로 골드/구리 톤. */
+export function makeFoilTexture(hue: number): THREE.CanvasTexture {
+  return cached(`foil:${hue}`, () => {
+    const s = 512;
+    const c = document.createElement("canvas");
+    c.width = c.height = s;
+    const x = c.getContext("2d")!;
+    const g = x.createLinearGradient(0, 0, s, s);
+    g.addColorStop(0, `hsl(${hue},66%,54%)`);
+    g.addColorStop(0.5, `hsl(${hue},72%,45%)`);
+    g.addColorStop(1, `hsl(${hue},62%,52%)`);
+    x.fillStyle = g;
+    x.fillRect(0, 0, s, s);
+    // 구겨진 포일 패싯 — 밝기 다른 작은 삼각형
+    for (let i = 0; i < 460; i++) {
+      const cx = Math.random() * s,
+        cy = Math.random() * s,
+        r = 6 + Math.random() * 24;
+      x.fillStyle = `hsla(${hue},${48 + Math.random() * 28}%,${28 + Math.random() * 48}%,${0.05 + Math.random() * 0.12})`;
+      x.beginPath();
+      x.moveTo(cx, cy);
+      x.lineTo(cx + r * (Math.random() - 0.5), cy + r * (Math.random() * 0.7 + 0.2));
+      x.lineTo(cx + r * (Math.random() - 0.5), cy - r * (Math.random() * 0.7 + 0.2));
+      x.closePath();
+      x.fill();
+    }
+    // 주름선
+    for (let i = 0; i < 150; i++) {
+      x.strokeStyle = `hsla(${hue},42%,${Math.random() < 0.5 ? 18 : 82}%,${Math.random() * 0.18})`;
+      x.lineWidth = Math.random() < 0.3 ? 1.6 : 0.8;
+      let px = Math.random() * s,
+        py = Math.random() * s;
+      x.beginPath();
+      x.moveTo(px, py);
+      const segs = 2 + Math.floor(Math.random() * 3);
+      for (let k = 0; k < segs; k++) {
+        px += (Math.random() - 0.5) * 90;
+        py += (Math.random() - 0.5) * 90;
+        x.lineTo(px, py);
+      }
+      x.stroke();
+    }
+    return c;
+  });
+}
+
+/** 태양전지 셀 격자 — 짙은 청색 셀 + 가는 핑거 라인 + 버스바(실버 세로띠). */
+export function makeSolarTexture(): THREE.CanvasTexture {
+  return cached("solar", () => {
+    const s = 512;
+    const c = document.createElement("canvas");
+    c.width = c.height = s;
+    const x = c.getContext("2d")!;
+    x.fillStyle = "#0a1426"; // 셀 사이 갭(어두움)
+    x.fillRect(0, 0, s, s);
+    const cols = 8,
+      rows = 16,
+      pad = 5;
+    const cw = (s - pad) / cols,
+      ch = (s - pad) / rows;
+    for (let i = 0; i < cols; i++)
+      for (let j = 0; j < rows; j++) {
+        const bx = pad + i * cw,
+          by = pad + j * ch;
+        const g = x.createLinearGradient(bx, by, bx + cw, by + ch);
+        g.addColorStop(0, "#1c3a72");
+        g.addColorStop(0.5, "#152b54");
+        g.addColorStop(1, "#21407c");
+        x.fillStyle = g;
+        x.fillRect(bx, by, cw - pad, ch - pad);
+        x.strokeStyle = "rgba(150,180,225,.12)"; // 셀 핑거
+        x.lineWidth = 1;
+        for (let k = 5; k < cw - pad; k += 6) {
+          x.beginPath();
+          x.moveTo(bx + k, by);
+          x.lineTo(bx + k, by + ch - pad);
+          x.stroke();
+        }
+      }
+    x.strokeStyle = "rgba(205,218,238,.22)"; // 버스바
+    x.lineWidth = 2;
+    for (let i = 0; i <= cols; i++) {
+      const bx = pad + i * cw - pad / 2;
+      x.beginPath();
+      x.moveTo(bx, 0);
+      x.lineTo(bx, s);
+      x.stroke();
+    }
+    return c;
+  });
+}
+
 /** 브러시드 메탈(히트 스프레더 IHS) — 옅은 실버 + 미세 가로 결. */
 export function makeBrushedMetalTexture(): THREE.CanvasTexture {
   return cached("brushed", () => {
