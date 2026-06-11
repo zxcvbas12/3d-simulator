@@ -24,6 +24,7 @@ const REGISTRY: Record<string, LazyExoticComponent<ComponentType>> = {
   "space/reentry-capsule": makeViewer(() => import("../../../space/reentry-capsule/model")),
   "automotive/ev-battery": makeViewer(() => import("../../../automotive/ev-battery/model")),
   "automotive/drive-motor": makeViewer(() => import("../../../automotive/drive-motor/model")),
+  "automotive/combustion-engine": makeViewer(() => import("../../../automotive/combustion-engine/model")),
 };
 
 /** 검증용 더미 — model.tsx가 아직 없는 live 모델의 폴백. */
