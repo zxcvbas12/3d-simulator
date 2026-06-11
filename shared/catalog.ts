@@ -250,9 +250,24 @@ export const MODELS: ModelEntry[] = [
     ] },
 
   // ── 자동차 ──
-  { cat: "automotive", id: "ev-battery", status: "soon", thumb: "cells",
+  { cat: "automotive", id: "ev-battery", status: "live", thumb: "cells",
     name: { ko: "EV 배터리 팩", en: "EV Battery Pack", ja: "EVバッテリーパック", zh: "电动汽车电池组" },
-    desc: { ko: "전기차 에너지 저장", en: "EV energy storage", ja: "EVのエネルギー貯蔵", zh: "电动车储能" } },
+    desc: { ko: "전기차 에너지 저장", en: "EV energy storage", ja: "EVのエネルギー貯蔵", zh: "电动车储能" },
+    overview: {
+      ko: "전기차 배터리는 셀 → 모듈 → 팩의 3단 계층으로 만듭니다. 가장 작은 단위인 셀(약 3.7 V)을 여러 개 묶어 모듈로, 모듈을 여러 개 모아 차 바닥 전체에 까는 팩으로 키웁니다. 셀을 직렬로 길게 이어 차를 움직일 수백 V를 만들고, 버스바가 그 큰 전류를 나릅니다. 냉각판이 셀 온도를 좁은 범위로 지키고, BMS가 모든 셀을 감시·보호하며, 알루미늄 하우징과 커버가 전체를 밀폐·보호합니다.",
+      en: "An EV battery is built as a three-level hierarchy: cell → module → pack. The smallest unit, a cell (~3.7 V), is grouped into modules, and modules are gathered into a pack spread across the vehicle floor. Cells are wired in long series strings to reach the hundreds of volts that move a car, and busbars carry that large current. A cold plate holds the cells in a narrow temperature band, a BMS watches and protects every cell, and an aluminum enclosure and lid seal and protect the whole.",
+      ja: "EV のバッテリーはセル→モジュール→パックの三層で作ります。最小単位のセル（約 3.7 V）を束ねてモジュールに、モジュールを集めて床全体に敷くパックにします。セルを直列に長くつないで車を動かす数百 V を作り、バスバーがその大電流を運びます。冷却プレートがセル温度を狭い範囲に保ち、BMS が全セルを監視・保護し、アルミのハウジングとカバーが全体を密閉・保護します。",
+      zh: "电动车电池采用电芯→模组→电池包的三层层级。最小单元电芯（约 3.7 V）成组为模组，模组再汇成铺满车底的电池包。电芯串联成长串以获得驱动汽车的数百伏，汇流排承载大电流。冷却板把电芯维持在狭窄温度区间，BMS 监控并保护每颗电芯，铝制外壳与顶盖密封并保护整体。",
+    },
+    specs: [
+      { label: { ko: "구조", en: "Structure", ja: "構造", zh: "结构" }, value: "cell → module → pack" },
+      { label: { ko: "팩 크기", en: "Pack size", ja: "パックサイズ", zh: "电池包尺寸" }, value: "≈ 2.0 × 1.5 m" },
+      { label: { ko: "셀 전압", en: "Cell voltage", ja: "セル電圧", zh: "电芯电压" }, value: "≈ 3.7 V (Li-ion)" },
+      { label: { ko: "팩 전압", en: "Pack voltage", ja: "パック電圧", zh: "电池包电压" }, value: "≈ 400 / 800 V" },
+      { label: { ko: "냉각", en: "Cooling", ja: "冷却", zh: "冷却" }, value: "liquid (glycol/water)" },
+      { label: { ko: "제어", en: "Control", ja: "制御", zh: "控制" }, value: "BMS (V/T/I + balancing)" },
+      { label: { ko: "하우징", en: "Enclosure", ja: "ハウジング", zh: "外壳" }, value: "sealed aluminum" },
+    ] },
   { cat: "automotive", id: "combustion-engine", status: "soon", thumb: "cells",
     name: { ko: "내연기관 엔진", en: "Combustion Engine", ja: "内燃エンジン", zh: "内燃机" },
     desc: { ko: "4행정 작동 원리", en: "Four-stroke cycle", ja: "4ストロークの原理", zh: "四冲程原理" } },
