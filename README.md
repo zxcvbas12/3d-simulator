@@ -29,7 +29,7 @@
 
 8개 카테고리(반도체 · 우주 · 자동차 · 가전 · 항공 · 의료기기 · 에너지 · 로보틱스)로 시작하며, 카테고리와 모델은 계속 늘어납니다. 다국어(**KO / EN / 日 / 中**)를 지원합니다.
 
-## 현재 제공 모델 (학습 가능) — 7종
+## 현재 제공 모델 (학습 가능) — 10종
 
 ### 반도체 (Semiconductor) — 적층 · 패키징 · 칩렛
 
@@ -47,6 +47,14 @@
 | **지구관측 위성** | [`space/eo-satellite/`](space/eo-satellite/) | 저궤도 버스 + 관측 카메라 — 전력·자세·통신·추진·열 |
 | **통신 위성** | [`space/comsat/`](space/comsat/) | 정지궤도 버스 + 중계기·반사판 — 위성과 **같은 버스 코어 공유** |
 | **재진입 캡슐** | [`space/reentry-capsule/`](space/reentry-capsule/) | 무딘 원뿔 + 융제 차폐막 — 어떻게 안 타고 귀환하나 |
+
+### 자동차 (Automotive) — 저장 → 구동 → 대비
+
+| 모델 | 폴더 | 보여주는 것 |
+|---|---|---|
+| **EV 배터리 팩** | [`automotive/ev-battery/`](automotive/ev-battery/) | 셀→모듈→팩 3단 계층 + 셀 형식 옵션(각형/원통/파우치) |
+| **구동 모터** | [`automotive/drive-motor/`](automotive/drive-motor/) | PMSM(IPM V자 자석) — 자동 회전 시 회전자가 실제로 돈다 |
+| **내연기관 엔진** | [`automotive/combustion-engine/`](automotive/combustion-engine/) | 4행정 + 크랭크 위상 — 단면으로 보어 속 피스톤 관찰 |
 
 자세한 구조·부품 설명은 각 모델 폴더의 README / CLAUDE.md 참고.
 
@@ -106,7 +114,11 @@ npm run preview  # 빌드 결과 미리보기
     satellite/               #     위성 공유 코어(parts.tsx·info.ts — 모델 아님)
     eo-satellite/ comsat/    #     위성 2종(코어 공유)
     reentry-capsule/         #     재진입 캡슐
-  automotive/ appliance/ aviation/ medical/ energy/ robotics/  # (예정)
+  automotive/              # ── 카테고리
+    ev-battery/              #     EV 배터리 팩
+    drive-motor/             #     구동 모터
+    combustion-engine/       #     내연기관 엔진
+  appliance/ aviation/ medical/ energy/ robotics/  # (예정)
 ```
 
 각 폴더에는 두 종류의 문서가 있습니다:
@@ -125,13 +137,19 @@ npm run preview  # 빌드 결과 미리보기
 // src/shared/r3f/model.ts — 모델 계약
 interface ModelDef {
   parts: PartDef[];   // { id, base, explode, order?, layer?, node }
-  info: PartInfoMap;  // 부품 id → 다국어 설명(tag·title·spec·lead·detail·facts)
+  info: PartInfoMap;  // 부품 id → 다국어 설명(tag·title·spec·lead·detail·facts·sources)
   extras?: ReactNode; // 분해와 무관한 메시 (예: HBM의 TSV)
-  update?: (ctx) => void; // 매 프레임 모델별 갱신 (예: TSV 길이, 2단계 분해)
+  options?: ModelOption[]; // 모델 옵션 — 뷰어 좌상단 토글 (예: HBM 층수·단면)
+  update?: (ctx) => void;  // 매 프레임 갱신 — ctx에 t·dt·autoRotate·options
 }
 ```
 
-부품의 위치는 분해값 t에 따라 `base → base + explode`로 보간되고, `order`로 순차 전개(stagger)됩니다. 분해 벡터만 바꾸면 **수직 적층**(HBM)·**평면 배치**(CPU/GPU)·혼합이 모두 표현됩니다.
+부품의 위치는 분해값 t에 따라 `base → base + explode`로 보간되고, `order`로 순차 전개(stagger)됩니다. 분해 벡터만 바꾸면 **수직 적층**(HBM)·**평면 배치**(CPU)·**축방향**(모터)·**동심 껍질**(캡슐)·혼합이 모두 표현됩니다.
+
+엔진이 추가로 제공하는 것:
+- **모델 옵션** — `options` 선언만으로 뷰어 좌상단에 토글 UI(예: HBM 층수 8/12/16-Hi, 배터리 셀 형식). 숨긴 부품은 클릭·카메라 프레이밍에서 자동 제외
+- **구동 연출** — `update`가 `dt`·`autoRotate`를 받아 자동 회전 중 기계가 실제로 움직임(모터 회전자, 엔진 크랭크·피스톤 4행정)
+- **단면(cutaway)** — 공용 헬퍼([`cutaway.ts`](src/shared/r3f/cutaway.ts))로 절단면 보기(HBM TSV 단면, 엔진 보어, 모터 IPM 자석)
 
 **새 모델 추가** (3곳):
 1. `<카테고리>/<모델>/` 폴더에 `model.tsx` + `data.ts` 작성
@@ -182,7 +200,9 @@ Three.js와 뷰어는 모델을 열 때만 지연 로드되어 홈·콘텐츠 �
 - [x] **8. 사이트 폴리시** — 공통 페이지 콘텐츠 · 웹폰트 · 상태 디자인 · 메타/OG (Lighthouse 95/100/100/100)
 - [x] **9. 배포** — Vercel 연결, `main` push 자동 배포, og:url/canonical 확정
 - [x] **우주 카테고리** — 로켓 엔진 · 지구관측/통신 위성(공유 코어) · 재진입 캡슐 (발사→궤도→귀환)
-- [ ] 이후 — 카테고리 확장(자동차·항공·의료 등), 필요 시 Astro 이전 + SEO/애널리틱스
+- [x] **자동차 카테고리** — EV 배터리 · 구동 모터 · 내연기관 (저장→구동→대비)
+- [x] **모델 보강 라운드** — 전 부품 sources(더 읽기) · 구동 연출(모터·엔진 4행정) · 모델 옵션(HBM 층수/단면, GPU 스택 수, 배터리 셀 형식) · 단면 공용화
+- [ ] 이후 — 카테고리 확장(항공·가전·의료·에너지·로보틱스), 필요 시 Astro 이전 + SEO/애널리틱스
 
 ## 제작자
 
