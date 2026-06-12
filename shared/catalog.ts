@@ -356,9 +356,24 @@ export const MODELS: ModelEntry[] = [
     desc: { ko: "풍력 발전 장치", en: "Wind power generator", ja: "風力発電", zh: "风力发电" } },
 
   // ── 로보틱스 ──
-  { cat: "robotics", id: "actuator", status: "soon", thumb: "joint",
+  { cat: "robotics", id: "actuator", status: "live", thumb: "joint",
     name: { ko: "로봇 액추에이터", en: "Robotic Actuator", ja: "ロボットアクチュエータ", zh: "机器人执行器" },
-    desc: { ko: "로봇 관절 구동부", en: "Robot joint drive", ja: "関節駆動部", zh: "关节驱动" } },
+    desc: { ko: "로봇 관절 구동부", en: "Robot joint drive", ja: "関節駆動部", zh: "关节驱动" },
+    overview: {
+      ko: "로봇 팔의 관절 하나에는 모터·감속기·센서·베어링이 전부 들어 있습니다 — 이것이 일체형 관절 액추에이터입니다. 케이스 없는 프레임리스 BLDC 모터가 빠르게 돌면, 하모닉 드라이브(웨이브 제너레이터·플렉스플라인·서큘러 스플라인의 동심 3겹)가 그 회전을 약 100분의 1로 줄여 크고 정밀한 토크로 바꿉니다. 비결은 이가 2개 차이 나는 유연한 컵 — 부품 3개로 기어 수십 단의 일을 하고 백래시(헐거움)가 거의 없습니다. 엔코더가 각도를 읽고, 크로스롤러 베어링이 모든 방향의 하중을 받칩니다. 이런 모듈 6~7개가 이어지면 로봇 팔이 됩니다.",
+      en: "A single robot-arm joint contains a motor, gear, sensor and bearing all in one — the integrated joint actuator. A caseless frameless BLDC motor spins fast, and a strain wave gear (three concentric parts: wave generator, flexspline, circular spline) reduces that spin about 100-fold into large, precise torque. The trick is a flexible cup with two fewer teeth — three parts do the work of dozens of gear stages with almost no backlash. An encoder reads the angle, and a cross-roller bearing carries loads from every direction. Chain six or seven of these modules and you have a robot arm.",
+      ja: "ロボットアームの関節一つには、モーター・減速機・センサー・ベアリングがすべて入っています — これが一体型関節アクチュエータです。ケースのないフレームレス BLDC モーターが高速で回り、ハーモニックドライブ（ウェーブジェネレータ・フレクスプライン・サーキュラスプラインの同心 3 重）がその回転を約 100 分の 1 に減らし、大きく精密なトルクに変えます。秘訣は歯が 2 枚少ない柔軟なカップ — 部品 3 つで数十段の歯車の仕事をし、バックラッシュがほぼありません。エンコーダが角度を読み、クロスローラーベアリングがあらゆる方向の荷重を支えます。このモジュールを 6〜7 個つなぐとロボットアームになります。",
+      zh: "机械臂的一个关节里装着电机、减速器、传感器和轴承——这就是一体化关节执行器。无壳的无框 BLDC 电机高速旋转，谐波减速器（波发生器、柔轮、刚轮三层同心结构）把转速降低约 100 倍，变成大而精准的扭矩。诀窍在于少两个齿的柔性杯——三个零件完成数十级齿轮的工作，且几乎没有背隙。编码器读取角度，交叉滚子轴承承受各方向载荷。把 6–7 个这样的模块串起来，就是一条机械臂。",
+    },
+    specs: [
+      { label: { ko: "구성", en: "Layout", ja: "構成", zh: "构成" }, value: "frameless BLDC + strain wave" },
+      { label: { ko: "감속비", en: "Reduction", ja: "減速比", zh: "减速比" }, value: "≈ 100 : 1" },
+      { label: { ko: "정격 토크", en: "Rated torque", ja: "定格トルク", zh: "额定扭矩" }, value: "≈ 50–200 N·m" },
+      { label: { ko: "반복 정밀도", en: "Repeatability", ja: "繰返し精度", zh: "重复精度" }, value: "≈ ±0.01°" },
+      { label: { ko: "엔코더", en: "Encoder", ja: "エンコーダ", zh: "编码器" }, value: "absolute · 17–20 bit" },
+      { label: { ko: "베어링", en: "Bearing", ja: "ベアリング", zh: "轴承" }, value: "cross-roller (1ea)" },
+      { label: { ko: "배선", en: "Cabling", ja: "配線", zh: "布线" }, value: "hollow bore pass-through" },
+    ] },
   { cat: "robotics", id: "humanoid-hand", status: "soon", thumb: "joint",
     name: { ko: "휴머노이드 손", en: "Humanoid Hand", ja: "ヒューマノイドハンド", zh: "仿生机械手" },
     desc: { ko: "다관절 로봇 손", en: "Multi-joint robot hand", ja: "多関節ロボットハンド", zh: "多关节机械手" } },
