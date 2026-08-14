@@ -1,209 +1,233 @@
-# STRATA — 3D 학습 시뮬레이터
+# STRATA — 3D Learning Simulator
 
-> 복잡한 기술 제품을 **3D 분해도(exploded view)**로 분해·탐구하며 배우는 교육용 웹사이트.
-> 제품을 회전하고, 스크롤·핀치·슬라이더로 부품을 펼치고(분해) 합치며(조립), 부품을 클릭하면 그 역할 설명을 봅니다.
+> An educational website for exploring complex technical products through **3D exploded views**.
+> Rotate the product, expand (explode) and collapse (assemble) parts with scroll/pinch/slider, and click any part to see an explanation of its role.
+> **STRATA** is a placeholder brand name. It can be changed in one place: [`shared/config.ts`](shared/config.ts).
 
-> **STRATA**는 임시 브랜드명(자리표시)입니다. [`shared/config.ts`](shared/config.ts) 한 곳에서 바꿀 수 있습니다.
+🟢 **Live**: **<https://3d-simulator-rouge.vercel.app>** — deployed on Vercel, auto-updated on every push to `main`.
 
-🟢 **라이브**: **<https://3d-simulator-rouge.vercel.app>** — Vercel에 배포되어 `main` push마다 자동 갱신됩니다.
+## Preview
 
-## 미리보기
+| Home | GPU Package — Exploded + Info Panel |
+| --- | --- |
+| [![Home screen](docs/screenshots/home.png)](docs/screenshots/home.png) | [![GPU exploded view with interposer info panel](docs/screenshots/gpu-exploded-panel.png)](docs/screenshots/gpu-exploded-panel.png) |
 
-| 홈 | GPU 패키지 — 분해 + 정보 패널 |
-|---|---|
-| ![홈 화면](docs/screenshots/home.png) | ![GPU 분해도와 인터포저 정보 패널](docs/screenshots/gpu-exploded-panel.png) |
-
-| HBM — 수직 적층 분해 | CPU — 칩렛 평면 분해 |
-|---|---|
-| ![HBM 8층 적층 분해](docs/screenshots/hbm-exploded.png) | ![CPU 칩렛 패키지 분해](docs/screenshots/cpu-exploded.png) |
-
----
-
-## 핵심 개념
-
-모든 모델은 같은 **3단계 흐름**으로 배웁니다.
-
-1. **회전** — 마우스·터치·화살표 키로 360° 모든 각도에서 관찰
-2. **분해** — 하단 슬라이더로 부품을 한 겹씩 펼치기 (줌과 독립)
-3. **학습** — 부품을 눌러 역할·치수·원리 확인
-
-8개 카테고리(반도체 · 우주 · 자동차 · 가전 · 항공 · 의료기기 · 에너지 · 로보틱스)로 시작하며, 카테고리와 모델은 계속 늘어납니다. 다국어(**KO / EN / 日 / 中**)를 지원합니다.
-
-## 현재 제공 모델 (학습 가능) — 10종
-
-### 반도체 (Semiconductor) — 적층 · 패키징 · 칩렛
-
-| 모델 | 폴더 | 보여주는 것 |
-|---|---|---|
-| **HBM 고대역폭 메모리** | [`semiconductor/hbm/`](semiconductor/hbm/) | DRAM 8층 수직 적층 + TSV 관통 — "왜 쌓는가" |
-| **GPU 패키지** | [`semiconductor/gpu/`](semiconductor/gpu/) | 연산 다이 + HBM ×4 2.5D 패키지 — "왜 옆에 두는가" |
-| **CPU 칩렛 패키지** | [`semiconductor/cpu/`](semiconductor/cpu/) | 칩렛 분할 구조 — "왜 나누는가" |
-
-### 우주 (Space) — 발사 → 궤도 → 귀환
-
-| 모델 | 폴더 | 보여주는 것 |
-|---|---|---|
-| **로켓 엔진** | [`space/rocket-engine/`](space/rocket-engine/) | 액체 엔진(가스발생기 · LOX/RP-1) — 추력은 어떻게 생기나 |
-| **지구관측 위성** | [`space/eo-satellite/`](space/eo-satellite/) | 저궤도 버스 + 관측 카메라 — 전력·자세·통신·추진·열 |
-| **통신 위성** | [`space/comsat/`](space/comsat/) | 정지궤도 버스 + 중계기·반사판 — 위성과 **같은 버스 코어 공유** |
-| **재진입 캡슐** | [`space/reentry-capsule/`](space/reentry-capsule/) | 무딘 원뿔 + 융제 차폐막 — 어떻게 안 타고 귀환하나 |
-
-### 자동차 (Automotive) — 저장 → 구동 → 대비
-
-| 모델 | 폴더 | 보여주는 것 |
-|---|---|---|
-| **EV 배터리 팩** | [`automotive/ev-battery/`](automotive/ev-battery/) | 셀→모듈→팩 3단 계층 + 셀 형식 옵션(각형/원통/파우치) |
-| **구동 모터** | [`automotive/drive-motor/`](automotive/drive-motor/) | PMSM(IPM V자 자석) — 자동 회전 시 회전자가 실제로 돈다 |
-| **내연기관 엔진** | [`automotive/combustion-engine/`](automotive/combustion-engine/) | 4행정 + 크랭크 위상 — 단면으로 보어 속 피스톤 관찰 |
-
-자세한 구조·부품 설명은 각 모델 폴더의 README / CLAUDE.md 참고.
+| HBM — Vertical Stack Exploded | CPU — Chiplet Planar Exploded |
+| --- | --- |
+| [![HBM 8-layer stack exploded](docs/screenshots/hbm-exploded.png)](docs/screenshots/hbm-exploded.png) | [![CPU chiplet package exploded](docs/screenshots/cpu-exploded.png)](docs/screenshots/cpu-exploded.png) |
 
 ---
 
-## 기술 스택
+## Core Concept
 
-- **빌드**: [Vite](https://vitejs.dev/) + TypeScript
-- **UI**: [React](https://react.dev/) + 전역 상태 [zustand](https://zustand.docs.pmnd.rs/)
-- **3D**: [React Three Fiber](https://r3f.docs.pmnd.rs/) + [@react-three/drei](https://drei.docs.pmnd.rs/) (엔진은 Three.js)
-- **스타일**: 순수 CSS + 디자인 토큰(CSS 변수) — UI 프레임워크 없음
-- **다국어**: 가벼운 자체 i18n (`locales/`의 키-값 사전, 한국어가 타입 기준)
-- **배포**: [Vercel](https://vercel.com/) — GitHub 연동, `main` push 시 자동 빌드·배포([`vercel.json`](vercel.json))
 
-## 시작하기
+Every model follows the same **three-step flow**:
 
-```bash
-npm install      # 의존성 설치
-npm run dev      # 개발 서버 (HMR)
-npm run build    # 타입체크(tsc) + 프로덕션 번들
-npm run preview  # 빌드 결과 미리보기
+1. **Rotate** — observe from any angle across 360° using mouse, touch, or arrow keys
+2. **Explode** — spread parts apart layer by layer with the bottom slider (independent of zoom)
+3. **Learn** — click a part to see its role, dimensions, and how it works
+
+The site launches with 8 categories (Semiconductor · Space · Automotive · Appliance · Aviation · Medical Device · Energy · Robotics), with more categories and models to come. Multi-language support (**KO / EN / 日 / 中**) is built in.
+
+## Models Currently Available — 11
+
+
+### Semiconductor — Stacking · Packaging · Chiplets
+
+
+| Model | Folder | What it shows |
+| --- | --- | --- |
+| **HBM (High Bandwidth Memory)** | [`semiconductor/hbm/`](semiconductor/hbm) | 8-layer vertical DRAM stack + through-silicon vias (TSV) — "why do we stack it" |
+| **GPU Package** | [`semiconductor/gpu/`](semiconductor/gpu) | Compute die + 4× HBM in a 2.5D package — "why do we place it side by side" |
+| **CPU Chiplet Package** | [`semiconductor/cpu/`](semiconductor/cpu) | Chiplet-split architecture — "why do we split it" |
+
+### Space — Launch → Orbit → Return
+
+
+| Model | Folder | What it shows |
+| --- | --- | --- |
+| **Rocket Engine** | [`space/rocket-engine/`](space/rocket-engine) | Liquid-fuel engine (gas generator cycle · LOX/RP-1) — how thrust is generated |
+| **Earth Observation Satellite** | [`space/eo-satellite/`](space/eo-satellite) | LEO bus + observation camera — power, attitude, comms, propulsion, thermal |
+| **Communications Satellite** | [`space/comsat/`](space/comsat) | GEO bus + transponder/reflector — **shares the same bus core** as the observation satellite |
+| **Reentry Capsule** | [`space/reentry-capsule/`](space/reentry-capsule) | Blunt cone + ablative heat shield — how it returns without burning up |
+
+### Automotive — Store → Drive → Prepare
+
+
+| Model | Folder | What it shows |
+| --- | --- | --- |
+| **EV Battery Pack** | [`automotive/ev-battery/`](automotive/ev-battery) | Cell → module → pack, 3-tier hierarchy + cell-format options (prismatic/cylindrical/pouch) |
+| **Drive Motor** | [`automotive/drive-motor/`](automotive/drive-motor) | PMSM (IPM V-shaped magnets) — the rotor actually spins during auto-rotate |
+| **Internal Combustion Engine** | [`automotive/combustion-engine/`](automotive/combustion-engine) | 4-stroke cycle + crank phase — a cutaway view of the piston inside the bore |
+
+### Robotics — Move · Sense
+
+| Model | Folder | What it shows |
+| --- | --- | --- |
+| **Robotic Actuator** | [`robotics/actuator/`](robotics/actuator) | Integrated joint module (frameless BLDC + strain wave gear) — how fast motor spin becomes precise, high torque |
+
+For detailed structure and part descriptions, see the README / CLAUDE.md inside each model folder.
+
+---
+
+## Tech Stack
+
+
+- **Build**: [Vite](https://vitejs.dev/) + TypeScript
+- **UI**: [React](https://react.dev/) + [zustand](https://zustand.docs.pmnd.rs/) for global state
+- **3D**: [React Three Fiber](https://r3f.docs.pmnd.rs/) + [@react-three/drei](https://drei.docs.pmnd.rs/) (engine is Three.js)
+- **Styling**: Plain CSS + design tokens (CSS variables) — no UI framework
+- **i18n**: Lightweight in-house i18n (key-value dictionaries in `locales/`, Korean is the type source of truth)
+- **Deployment**: [Vercel](https://vercel.com/) — connected to GitHub, auto build/deploy on push to `main` ([`vercel.json`](vercel.json))
+
+## Getting Started
+
+
+```
+npm install      # install dependencies
+npm run dev      # dev server (HMR)
+npm run build    # typecheck (tsc) + production bundle
+npm run preview  # preview the production build
 ```
 
-모델 화면 URL에 `?stats`를 붙이면 FPS 오버레이(stats.js)가 표시됩니다 — 성능 점검용.
+Append `?stats` to any model screen URL to show an FPS overlay (stats.js) for performance checks.
 
 ---
 
-## 프로젝트 구조
+## Project Structure
+
 
 ```
 3d-simulator/
-  index.html                 # Vite 진입점
+  index.html                 # Vite entry point
   src/
-    main.tsx                 # 부트스트랩
-    App.tsx                  # 앱 셸: 상단 네비 + 2단계 사이드바 + 본문 라우팅
+    main.tsx                 # bootstrap
+    App.tsx                  # app shell: top nav + 2-level sidebar + content routing
     shared/
-      r3f/                   # 공통 3D 엔진
-        Viewer.tsx           #   <Viewer> — Canvas·온디맨드 렌더·뷰어 크롬
-        SceneContents.tsx    #   분해 보간·카메라 프레이밍·입력(드래그/핀치/키보드)·피킹
-        model.ts             #   모델 계약(ModelDef) 타입
-        registry.tsx         #   "카테고리/모델" → lazy 뷰어 (새 모델 등록 = 한 줄)
-        textures.ts          #   공용 절차적 텍스처(파라미터별 캐시)
-      ui/                    # 네비·사이드바·정보 패널·뷰어 컨트롤 (React)
-      state/                 # zustand 스토어(언어·분해값·선택·줌) + 라우팅
-    index.css                # 셸 보조 스타일
+      r3f/                   # shared 3D engine
+        Viewer.tsx           #   <Viewer> — Canvas, on-demand rendering, viewer chrome
+        SceneContents.tsx    #   explode interpolation, camera framing, input (drag/pinch/keyboard), picking
+        model.ts             #   model contract (ModelDef) type
+        registry.tsx         #   "category/model" → lazy viewer (registering a new model = one line)
+        textures.ts          #   shared procedural textures (cached per parameter set)
+      ui/                    # nav, sidebar, info panel, viewer controls (React)
+      state/                 # zustand stores (language, explode value, selection, zoom) + routing
+    index.css                # shell-level auxiliary styles
   shared/
-    config.ts                # 브랜드명 단일 소스
-    catalog.ts               # 카테고리 + 모델 카탈로그(이름·개요·사양, 다국어)
-    styles/                  # 디자인 토큰 + 셸/뷰어 CSS
-    scene/ interaction/ …    # (레거시) 바닐라 Three.js 시절 코드 — 현재 미사용
-  locales/                   # 다국어 사전 ko / en / ja / zh
-  pages/                     # 공통 페이지(소개·학습 구조·제작자 의도) 콘텐츠 지침
-  semiconductor/             # ── 카테고리 (README + CLAUDE.md)
-    hbm/  gpu/  cpu/         #     ── 모델: model.tsx(형상) + data.ts(부품 설명)
-  space/                     # ── 카테고리
-    rocket-engine/           #     로켓 엔진
-    satellite/               #     위성 공유 코어(parts.tsx·info.ts — 모델 아님)
-    eo-satellite/ comsat/    #     위성 2종(코어 공유)
-    reentry-capsule/         #     재진입 캡슐
-  automotive/              # ── 카테고리
-    ev-battery/              #     EV 배터리 팩
-    drive-motor/             #     구동 모터
-    combustion-engine/       #     내연기관 엔진
-  appliance/ aviation/ medical/ energy/ robotics/  # (예정)
+    config.ts                # single source of truth for the brand name
+    catalog.ts                # category + model catalog (name/overview/specs, multi-language)
+    styles/                  # design tokens + shell/viewer CSS
+    scene/ interaction/ …    # (legacy) vanilla Three.js-era code — unused now
+  locales/                   # dictionaries: ko / en / ja / zh
+  pages/                     # content guidelines for shared pages (About · Learning structure · Creator's intent)
+  semiconductor/             # ── category (README + CLAUDE.md)
+    hbm/  gpu/  cpu/         #     ── models: model.tsx (geometry) + data.ts (part descriptions)
+  space/                     # ── category
+    rocket-engine/           #     rocket engine
+    satellite/               #     shared satellite core (parts.tsx · info.ts — not a model itself)
+    eo-satellite/ comsat/    #     2 satellite models (share the core)
+    reentry-capsule/         #     reentry capsule
+  automotive/               # ── category
+    ev-battery/  drive-motor/  combustion-engine/
+  robotics/                 # ── category
+    actuator/                 #     robotic actuator (harmonic drive joint)
+  appliance/ aviation/ medical/ energy/  # (planned)
+
 ```
 
-각 폴더에는 두 종류의 문서가 있습니다:
-- **`README.md`** — 사람을 위한 설명(이 폴더가 무엇이고 어떻게 동작하는지).
-- **`CLAUDE.md`** — AI 협업 지침(루트 → 카테고리 → 모델 순으로 읽히며, 아래로 갈수록 구체적·우선).
+Each folder contains two kinds of docs:
+
+- **`README.md`** — human-facing explanation (what this folder is and how it works).
+- **`CLAUDE.md`** — AI collaboration guidance (read root → category → model, with specificity/priority increasing further down).
 
 ---
 
-## 아키텍처 — 공통 vs 모델별
+## Architecture — Shared vs. Model-Specific
 
-핵심 원칙: **모델마다 다른 건 형상과 설명뿐, 나머지 동작은 전부 공유한다.**
 
-각 모델은 두 파일만 제공합니다 — `model.tsx`(3D 형상)와 `data.ts`(부품 다국어 설명). 회전·줌·분해·선택·정보 패널·환경맵은 전부 공통 엔진 [`<Viewer>`](src/shared/r3f/Viewer.tsx)가 처리합니다.
+Core principle: **the only thing that differs between models is geometry and descriptions — everything else is shared.**
 
-```ts
-// src/shared/r3f/model.ts — 모델 계약
+Each model provides just two files — `model.tsx` (3D geometry) and `data.ts` (multi-language part descriptions). Rotation, zoom, explode, selection, the info panel, and the environment map are all handled by the shared engine, [`<Viewer>`](src/shared/r3f/Viewer.tsx).
+
+```
+// src/shared/r3f/model.ts — model contract
 interface ModelDef {
   parts: PartDef[];   // { id, base, explode, order?, layer?, node }
-  info: PartInfoMap;  // 부품 id → 다국어 설명(tag·title·spec·lead·detail·facts·sources)
-  extras?: ReactNode; // 분해와 무관한 메시 (예: HBM의 TSV)
-  options?: ModelOption[]; // 모델 옵션 — 뷰어 좌상단 토글 (예: HBM 층수·단면)
-  update?: (ctx) => void;  // 매 프레임 갱신 — ctx에 t·dt·autoRotate·options
+  info: PartInfoMap;  // part id → multi-language description (tag·title·spec·lead·detail·facts·sources)
+  extras?: ReactNode; // meshes unrelated to the explode (e.g. HBM's TSVs)
+  options?: ModelOption[]; // model options — toggles in the viewer's top-left corner (e.g. HBM layer count, cutaway)
+  update?: (ctx) => void;  // per-frame update — ctx provides t · dt · autoRotate · options
 }
 ```
 
-부품의 위치는 분해값 t에 따라 `base → base + explode`로 보간되고, `order`로 순차 전개(stagger)됩니다. 분해 벡터만 바꾸면 **수직 적층**(HBM)·**평면 배치**(CPU)·**축방향**(모터)·**동심 껍질**(캡슐)·혼합이 모두 표현됩니다.
+Each part's position is interpolated from `base → base + explode` based on the explode value `t`, staggered via `order`. Simply changing the explode vector expresses **vertical stacking** (HBM), **planar layout** (CPU), **axial** (motor), **concentric shells** (capsule), or any mix of these.
 
-엔진이 추가로 제공하는 것:
-- **모델 옵션** — `options` 선언만으로 뷰어 좌상단에 토글 UI(예: HBM 층수 8/12/16-Hi, 배터리 셀 형식). 숨긴 부품은 클릭·카메라 프레이밍에서 자동 제외
-- **구동 연출** — `update`가 `dt`·`autoRotate`를 받아 자동 회전 중 기계가 실제로 움직임(모터 회전자, 엔진 크랭크·피스톤 4행정)
-- **단면(cutaway)** — 공용 헬퍼([`cutaway.ts`](src/shared/r3f/cutaway.ts))로 절단면 보기(HBM TSV 단면, 엔진 보어, 모터 IPM 자석)
+What the engine additionally provides:
 
-**새 모델 추가** (3곳):
-1. `<카테고리>/<모델>/` 폴더에 `model.tsx` + `data.ts` 작성
-2. [`src/shared/r3f/registry.tsx`](src/shared/r3f/registry.tsx)에 lazy 항목 한 줄
-3. [`shared/catalog.ts`](shared/catalog.ts)에 카드 메타(이름·개요·사양) 한 항목
+- **Model options** — declaring `options` alone adds toggle UI in the viewer's top-left corner (e.g. HBM layer count 8/12/16-Hi, battery cell format). Hidden parts are automatically excluded from clicking and camera framing.
+- **Motion staging** — `update` receives `dt` and `autoRotate`, so the mechanism actually moves during auto-rotate (motor rotor spinning, engine crank/piston 4-stroke cycle).
+- **Cutaway views** — a shared helper ([`cutaway.ts`](src/shared/r3f/cutaway.ts)) provides cross-section views (HBM TSV cross-section, engine bore, motor IPM magnets).
 
-Three.js와 뷰어는 모델을 열 때만 지연 로드되어 홈·콘텐츠 화면 번들에 들어가지 않습니다.
+**Adding a new model** (3 places):
 
----
+1. Write `model.tsx` + `data.ts` inside `<category>/<model>/`
+2. Add one lazy-loaded entry to [`src/shared/r3f/registry.tsx`](src/shared/r3f/registry.tsx)
+3. Add one card-metadata entry (name/overview/specs) to [`shared/catalog.ts`](shared/catalog.ts)
 
-## 성능 / 접근성
-
-- **온디맨드 렌더** — `frameloop="demand"`: 화면이 변할 때만 그립니다(정지 상태 GPU 사용 0).
-- **지연 로드** — 3D 번들(three ≈184kB gzip)은 모델 화면에서만. 모델 청크는 개당 ≈4~14kB gzip(공유 코어를 쓰는 위성은 더 작음).
-- **인스턴싱** — 반복 요소(BGA·범프·TSV·태양전지 셀·RCS 노즐)는 InstancedMesh.
-- **텍스처 예산** — 절차적 텍스처는 파라미터별 1장 생성 후 캐시 공유.
-- **모션 접근성** — `prefers-reduced-motion`이면 전환 애니메이션·자동 회전을 끕니다.
-- **키보드/스크린리더** — 캔버스 포커스 + 화살표 키 회전, `:focus-visible` 포커스 링, 컨트롤 ARIA 라벨(다국어).
-
-성능 예산표와 측정 절차는 [`src/shared/CLAUDE.md`](src/shared/CLAUDE.md) 참고.
-
-## 다국어 (i18n)
-
-- 사이트 공통 문구 → `locales/{ko,en,ja,zh}.ts` — 한국어가 기준 타입(`Dict`), 키 누락은 컴파일에서 차단.
-- 모델 부품 설명 → 각 모델의 `data.ts`에 콜로케이션. 모델 개요·사양 → `shared/catalog.ts`.
-- 사용자에게 보이는 텍스트는 전부 다국어 키로 두며 하드코딩하지 않습니다.
-
-## 디자인 방향
-
-정밀 계측기(precision instrument) 느낌의 절제된 다크 테크 미감.
-
-- **배경**: 거의 검정에 가까운 네이비 라디얼 그라데이션
-- **포인트 색**: 블루 `#6f9bff` · 구리 `#c97b34` · 골드 `#e6b53c`
-- **UI**: 반투명 글래스 패널, 얇은 테두리. **타이포**: 제목·수치 모노, 본문 산세리프
-
-공통 색·폰트는 [`shared/styles/tokens.css`](shared/styles/tokens.css)의 CSS 변수로 관리합니다.
+Three.js and the viewer are lazy-loaded only when a model is opened, so they're excluded from the home/content screen bundles.
 
 ---
 
-## 진행 상황
+## Performance / Accessibility
 
-- [x] **1–2. 셋업** — Vite + TS → React/R3F/drei/zustand 전환
-- [x] **3. 앱 셸 + 다국어** — 네비, 2단계 사이드바, 공통 페이지, i18n
-- [x] **4. 공통 3D 엔진** — `<Viewer>` 계약·분해·피킹·온디맨드 렌더
-- [x] **5. HBM** — 바닐라 프로토타입(`hbm-3d-space.html`)을 R3F로 이식 (품질 기준)
-- [x] **6. CPU / GPU** — 평면·혼합 분해로 엔진 일반화 검증
-- [x] **7. 성능 패스 + 접근성** — 텍스처 캐시·측정 도구·reduced-motion·키보드·ARIA
-- [x] **8. 사이트 폴리시** — 공통 페이지 콘텐츠 · 웹폰트 · 상태 디자인 · 메타/OG (Lighthouse 95/100/100/100)
-- [x] **9. 배포** — Vercel 연결, `main` push 자동 배포, og:url/canonical 확정
-- [x] **우주 카테고리** — 로켓 엔진 · 지구관측/통신 위성(공유 코어) · 재진입 캡슐 (발사→궤도→귀환)
-- [x] **자동차 카테고리** — EV 배터리 · 구동 모터 · 내연기관 (저장→구동→대비)
-- [x] **모델 보강 라운드** — 전 부품 sources(더 읽기) · 구동 연출(모터·엔진 4행정) · 모델 옵션(HBM 층수/단면, GPU 스택 수, 배터리 셀 형식) · 단면 공용화
-- [ ] 이후 — 카테고리 확장(항공·가전·의료·에너지·로보틱스), 필요 시 Astro 이전 + SEO/애널리틱스
 
-## 제작자
+- **On-demand rendering** — `frameloop="demand"`: only redraws when the screen actually changes (zero GPU usage while idle).
+- **Lazy loading** — the 3D bundle (three ≈184kB gzip) loads only on model screens. Each model chunk is ≈4–14kB gzip (satellites sharing the core are even smaller).
+- **Instancing** — repeated elements (BGA balls, bumps, TSVs, solar cells, RCS nozzles) use `InstancedMesh`.
+- **Texture budget** — procedural textures are generated once per parameter set and shared via a cache.
+- **Motion accessibility** — transition animations and auto-rotate are disabled under `prefers-reduced-motion`.
+- **Keyboard/screen reader** — canvas focus + arrow-key rotation, `:focus-visible` focus rings, ARIA labels on controls (multi-language).
 
-토론토에서 제작. "열어서 직접 보면 이해가 빠르다"는 단순한 믿음에서 출발한 프로젝트입니다.
+See [`src/shared/CLAUDE.md`](src/shared/CLAUDE.md) for the performance budget table and measurement procedure.
+
+## Internationalization (i18n)
+
+
+- Site-wide copy → `locales/{ko,en,ja,zh}.ts` — Korean is the source-of-truth type (`Dict`); missing keys are caught at compile time.
+- Model part descriptions → co-located in each model's `data.ts`. Model overview/specs → `shared/catalog.ts`.
+- All user-facing text lives behind translation keys; nothing is hardcoded.
+
+## Design Direction
+
+
+A restrained, dark tech aesthetic evoking a precision instrument.
+
+- **Background**: near-black navy radial gradient
+- **Accent colors**: blue `#6f9bff` · copper `#c97b34` · gold `#e6b53c`
+- **UI**: translucent glass panels, thin borders. **Typography**: monospace for headings/numbers, sans-serif for body text
+
+Shared colors and fonts are managed as CSS variables in [`shared/styles/tokens.css`](shared/styles/tokens.css).
+
+---
+
+## Progress
+
+
+- [x] **1–2. Setup** — Vite + TS → migrated to React/R3F/drei/zustand
+- [x] **3. App shell + i18n** — nav, 2-level sidebar, shared pages, i18n
+- [x] **4. Shared 3D engine** — `<Viewer>` contract, explode, picking, on-demand rendering
+- [x] **5. HBM** — ported the vanilla prototype (`hbm-3d-space.html`) to R3F (quality baseline)
+- [x] **6. CPU / GPU** — validated engine generalization with planar/mixed explode directions
+- [x] **7. Performance pass + accessibility** — texture caching, measurement tooling, reduced-motion, keyboard, ARIA
+- [x] **8. Site polish** — shared page content · web fonts · state design · meta/OG (Lighthouse 95/100/100/100)
+- [x] **9. Deployment** — connected to Vercel, auto-deploy on push to `main`, finalized og:url/canonical
+- [x] **Space category** — rocket engine · Earth-observation/comm satellites (shared core) · reentry capsule (launch → orbit → return)
+- [x] **Automotive category** — EV battery · drive motor · internal combustion engine (store → drive → prepare)
+- [x] **Model enrichment round** — sources ("read more") for every part · motion staging (motor, engine 4-stroke) · model options (HBM layer count/cutaway, GPU stack count, battery cell format) · shared cutaway implementation
+- [x] **Robotics category (started)** — robotic actuator: harmonic-drive joint module, axial explode + reduction-motion staging + cutaway
+- [ ] Next — expand categories (Aviation, Appliance, Medical, Energy) and Robotics (humanoid hand, LiDAR); migrate to Astro if needed + SEO/analytics
+
+## Creator
+
+
+Built in Toronto, from a simple belief: understanding comes faster when you open something up and look inside for yourself.
