@@ -1,42 +1,42 @@
-# CPU 칩렛 패키지 — 모델
+# CPU Chiplet Package — Model
 
-> **핵심 질문: 칩을 왜 나누는가?**
-> 현대 CPU는 모든 코어를 담은 큰 다이 하나가 아니라, 여러 개의 작은 **칩렛(chiplet)**을 한 패키지에 모아 만듭니다. 다이가 클수록 불량 확률이 커지므로, 작게 나누면 **수율 ↑ · 비용 ↓**, 칩렛을 더 붙이면 코어 수가 늘어 확장도 유연합니다. HBM의 수직 적층과 대비되는 **평면 배치**를 보여주는 모델입니다.
+> **Core question: why split a chip up?**
+> Modern CPUs aren't one large die holding every core — they gather several small **chiplets** into a single package. The bigger a die is, the higher its defect probability, so splitting it up smaller means **higher yield, lower cost**, and adding more chiplets scales the core count flexibly. This model shows the **planar layout** that contrasts with HBM's vertical stacking.
 
-## 구조 (아래 → 위, 칩렛은 평면 배치)
+## Structure (bottom → top, chiplets arranged on a plane)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `substrate` | 패키지 기판 | 받침. 브라운 계열 라우팅 텍스처 |
-| `lga` | LGA 랜드 | 기판 아랫면 16×16 **평평한 금색 접점** 격자 (볼이 아님 — 핀은 소켓 쪽) |
-| `iod` | I/O 다이 | 중앙. 메모리·PCIe·칩렛 간 통신 허브. 골드 톤 + "IOD" 각인 |
-| `ccd` | 컴퓨트 칩렛 ×2 | I/O 다이 좌우. 코어가 든 작은 다이. 블루 + "CCD" 각인 |
-| `tim` | TIM (열전달 물질) | 다이와 덮개 사이 반투명 얇은 층 |
-| `ihs` | 통합 히트 스프레더 | 브러시드 메탈 금속 덮개 |
+| `substrate` | Package substrate | Base. Brown-family routing texture |
+| `lga` | LGA land grid | 16×16 grid of **flat gold contacts** on the underside of the substrate (not balls — the pins are on the socket side) |
+| `iod` | I/O die | Center. Hub for memory, PCIe, and inter-chiplet communication. Gold tone + "IOD" mark |
+| `ccd` | Compute chiplets ×2 | On either side of the I/O die. Small dies containing the cores. Blue + "CCD" mark |
+| `tim` | TIM (thermal interface material) | Thin translucent layer between the dies and the lid |
+| `ihs` | Integrated heat spreader | Brushed-metal cover |
 
-## 동작 — 평면 중심 혼합 분해
+## Behavior — planar-centered mixed exploding
 
-- IHS·TIM은 위로(수직), 기판은 아래로.
-- **컴퓨트 칩렛 2개는 좌우 바깥으로 펼쳐지며**(평면) 기판 위 칩렛 레이아웃이 드러납니다 — HBM의 "위로 벌어지는" 분해와 대비되는 그림.
+- The IHS and TIM move up (vertical), the substrate moves down.
+- **The two compute chiplets spread outward to either side** (planar), revealing the chiplet layout on the substrate — a contrast to HBM's "spreads upward" exploding.
 
-## 주요 사양 (정보 패널·카탈로그에 표기)
+## Key specs (shown in the info panel / catalog)
 
-CCD ×2 + I/O die · 패키지 ≈ 40 × 40 mm · 컴퓨트 칩렛 ≈ 70 mm² (5 nm) · I/O 다이 ≈ 120 mm² (6 nm) · LGA 1,000+ 랜드 · Ni 도금 Cu IHS
+CCD ×2 + I/O die · package ≈ 40 × 40 mm · compute chiplet ≈ 70 mm² (5 nm) · I/O die ≈ 120 mm² (6 nm) · LGA 1,000+ lands · Ni-plated Cu IHS
 
-## 학습 포인트 (정보 패널 facts에 반영)
+## Learning points (reflected in the info panel's facts)
 
-1. 칩렛 = 큰 다이를 작은 다이 여러 개로 분할 → 불량 다이만 버리면 되니 **수율 ↑ · 비용 ↓**.
-2. I/O 다이가 칩렛들과 메모리·외부를 잇는 허브 — 컴퓨트 칩렛은 계산에 집중.
-3. IHS·TIM이 한 점에 몰리는 열을 넓게 퍼뜨려 쿨러로 넘긴다.
-4. LGA(평평한 랜드) vs PGA(핀) vs BGA(솔더 볼) — 패키지 ↔ 보드 연결 방식 비교.
+1. Chiplets = splitting a large die into several small dies → only defective dies need to be discarded, so **yield goes up, cost goes down**.
+2. The I/O die is the hub connecting the chiplets to memory and the outside world — the compute chiplets focus purely on computation.
+3. The IHS and TIM spread heat that would otherwise concentrate in one spot, passing it on to the cooler.
+4. LGA (flat lands) vs. PGA (pins) vs. BGA (solder balls) — a comparison of package-to-board connection methods.
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·혼합 분해 벡터
-- [`data.ts`](data.ts) — 부품 6종 설명, 4개 언어 (lead / detail / facts / spec)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양
+- [`model.tsx`](model.tsx) — geometry, materials, mixed explode vectors
+- [`data.ts`](data.ts) — descriptions for the 6 parts, in 4 languages (lead / detail / facts / spec)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec
 
-## 구현 메모
+## Implementation notes
 
-- 이 모델에서 공용 절차적 텍스처 모듈(`src/shared/r3f/textures.ts`)이 분리됐습니다 — HBM 전용이던 텍스처를 파라미터화해 CPU/GPU가 재사용합니다.
-- GPU 모델과 묶어 보면 좋습니다: GPU는 "큰 다이 + 옆 메모리", CPU는 "작은 다이 여러 개" — 같은 패키징 기술이 다른 문제를 푸는 사례.
+- The shared procedural texture module (`src/shared/r3f/textures.ts`) was split out from this model — textures that had been HBM-specific were parameterized so CPU and GPU could reuse them.
+- Worth viewing alongside the GPU model: GPU is "one large die + memory beside it," CPU is "several small dies" — the same packaging technology solving a different problem.

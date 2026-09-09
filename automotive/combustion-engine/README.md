@@ -1,49 +1,49 @@
-# 내연기관 엔진 — 모델
+# Internal Combustion Engine — Model
 
-> **핵심 질문: 연료의 폭발이 어떻게 바퀴를 돌리는 회전이 되는가?**
-> 100년 넘게 자동차를 움직여 온 **직렬 4기통 DOHC 가솔린 엔진**입니다. 피스톤이 흡입 → 압축 → 폭발 → 배기의 4행정을 반복하고, 커넥팅 로드가 그 직선 운동을 크랭크샤프트의 회전으로 바꿉니다. [EV 배터리](../ev-battery/)·[구동 모터](../drive-motor/)와 비교하며 보는 대비 모델.
+> **Core question: how does exploding fuel turn into the rotation that spins the wheels?**
+> An **inline-4 DOHC gasoline engine**, the kind that's been powering cars for over a century. A piston repeats the 4-stroke cycle (intake → compression → power → exhaust), and a connecting rod converts that linear motion into the crankshaft's rotation. A contrasting model to view alongside the [EV Battery](../ev-battery/) and [Drive Motor](../drive-motor/).
 
-## 구조 (위 → 아래)
+## Structure (top → bottom)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `valvecover` | 밸브 커버 | 브러시드 알루미늄 덮개 |
-| `camshaft` | 캠샤프트 (DOHC ×2) | 타원 캠 로브 + 타이밍 스프로킷 |
-| `head` | 실린더 헤드 | 점화플러그 4개(골드) + 연소실 |
-| `block` | 실린더 블록 | 주철 톤 본체 + 보어 4개 |
-| `piston` | 피스톤 ×4 | 크라운 + 링 그루브 — **위상대로 높이가 다름** |
-| `conrod` | 커넥팅 로드 ×4 | I빔 + 대단부 링 |
-| `crankshaft` | 크랭크샤프트 | 오프셋 핀 + 카운터웨이트 + 플라이휠 |
-| `oilpan` | 오일팬 | 강판 트레이 + 드레인 플러그 |
+| `valvecover` | Valve cover | A brushed-aluminum cover |
+| `camshaft` | Camshafts (DOHC ×2) | Oval cam lobes + timing sprockets |
+| `head` | Cylinder head | 4 spark plugs (gold) + combustion chambers |
+| `block` | Cylinder block | A cast-iron-toned body with 4 bores |
+| `piston` | Pistons ×4 | Crown + ring grooves — **heights differ according to crank phase** |
+| `conrod` | Connecting rods ×4 | I-beam + big-end ring |
+| `crankshaft` | Crankshaft | Offset pins + counterweights + flywheel |
+| `oilpan` | Oil pan | A steel tray + drain plug |
 
-## 동작 — 정비 순서 수직 분해
+## Behavior — vertical exploding in service-teardown order
 
-실제 엔진을 분해하는 순서 그대로: **밸브커버가 열리고** → 캠샤프트 → 헤드가 들리고 → **피스톤 4개가 보어에서 위로 뽑혀 나오고** → 커넥팅 로드 → 크랭크샤프트와 오일팬이 아래로 분리됩니다. 피스톤·로드 클릭 시 "n번째" 표시(`layer`).
+Follows the order a real engine is torn down: **the valve cover opens** → camshafts → the head lifts off → **all 4 pistons are pulled up out of their bores** → connecting rods → the crankshaft and oil pan separate downward. Clicking a piston or rod shows "n" (`layer`).
 
-**디테일**: 분해된 피스톤 4개의 높이가 서로 다릅니다 — 크랭크 위상(1·4번 상사점, 2·3번 하사점) 그대로예요. 네 실린더가 1-3-4-2 순서로 번갈아 폭발해 회전이 끊기지 않는다는 것을 형상으로 보여줍니다.
+**Detail**: the 4 exploded pistons sit at different heights — reflecting their actual crank phase (pistons 1 and 4 at top dead center, 2 and 3 at bottom dead center). This shows, through the geometry itself, how the four cylinders fire in alternating 1-3-4-2 order to keep rotation smooth.
 
-- **4행정 구동 연출**: 자동 회전을 켜면 크랭크가 돌고 피스톤 4개가 점화순서대로 왕복하며 커넥팅 로드가 따라 기울어집니다(슬라이더-크랭크 기구학). 분해하면 연출이 잦아들고 정적 위상 포즈로 복귀합니다.
-- **단면(cutaway) 옵션**: 블록을 갈라 **보어 속 피스톤·연소실·크랭크 단면**을 봅니다 — 구동 연출과 조합하면 피스톤이 보어 안에서 왕복하는 모습을 단면으로 관찰할 수 있습니다.
+- **4-stroke motion animation**: with auto-rotate on, the crank turns, all 4 pistons reciprocate in firing order, and the connecting rods tilt accordingly (slider-crank kinematics). Exploding it pauses the animation and returns it to a static phase pose.
+- **Cutaway option**: splits the block to reveal the **piston, combustion chamber, and crankshaft in cross-section inside the bore** — combine it with the motion animation to watch a piston reciprocate inside its bore in cross-section.
 
-## 주요 사양 (정보 패널·카탈로그)
+## Key specs (info panel / catalog)
 
-직렬 4기통 DOHC · ≈ 2.0 L · 4행정(오토 사이클) · 압축비 ≈ 10–13:1 · 점화순서 1-3-4-2 · 최고 ≈ 6,500 rpm · 열효율 ≈ 30–40 %
+Inline-4 DOHC · ≈ 2.0 L · 4-stroke (Otto cycle) · compression ratio ≈ 10-13:1 · firing order 1-3-4-2 · up to ≈ 6,500 rpm · thermal efficiency ≈ 30-40%
 
-## 학습 포인트
+## Learning points
 
-1. **4행정**: 흡입·압축·폭발·배기 — 힘이 나오는 건 폭발뿐이라 4기통이 번갈아 맡는다.
-2. 피스톤(직선) → 커넥팅 로드 → 크랭크샤프트(회전) — 자전거 페달을 밟는 다리와 같은 원리.
-3. 캠샤프트는 크랭크의 **절반 속도**로 돌며 밸브를 여닫는다(크랭크 2회전 = 밸브 1회).
-4. 전기 동력계와의 대비 — 같은 문제(에너지 → 바퀴 회전)를 푸는 두 가지 답.
+1. **4 strokes**: intake, compression, power, exhaust — only the power stroke actually produces force, so the 4 cylinders take turns.
+2. Piston (linear) → connecting rod → crankshaft (rotational) — the same principle as a leg pedaling a bicycle.
+3. The camshaft turns at **half the crank's speed**, opening and closing valves (2 crank revolutions = 1 valve cycle).
+4. A contrast with the electric powertrain — two different answers to the same problem (energy → wheel rotation).
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·정비 순서 분해 벡터·크랭크 위상 계산
-- [`data.ts`](data.ts) — 부품 8종 설명, 4개 언어 (lead / detail / facts / spec / sources)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양·남은 보강
+- [`model.tsx`](model.tsx) — geometry, materials, service-order explode vectors, crank-phase calculation
+- [`data.ts`](data.ts) — descriptions for the 8 parts, in 4 languages (lead / detail / facts / spec / sources)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec and remaining follow-ups
 
-## 구현 메모
+## Implementation notes
 
-- 신규 절차 텍스처 없이 구현 — 밸브커버만 `makeBrushedMetalTexture`, 나머지는 PBR 재질 + 엣지.
-- 커넥팅 로드는 위상에 따라 길이가 달라 가변 빌더(`buildConrod(len)`)로 생성합니다.
-- 교육용 단순화: 밸브·인젝터·타이밍 체인 등은 캠샤프트·헤드 설명에 녹였습니다.
+- Built with no new procedural textures — only the valve cover uses `makeBrushedMetalTexture`, everything else is PBR materials plus edges.
+- Connecting rods vary in length by phase, generated via a variable builder (`buildConrod(len)`).
+- Simplified for education: valves, injectors, and the timing chain are folded into the camshaft and head descriptions.

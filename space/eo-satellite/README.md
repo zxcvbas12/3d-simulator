@@ -1,39 +1,39 @@
-# 지구관측 위성 — 모델
+# Earth Observation Satellite — Model
 
-> **핵심 질문: 위성은 어떻게 스스로 운영되며 지구를 관측하나?**
-> 저궤도(LEO)를 돌며 지표를 촬영하는, 사실상 우주에 띄운 망원경입니다. 임무 장비(탑재체)를 뺀 공통 토대인 "버스"에 카메라를 얹어 만들어집니다. 사이트의 **첫 모듈형(중앙 버스 + 면별 부속)** 구조 모델입니다.
+> **Core question: how does a satellite operate itself and observe the Earth?**
+> Orbiting in low Earth orbit (LEO) to photograph the surface — essentially a telescope placed in space. Built by attaching a camera to a "bus," the common foundation left over once you remove the mission payload. The site's **first modular (central bus + face-mounted accessories)** structure model.
 
-## 구조 (중앙 버스 + 면별 부속, 7부품)
+## Structure (central bus + face-mounted accessories, 7 parts)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `bus` | 본체 / 버스 | 금박(MLI) 박스 — 모든 장비의 토대 |
-| `solar` ×2 | 태양전지판 | 좌우(±X) 청색 셀 날개 — 전력 생산 |
-| `antenna` | 고이득 안테나 | 상단 포물면 dish ×1 — 영상 지상 전송 |
-| `payload` | 관측 카메라 | 지구를 향한(−Y) 망원 배럴 + 골드 조리개 |
-| `propulsion` | 추진 모듈 | 추진제 탱크(구) + 추력기 — 궤도 유지 |
-| `adcs` | 반작용 휠 | 상단 휠 클러스터 — 연료 없이 자세 제어 |
-| `battery` | 배터리 | 셀 팩 — 음지(eclipse) 전력 저장 |
+| `bus` | Body / bus | A foil (MLI)-wrapped box — the foundation for all the equipment |
+| `solar` ×2 | Solar panels | Blue-cell wings on either side (±X) — power generation |
+| `antenna` | High-gain antenna | One parabolic dish on top — downlinks imagery to the ground |
+| `payload` | Observation camera | A telephoto barrel pointed at Earth (−Y) + gold aperture |
+| `propulsion` | Propulsion module | A propellant tank (sphere) + thrusters — orbit maintenance |
+| `adcs` | Reaction wheels | A wheel cluster on top — attitude control without using fuel |
+| `battery` | Battery | A cell pack — stores power for eclipse periods |
 
-> 버스·태양전지판·반작용 휠·추진·배터리는 [`../satellite/`](../satellite/) 공유 코어에서 만들고, 이 모델은 **카메라와 dish만** 따로 짭니다.
+> The bus, solar panels, reaction wheels, propulsion, and battery are built from the [`../satellite/`](../satellite/) shared core — this model adds only **the camera and dish**.
 
-## 동작
+## Behavior
 
-- **분해**: 방사형 — 각 부속이 버스에서 면 방향으로 떨어져 나갑니다(태양전지판 ±X, 안테나·휠 상단, 카메라 하단, 배터리 +Z). 버스는 앵커.
-- **클릭**: 부품 강조 + 정보 패널(치수·입문↔심화·출처). 태양전지판은 좌우 둘 다 같은 설명.
-- 회전·줌·선택·패널은 공통 엔진.
+- **Exploding**: radial — each accessory separates from the bus outward along its own face (solar panels ±X, antenna and wheels toward the top, camera toward the bottom, battery +Z). The bus is the anchor.
+- **Clicking**: highlights the part + shows the info panel (dimensions, basic↔detailed toggle, sources). Both solar panels share the same description.
+- Rotation, zoom, selection, and the info panel are handled by the shared engine.
 
-## 주요 사양
+## Key specs
 
-3축 안정화 버스 + 태양전지판 ×2 · 본체 ≈ 2×2×3 m · 질량 ≈ 2,000 kg · 전력 ≈ 8 kW · 탑재체 관측 카메라(GSD ~0.5 m) · 안테나 고이득 ∅ ≈ 2 m(X-band) · 궤도 LEO ≈ 600 km
+3-axis-stabilized bus + 2 solar panels · body ≈ 2×2×3 m · mass ≈ 2,000 kg · power ≈ 8 kW · payload: observation camera (GSD ~0.5 m) · antenna: high-gain ∅ ≈ 2 m (X-band) · orbit: LEO ≈ 600 km
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 공유 코어 import + 카메라·dish 배치·분해 벡터
-- [`data.ts`](data.ts) — `...commonSatInfo` + 고유 antenna·payload 설명(4개 언어)
-- [`CLAUDE.md`](CLAUDE.md) — 이 변형 고유 사항(가족 지침은 `../satellite/CLAUDE.md`)
+- [`model.tsx`](model.tsx) — imports the shared core + places the camera and dish + explode vectors
+- [`data.ts`](data.ts) — `...commonSatInfo` plus this variant's unique antenna/payload descriptions (4 languages)
+- [`CLAUDE.md`](CLAUDE.md) — this variant's unique details (family-wide guidance is in `../satellite/CLAUDE.md`)
 
-## 구현 메모
+## Implementation notes
 
-- 통신 위성([`../comsat/`](../comsat/))과 **같은 버스 코어**를 씁니다 — 나란히 보면 "버스 + 탑재체" 구조가 분명해집니다.
-- 새 공용 텍스처 `makeFoilTexture`(MLI 금박)·`makeSolarTexture`(셀 격자)는 두 위성·향후 우주 모델이 공유합니다.
+- Uses the **same bus core** as the communications satellite ([`../comsat/`](../comsat/)) — viewing them side by side makes the "bus + payload" structure clear.
+- The new shared textures `makeFoilTexture` (MLI foil) and `makeSolarTexture` (cell grid) are shared by both satellites and future space models.

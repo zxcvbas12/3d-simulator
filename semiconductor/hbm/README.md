@@ -1,43 +1,43 @@
-# HBM 고대역폭 메모리 — 모델
+# HBM High Bandwidth Memory — Model
 
-> **핵심 질문: 메모리를 왜 쌓는가?**
-> 얇은 DRAM 다이를 수직으로 쌓고 실리콘 관통 전극(TSV)으로 곧장 연결하면, 좁은 면적에 큰 용량과 아주 넓은 데이터 통로(대역폭)를 동시에 얻습니다. 이 사이트의 **첫 모델이자 품질 기준**입니다.
+> **Core question: why do we stack memory?**
+> Stacking thin DRAM dies vertically and wiring them straight through with through-silicon vias (TSV) gets you large capacity and a very wide data path (bandwidth) in a small footprint. This is the site's **first model and its quality benchmark**.
 
-## 구조 (아래 → 위)
+## Structure (bottom → top)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `substrate` | 패키지 기판 | 가장 큰 받침. 윗면 PCB 라우팅 텍스처 |
-| `bga` | BGA 솔더 볼 | 기판 아랫면 14×14 실버 볼 격자 (외부 연결) |
-| `interposer` | 실리콘 인터포저 | 얇은 회색 판. 윗면 미세 배선, 아랫면 골드 C4 범프 |
-| `base` | 베이스(로직) 다이 | 메모리 컨트롤러·PHY. 윗면 큰 기능 블록 텍스처 |
-| `dram` | DRAM 다이 ×8~16 (층수 옵션) | 블루 계열(층마다 명도 변화). 맨 위 다이에 "HBM" 레이저 각인 |
-| `tsv` | TSV (관통 전극) | 5×5 구리 기둥 — 분해 시 **스택 높이에 맞춰 늘어나며** 모든 층 관통 |
-| `microbump` | 마이크로 범프 | 각 다이 밑면의 골드 솔더 볼 격자 |
+| `substrate` | Package substrate | The largest base. PCB routing texture on top |
+| `bga` | BGA solder balls | 14×14 grid of silver balls on the underside of the substrate (external connections) |
+| `interposer` | Silicon interposer | Thin gray plate. Fine traces on top, gold C4 bumps on the bottom |
+| `base` | Base (logic) die | Memory controller/PHY. Large functional-block texture on top |
+| `dram` | DRAM dies ×8-16 (layer-count option) | Blue family (brightness varies per layer). The top die has an "HBM" laser mark |
+| `tsv` | TSV (through-silicon vias) | 5×5 grid of copper pillars — **stretches to match the stack height** and passes through every layer when exploded |
+| `microbump` | Micro bumps | Grid of gold solder balls on the underside of each die |
 
-## 동작
+## Behavior
 
-- **분해**: 수직 — 아래층부터 순차 전개(stagger) + 가감속. TSV는 매 프레임 길이를 갱신해 펼쳐진 스택을 계속 관통합니다(`update` 훅).
-- **DRAM 클릭**: 정보 패널에 "n번째 층" 표시 (`layer` 필드).
-- 회전·줌·선택·패널은 공통 엔진 — 이 폴더 코드는 형상과 설명뿐입니다.
+- **Exploding**: vertical — layers fan out bottom-first with stagger + easing. TSVs update their length every frame to keep piercing through the expanded stack (`update` hook).
+- **Clicking a DRAM die**: the info panel shows "layer n" (the `layer` field).
+- Rotation, zoom, selection, and the info panel are all handled by the shared engine — this folder's code is only geometry and descriptions.
 
-## 옵션 (뷰어 좌상단 토글)
+## Options (top-left viewer toggle)
 
-- **층수** — 8-Hi(기본) / 12-Hi / 16-Hi: 스택 높이를 바꿔 봅니다. TSV 길이·맨 위 레이저 각인(`…·{n}H`)·카메라 거리가 자동으로 따라갑니다.
-- **단면(cutaway)** — 절단면으로 스택 내부(층 구조·TSV 구리 기둥 단면)를 봅니다. 분해 슬라이더와 조합 가능.
+- **Layer count** — 8-Hi (default) / 12-Hi / 16-Hi: change the stack height. TSV length, the top die's laser mark (`...·{n}H`), and camera distance all follow automatically.
+- **Cutaway** — see inside the stack (layer structure, TSV copper-pillar cross-section) via a clipping plane. Can be combined with the explode slider.
 
-## 주요 사양 (정보 패널·카탈로그에 표기)
+## Key specs (shown in the info panel / catalog)
 
-8-Hi DRAM + 로직 다이 · 다이 ≈ 11 × 11 mm · 스택 ≈ 0.72 mm · DRAM ≈ 50 μm/장 · TSV ∅ ≈ 10 μm · 대역폭 ≈ 1 TB/s/스택 · 2.5D(Si 인터포저) 패키징
+8-Hi DRAM + logic die · die ≈ 11 × 11 mm · stack ≈ 0.72 mm · DRAM ≈ 50 μm/layer · TSV ∅ ≈ 10 μm · bandwidth ≈ 1 TB/s/stack · 2.5D (Si interposer) packaging
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·분해 벡터·TSV update 훅
-- [`data.ts`](data.ts) — 부품 7종 설명, 4개 언어 (lead / detail / facts / spec)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양(시각·인터랙션 기준)
+- [`model.tsx`](model.tsx) — geometry, materials, explode vectors, the TSV update hook
+- [`data.ts`](data.ts) — descriptions for the 7 parts, in 4 languages (lead / detail / facts / spec)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec (visual/interaction reference)
 
-## 구현 메모
+## Implementation notes
 
-- 원본은 바닐라 Three.js 단일 파일 프로토타입 [`/hbm-3d-space.html`](../../hbm-3d-space.html) — 형상·텍스처·연출을 R3F `ModelDef`로 이식했습니다.
-- 반복 요소(BGA·C4·마이크로 범프·TSV)는 InstancedMesh. 절차적 텍스처는 공용 모듈에서 캐시 공유.
-- 향후 확장 아이디어: 단면 절단(cutaway), 층 수 선택(12·16-Hi).
+- The original was a single-file vanilla Three.js prototype, [`/hbm-3d-space.html`](../../hbm-3d-space.html) — its geometry, textures, and animation were ported into an R3F `ModelDef`.
+- Repeated elements (BGA, C4, micro bumps, TSVs) use InstancedMesh. Procedural textures are cached and shared from a shared module.
+- Future extension ideas: cutaway sectioning, layer-count selection (12/16-Hi).

@@ -1,43 +1,43 @@
-# 우주 (Space) — 카테고리
+# Space — Category
 
-극한 환경을 견디는 우주 기계를 3D 분해도로 다루는 카테고리입니다. **발사 → 궤도 → 귀환**으로 이어지는 한 번의 우주 여정을 네 모델로 따라갑니다.
+A category covering space hardware built to survive extreme environments, shown as 3D exploded views. Four models trace a single space journey: **launch → orbit → return**.
 
-## 모델 목록
+## Model list
 
-| 모델 | 상태 | 핵심 질문 | 형상·분해 |
+| Model | Status | Core question | Geometry / exploding |
 |---|---|---|---|
-| [`rocket-engine/`](rocket-engine/) 로켓 엔진 | ✅ 학습 가능 | 추력은 **어떻게 생기나** | 회전체(벨·연소실), 수직+방사 분해 |
-| [`eo-satellite/`](eo-satellite/) 지구관측 위성 | ✅ 학습 가능 | 위성은 **어떻게 스스로 운영되나** | 모듈형(버스+부속), 방사형 분해 |
-| [`comsat/`](comsat/) 통신 위성 | ✅ 학습 가능 | 통신 위성은 **어떻게 신호를 중계하나** | 모듈형 — eo-satellite와 **버스 코어 공유** |
-| [`reentry-capsule/`](reentry-capsule/) 재진입 캡슐 | ✅ 학습 가능 | 어떻게 **안 타고 귀환하나** | 무딘 원뿔+구형 차폐막, 동심 껍질 분해 |
+| [`rocket-engine/`](rocket-engine/) Rocket Engine | ✅ Learnable | **How** is thrust produced | Bodies of revolution (bell, combustion chamber), vertical + radial exploding |
+| [`eo-satellite/`](eo-satellite/) Earth Observation Satellite | ✅ Learnable | **How** does a satellite operate itself | Modular (bus + payload), radial exploding |
+| [`comsat/`](comsat/) Communications Satellite | ✅ Learnable | **How** does a comms satellite relay signals | Modular — **shares its bus core** with eo-satellite |
+| [`reentry-capsule/`](reentry-capsule/) Reentry Capsule | ✅ Learnable | **How** does it return without burning up | Blunt cone + spherical heat shield, concentric-shell exploding |
 
-> [`satellite/`](satellite/)는 **모델이 아니라 두 위성이 공유하는 코어 폴더**입니다(빌더·공통 설명). 사이트에 등록되지 않습니다.
+> [`satellite/`](satellite/) is **not a model** — it's the shared core folder used by both satellites (builder + shared descriptions). It is not registered on the site.
 
-**추천 학습 순서**: 로켓 엔진 → 위성(지구관측·통신) → 재진입 캡슐.
-발사체의 추진(로켓 엔진)으로 궤도에 올라가, 거기서 일하는 위성을 보고, 다시 대기로 돌아오는 캡슐로 여정을 닫습니다. 위성 2종은 같은 버스에 탑재체만 다르게 얹은 것이라 나란히 보면 "버스 + 탑재체" 구조가 분명해집니다.
+**Recommended order**: Rocket Engine → Satellites (EO, Comms) → Reentry Capsule.
+Launch propulsion (rocket engine) gets you to orbit, where a satellite does its work, and the journey closes with a capsule returning through the atmosphere. The two satellite models are the same bus with a different payload on top, so viewing them side by side makes the "bus + payload" structure clear.
 
-## 이 카테고리의 공통 시각 언어
+## Shared visual language for this category
 
-- **형상**: 반도체의 "적층 박스"와 달리 **회전체(원통·원뿔·벨)·평면 패널·동심 껍질**이 핵심. `LatheGeometry`·`CylinderGeometry`·`TubeGeometry`·`TorusGeometry`를 쓰되 공통 `<Viewer>` 엔진은 그대로.
-- **분해 방향**: 수직(추력/대칭 축) + 일부 방사(배관·부속·껍질 분리).
-- **색**: **구리/브론즈**(연소실·노즐·열 차폐막 등 고열 금속)를 강조색으로, 차가운 강철/실버 구조 + 연료 블루·산화제 골드·태양전지 청색. 고온부에 절제된 골드 발광(네온 금지).
-- **표면**: 절차적 캔버스 텍스처 — 냉각 채널·MLI 금박·태양전지 셀 격자·융제 탄화. 사실감을 위한 무늬.
-- **공통 용어**: 노즐·연소실·인젝터·터보펌프·재생냉각·짐벌·추진제·비추력 / 버스·탑재체·반작용 휠·MLI / 융제 차폐막·재진입 — 표기는 `locales/`와 각 `data.ts`에서 통일.
+- **Geometry**: unlike semiconductor's "stacked boxes," this category is built around **bodies of revolution (cylinders, cones, bells), flat panels, and concentric shells**. Uses `LatheGeometry`/`CylinderGeometry`/`TubeGeometry`/`TorusGeometry`, but still plugs into the same shared `<Viewer>` engine.
+- **Explode direction**: mostly vertical (along the thrust/symmetry axis), with some radial exploding (plumbing, accessories, shell separation).
+- **Colors**: **copper/bronze** (high-heat metals like combustion chambers, nozzles, heat shields) as the accent, against cool steel/silver structure, plus fuel blue, oxidizer gold, and solar-cell blue. Restrained gold glow on hot sections (no neon).
+- **Surfaces**: procedural canvas textures — cooling channels, MLI foil, solar-cell grid, ablative charring. Patterns for visual realism.
+- **Shared terminology**: nozzle, combustion chamber, injector, turbopump, regenerative cooling, gimbal, propellant, specific impulse (Isp) / bus, payload, reaction wheel, MLI / ablative heat shield, reentry — kept consistent across `locales/` and each model's `data.ts`.
 
-## 폴더 구성
+## Folder layout
 
-각 모델 폴더는 두 파일 + 문서로 구성됩니다:
+Each model folder consists of two files plus docs:
 
 ```
 <model>/
-  model.tsx   # 3D 형상 — 부품(PartDef[])과 분해 벡터. 공통 <Viewer> 엔진에 꽂힌다.
-  data.ts     # 부품 설명 — 부품 id별 4개 언어 (tag·title·spec·lead·detail·facts·sources)
-  README.md   # 사람용: 모델이 보여주는 것·부품·동작
-  CLAUDE.md   # AI 협업 지침: 구조·색·분해 사양
+  model.tsx   # 3D geometry — parts (PartDef[]) and explode vectors. Plugs into the shared <Viewer> engine.
+  data.ts     # Part descriptions — 4 languages per part id (tag, title, spec, lead, detail, facts, sources)
+  README.md   # human-facing: what the model shows, its parts, its behavior
+  CLAUDE.md   # AI collaboration guidance: structure, colors, explode spec
 ```
 
-회전·줌·분해·선택·정보 패널은 모델 코드에 없습니다 — 전부 [`src/shared/r3f/`](../src/shared/r3f/)의 공통 엔진이 처리합니다. 절차적 텍스처도 [`src/shared/r3f/textures.ts`](../src/shared/r3f/textures.ts)를 파라미터만 바꿔 공유합니다(파라미터별 캐시).
+Rotation, zoom, exploding, selection, and the info panel are not in the model code at all — they're all handled by the shared engine in [`src/shared/r3f/`](../src/shared/r3f/). Procedural textures are also shared from [`src/shared/r3f/textures.ts`](../src/shared/r3f/textures.ts) by varying only the parameters (cached per parameter set).
 
-## 정확성에 대해
+## On accuracy
 
-특정 실제 기체를 베끼지 않고, 그 분야의 **대표적인 구조를 일반화**한 교육용 모델입니다(추력·치수·층 수·각도 등은 보기 좋고 이해하기 쉽게 조정). 부품 설명의 치수(`spec`)는 실제 제품의 대표적인 수치 범위를 표기하며, 각 부품에는 표준·백과 수준의 출처(`sources`)를 답니다.
+Rather than copying any specific real vehicle, these are educational models that **generalize the representative structure** of the field (thrust, dimensions, layer counts, angles, etc. are adjusted for clarity and ease of understanding). The dimensions in each part's `spec` field represent typical value ranges for real hardware, and each part links standard/encyclopedia-level `sources`.

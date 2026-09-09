@@ -1,39 +1,39 @@
-# 반도체 (Semiconductor) — 카테고리
+# Semiconductor — Category
 
-칩·패키지 단위의 반도체 제품을 3D 분해도로 다루는 카테고리입니다. 사이트에서 **첫 번째로 구현된 분야**이며, 다른 카테고리의 품질 기준이 되는 모델들이 들어 있습니다.
+A category covering chip- and package-level semiconductor products as 3D exploded views. This is the **first category implemented** on the site, and its models set the quality bar for the other categories.
 
-## 모델 목록
+## Model list
 
-| 모델 | 상태 | 핵심 질문 | 분해 방식 |
+| Model | Status | Core question | Exploding style |
 |---|---|---|---|
-| [`hbm/`](hbm/) HBM 고대역폭 메모리 | ✅ 학습 가능 | 메모리를 **왜 쌓는가** | 수직 적층 (8층 + TSV) |
-| [`gpu/`](gpu/) GPU 패키지 | ✅ 학습 가능 | 메모리를 **왜 프로세서 옆에 두는가** | 혼합 (수직 + 평면) + 스택 2단계 |
-| [`cpu/`](cpu/) CPU 칩렛 패키지 | ✅ 학습 가능 | 칩을 **왜 나누는가** | 혼합 (평면 중심) |
+| [`hbm/`](hbm/) HBM High Bandwidth Memory | ✅ Learnable | **Why** do we stack memory | Vertical stack (8 layers + TSV) |
+| [`gpu/`](gpu/) GPU Package | ✅ Learnable | **Why** put memory next to the processor | Mixed (vertical + planar) + 2-stage stack |
+| [`cpu/`](cpu/) CPU Chiplet Package | ✅ Learnable | **Why** split a chip up | Mixed (mostly planar) |
 
-**추천 학습 순서**: HBM → GPU → CPU.
-쌓는 구조(HBM)를 먼저 이해하면, 그것을 옆에 두는 이유(GPU 2.5D)와 칩을 나누는 이유(CPU 칩렛)가 자연스럽게 이어집니다. GPU 모델의 HBM 스택은 간략화 버전이므로 내부가 궁금하면 HBM 모델로 돌아가면 됩니다.
+**Recommended order**: HBM → GPU → CPU.
+Understanding a stacked structure (HBM) first makes it easier to follow why you'd put one next to a processor (GPU's 2.5D package) and why you'd split a chip into chiplets (CPU). The GPU model's HBM stack is a simplified version — go back to the HBM model if you want to see inside it.
 
-## 이 카테고리의 공통 시각 언어
+## Shared visual language for this category
 
-- **분해 방향**: 기본은 수직 적층 — 층이 위아래로 벌어지며 내부 다이·배선이 드러난다.
-- **색**: 다이 = 차분한 블루 계열(층마다 명도 미세 변화), 금속 연결(TSV·범프·배선) = 구리/골드, 솔더 볼 = 실버. GPU 연산 다이만 구분되는 청록 포인트색.
-- **표면**: 절차적 캔버스 텍스처(기판 라우팅·미세 배선·다이 셀 격자·레이저 각인) — 실제 회로 데이터가 아니라 사실감을 위한 무늬.
-- **공통 용어**: 다이(die) · 패키지(package) · 기판(substrate) · 인터포저(interposer) · 범프(bump) — 표기는 `locales/`와 각 `data.ts`에서 통일.
+- **Explode direction**: vertical stacking by default — layers spread apart vertically, revealing the die and interconnects inside.
+- **Colors**: dies use a muted blue family (subtle brightness variation per layer), metal interconnects (TSV/bumps/traces) use copper/gold, solder balls use silver. Only the GPU's compute die gets a distinct teal accent.
+- **Surfaces**: procedural canvas textures (substrate routing, fine traces, die-cell grid, laser marking) — patterns for visual realism, not real circuit data.
+- **Shared terminology**: die, package, substrate, interposer, bump — kept consistent across `locales/` and each model's `data.ts`.
 
-## 폴더 구성
+## Folder layout
 
-각 모델 폴더는 두 파일 + 문서로 구성됩니다:
+Each model folder consists of two files plus docs:
 
 ```
 <model>/
-  model.tsx   # 3D 형상 — 부품(PartDef[])과 분해 벡터. 공통 <Viewer> 엔진에 꽂힌다.
-  data.ts     # 부품 설명 — 부품 id별 4개 언어 (tag·title·spec·lead·detail·facts)
-  README.md   # 사람용: 모델이 보여주는 것·부품·동작
-  CLAUDE.md   # AI 협업 지침: 구조·색·분해 사양
+  model.tsx   # 3D geometry — parts (PartDef[]) and explode vectors. Plugs into the shared <Viewer> engine.
+  data.ts     # Part descriptions — 4 languages per part id (tag, title, spec, lead, detail, facts)
+  README.md   # human-facing: what the model shows, its parts, its behavior
+  CLAUDE.md   # AI collaboration guidance: structure, colors, explode spec
 ```
 
-회전·줌·분해·선택·정보 패널은 모델 코드에 없습니다 — 전부 [`src/shared/r3f/`](../src/shared/r3f/)의 공통 엔진이 처리합니다. 절차적 텍스처도 [`src/shared/r3f/textures.ts`](../src/shared/r3f/textures.ts)를 파라미터만 바꿔 공유합니다(파라미터별 캐시).
+Rotation, zoom, exploding, selection, and the info panel are not in the model code at all — they're all handled by the shared engine in [`src/shared/r3f/`](../src/shared/r3f/). Procedural textures are also shared from [`src/shared/r3f/textures.ts`](../src/shared/r3f/textures.ts) by varying only the parameters (cached per parameter set).
 
-## 정확성에 대해
+## On accuracy
 
-모델은 공개 표준·백서 수준의 구조를 따르되 **교육 목적으로 단순화**되어 있습니다(층 수·비례·범프 개수 등은 보기 좋게 조정). 부품 설명의 치수(`spec`)는 실제 제품의 대표적인 수치 범위를 표기합니다.
+Models follow publicly documented, standard/whitepaper-level structure but are **simplified for educational purposes** (layer counts, proportions, bump counts, etc. are adjusted for clarity). The dimensions in each part's `spec` field represent typical value ranges for real products.

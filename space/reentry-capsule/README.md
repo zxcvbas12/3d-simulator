@@ -1,37 +1,37 @@
-# 재진입 캡슐 — 모델
+# Reentry Capsule — Model
 
-> **핵심 질문: 시속 28,000 km로 떨어지며 어떻게 안 타고 사람을 살려 착륙하나?**
-> 궤도에서 지구로 사람을 데려오는 "귀환" 단계의 유인 캡슐입니다. 무딘 몸체가 충격파로 열을 떼어내고, 융제(ablative) 차폐막이 타며 남은 열을 가져가고, 대기가 감속하고, 낙하산이 마무리합니다. 우주 카테고리의 **마지막 모델**로 발사→궤도→귀환 서사를 닫습니다.
+> **Core question: falling at 28,000 km/h, how does it return without burning up and keep its crew alive?**
+> A crewed capsule for the "return" phase, bringing people home from orbit. Its blunt body sheds heat via the shock wave, an ablative heat shield burns away and carries off the remaining heat, the atmosphere decelerates it, and a parachute finishes the job. The **final model** in the space category, closing the launch → orbit → return story.
 
-## 구조 (동심 껍질 + 상·하부, 7부품)
+## Structure (concentric shells + upper/lower sections, 7 parts)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `heatshield` | 열 차폐막 | 바닥의 융제 구형 캡 — 구리/탄화 톤(`makeAblativeTexture`) |
-| `backshell` | 백셸 / 외피 | 절두 원뿔 TPS + MLI 금박 패치 |
-| `pressure-vessel` | 여압 동체 | 백셸 안쪽 티타늄 구조 — 1기압 유지 |
-| `interior` | 내부 | 좌석 3 + 항전 박스 — 4~8 g 흡수 |
-| `rcs` | 자세 제어 추력기 | 외피 둘레 소형 노즐 8개 — 진입 각·양력 제어 |
-| `parachute` | 낙하산 | 상단 캐니스터 + 캐노피(화이트/오렌지) |
-| `hatch` | 해치 / 도킹 | 상단 도킹 링 + 측면 해치 + 창 |
+| `heatshield` | Heat shield | An ablative spherical cap at the bottom — copper/charred tones (`makeAblativeTexture`) |
+| `backshell` | Backshell / outer shell | A truncated cone of thermal protection + MLI foil patches |
+| `pressure-vessel` | Pressure vessel | The titanium structure inside the backshell — maintains 1 atmosphere |
+| `interior` | Interior | 3 seats + avionics boxes — absorbs 4-8 g |
+| `rcs` | Reaction control thrusters | 8 small nozzles around the shell — controls entry angle and lift |
+| `parachute` | Parachute | A canister on top + canopy (white/orange) |
+| `hatch` | Hatch / docking | A docking ring on top + a side hatch + window |
 
-## 동작
+## Behavior
 
-- **분해**: 동심 껍질 벗기기 — 열 차폐막이 아래로, 백셸·여압 동체가 위로 텔레스코핑하며 3겹 껍질이 벗겨지고 내부(좌석·항전)가 드러납니다. 낙하산은 위로, 해치·RCS는 옆으로.
-- **클릭**: 부품 강조 + 정보 패널(치수·입문↔심화·출처).
-- 회전·줌·선택·패널은 공통 엔진.
+- **Exploding**: peeling back concentric shells — the heat shield drops away (direction of travel), the backshell and pressure vessel telescope upward, peeling back 3 layers of shell and revealing the interior (seats, avionics). The parachute moves up, the hatch and RCS move sideways.
+- **Clicking**: highlights the part + shows the info panel (dimensions, basic↔detailed toggle, sources).
+- Rotation, zoom, selection, and the info panel are handled by the shared engine.
 
-## 주요 사양
+## Key specs
 
-무딘 원뿔 캡슐 · 베이스 ∅ ≈ 5 m · 높이 ≈ 3.3 m · 질량 ≈ 9 t · 승무원 3–4 · 재진입 속도 ≈ 7.8 km/s(LEO) · 열차폐 융제(ablative) · 감속 대기 + 낙하산(드로그 + 메인 ×3)
+Blunt-cone capsule · base ∅ ≈ 5 m · height ≈ 3.3 m · mass ≈ 9 t · crew of 3-4 · reentry speed ≈ 7.8 km/s (from LEO) · ablative heat shield · deceleration via atmosphere + parachutes (drogue + 3 mains)
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 동심 껍질 형상(Lathe 차폐막, Cone 백셸/여압동체, 인스턴싱 RCS, Box 좌석, Torus 도킹 링)·분해 벡터
-- [`data.ts`](data.ts) — 부품 7종 설명, 4개 언어 (lead / detail / facts / spec / sources)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양
+- [`model.tsx`](model.tsx) — concentric-shell geometry (lathe heat shield, cone backshell/pressure vessel, instanced RCS, box seats, torus docking ring), explode vectors
+- [`data.ts`](data.ts) — descriptions for the 7 parts, in 4 languages (lead / detail / facts / spec / sources)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec
 
-## 구현 메모
+## Implementation notes
 
-- 새 공용 텍스처 `makeAblativeTexture`(탄화 융제 표면)를 추가했고, 백셸의 금박 패치는 위성과 같은 `makeFoilTexture`를 재사용합니다.
-- 핵심 교육 포인트: **무딘 몸체**가 충격파를 앞으로 밀어 열을 떼어내고(직관과 반대), 융제 차폐막은 일부러 타서 열을 가져가는 **희생식**입니다. 감속은 추력이 아니라 대기가 맡습니다.
+- Added a new shared texture, `makeAblativeTexture` (charred ablative surface); the backshell's foil patches reuse the same `makeFoilTexture` used by the satellites.
+- Key learning point: a **blunt body** pushes the shock wave ahead of it, shedding most of the heat away from the capsule (counterintuitive), and the ablative shield is deliberately sacrificial, burning away to carry heat off with it. Deceleration is the atmosphere's job, not thrust.

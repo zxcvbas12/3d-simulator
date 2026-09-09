@@ -1,39 +1,39 @@
-# 통신 위성 — 모델
+# Communications Satellite — Model
 
-> **핵심 질문: 통신 위성은 어떻게 신호를 중계하나?**
-> 정지궤도(GEO, 35,786 km)에서 지상의 신호를 받아 증폭해 다시 내려보내는 중계국입니다. 지구관측 위성과 **똑같은 버스**를 쓰되, 탑재체가 카메라가 아니라 중계기(transponder)이고, 지구를 향한 큰 반사판으로 넓은 지역에 신호를 뿌립니다.
+> **Core question: how does a comms satellite relay signals?**
+> Sitting in geostationary orbit (GEO, 35,786 km), it receives a signal from the ground, amplifies it, and beams it back down — a relay station. It uses **the exact same bus** as the Earth observation satellite, but its payload is a transponder instead of a camera, and it broadcasts to a wide area via a large reflector pointed at Earth.
 
-## 구조 (중앙 버스 + 면별 부속, 7부품)
+## Structure (central bus + face-mounted accessories, 7 parts)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `bus` | 본체 / 버스 | 금박(MLI) 박스 — 모든 장비의 토대 |
-| `solar` ×2 | 태양전지판 | 좌우(±X) 청색 셀 날개 — 전력 생산 |
-| `antenna` | 반사판 안테나 ×2 | 지구를 향한(+Z) 대형 반사판 — 신호 중계 |
-| `payload` | 중계기(transponder) | 전자 박스 + 도파관 혼 — 수신·증폭·재송신 |
-| `propulsion` | 추진 모듈 | 추진제 탱크(구) + 추력기 — 궤도 유지 |
-| `adcs` | 반작용 휠 | 상단 휠 클러스터 — 연료 없이 자세 제어 |
-| `battery` | 배터리 | 셀 팩 — 음지(eclipse) 전력 저장 |
+| `bus` | Body / bus | A foil (MLI)-wrapped box — the foundation for all the equipment |
+| `solar` ×2 | Solar panels | Blue-cell wings on either side (±X) — power generation |
+| `antenna` | Reflector antennas ×2 | Large reflectors pointed at Earth (+Z) — relays signals |
+| `payload` | Transponder | An electronics box + waveguide horn — receives, amplifies, and retransmits |
+| `propulsion` | Propulsion module | A propellant tank (sphere) + thrusters — orbit maintenance |
+| `adcs` | Reaction wheels | A wheel cluster on top — attitude control without using fuel |
+| `battery` | Battery | A cell pack — stores power for eclipse periods |
 
-> 버스·태양전지판·반작용 휠·추진·배터리는 [`../satellite/`](../satellite/) 공유 코어에서 만들고, 이 모델은 **반사판 ×2와 중계기만** 따로 짭니다.
+> The bus, solar panels, reaction wheels, propulsion, and battery are built from the [`../satellite/`](../satellite/) shared core — this model adds only **the two reflectors and the transponder**.
 
-## 동작
+## Behavior
 
-- **분해**: 방사형 — 반사판은 지구 쪽(+Z)으로, 중계기는 반대쪽(−Z)으로, 태양전지판 ±X, 휠·배터리 상단. 버스는 앵커.
-- **클릭**: 부품 강조 + 정보 패널(치수·입문↔심화·출처).
-- 회전·줌·선택·패널은 공통 엔진.
+- **Exploding**: radial — reflectors move toward Earth (+Z), the transponder moves the opposite way (−Z), solar panels move ±X, wheels and battery move toward the top. The bus is the anchor.
+- **Clicking**: highlights the part + shows the info panel (dimensions, basic↔detailed toggle, sources).
+- Rotation, zoom, selection, and the info panel are handled by the shared engine.
 
-## 주요 사양
+## Key specs
 
-3축 안정화 버스 + 태양전지판 ×2 · 본체 ≈ 2×2×3 m · 질량 ≈ 2,000 kg · 전력 ≈ 8 kW · 탑재체 중계기(다중 트랜스폰더) · 안테나 반사판 ∅ ≈ 2.5 m ×2(Ku/Ka-band) · 궤도 GEO 35,786 km
+3-axis-stabilized bus + 2 solar panels · body ≈ 2×2×3 m · mass ≈ 2,000 kg · power ≈ 8 kW · payload: transponder (multiple channels) · antenna: 2 reflectors ∅ ≈ 2.5 m (Ku/Ka-band) · orbit: GEO 35,786 km
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 공유 코어 import + 반사판 ×2·중계기 배치·분해 벡터
-- [`data.ts`](data.ts) — `...commonSatInfo` + 고유 antenna·payload 설명(4개 언어)
-- [`CLAUDE.md`](CLAUDE.md) — 이 변형 고유 사항(가족 지침은 `../satellite/CLAUDE.md`)
+- [`model.tsx`](model.tsx) — imports the shared core + places the 2 reflectors and transponder + explode vectors
+- [`data.ts`](data.ts) — `...commonSatInfo` plus this variant's unique antenna/payload descriptions (4 languages)
+- [`CLAUDE.md`](CLAUDE.md) — this variant's unique details (family-wide guidance is in `../satellite/CLAUDE.md`)
 
-## 구현 메모
+## Implementation notes
 
-- 지구관측 위성([`../eo-satellite/`](../eo-satellite/))과 코어를 공유합니다. "관측은 가까이(LEO), 통신은 한자리(GEO)" — 임무가 궤도와 탑재체를 정합니다.
-- 반사판은 공유 `buildDish`를 지구 방향으로 돌려(`rotation.x=-π/2`) 좌우로 배치한 것입니다.
+- Shares its core with the Earth observation satellite ([`../eo-satellite/`](../eo-satellite/)). "Observation stays close (LEO), communications stays put (GEO)" — the mission determines both the orbit and the payload.
+- The reflectors are the shared `buildDish` rotated to face Earth (`rotation.x=-π/2`) and placed on either side.

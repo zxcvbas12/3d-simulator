@@ -1,46 +1,46 @@
-# 로봇 액추에이터 — 모델
+# Robotic Actuator — Model
 
-> **핵심 질문: 모터의 빠른 회전이 어떻게 크고 정밀한 관절 움직임이 되는가?**
-> 협동로봇·휴머노이드 관절 하나에는 모터·감속기·센서·베어링이 전부 들어 있습니다 — **일체형 관절 액추에이터**. 주인공은 부품 3개로 감속비 ≈100:1을 만드는 **하모닉 드라이브**입니다. 로보틱스 카테고리의 첫 모델.
+> **Core question: how does a motor's fast spin become large, precise joint movement?**
+> A single joint in a collaborative robot or humanoid packs a motor, a reduction gear, sensors, and bearings into one unit — an **integrated joint actuator**. The star of the show is the **harmonic drive**, which achieves roughly a 100:1 reduction ratio with just 3 parts. The first model in the robotics category.
 
-## 구조 (축방향 원통, 입력 → 출력)
+## Structure (an axial cylinder, input → output)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `housing` | 하우징 | 알루미늄 원통 셸 + 케이블 그로밋 |
-| `encoder` | 엔코더 | 슬릿 디스크(눈금 36) + 리더 PCB — 관절의 눈 |
-| `motor` | 프레임리스 BLDC | 고정자 + 구리 권선 띠 + 자석 로터 링 (도넛형) |
-| `wavegen` | 웨이브 제너레이터 | **타원 캠** + 골드 베어링 링 — 하모닉 입력 |
-| `flexspline` | 플렉스플라인 | 얇은 **유연 강철 컵** + 바깥 치형 — 하모닉 출력 |
-| `circspline` | 서큘러 스플라인 | 고정 링 기어(안쪽 치형) — 기준 |
-| `crossroller` | 크로스롤러 베어링 | 롤러 16개 **90° 교차** 배열 |
-| `flange` | 출력 플랜지 | 볼트 원 + 중공축 구멍 — 다음 링크 연결 |
+| `housing` | Housing | An aluminum cylindrical shell + cable grommet |
+| `encoder` | Encoder | A slit disk (36 graduations) + reader PCB — the joint's eye |
+| `motor` | Frameless BLDC | Stator + copper winding bands + a donut-shaped magnet rotor ring |
+| `wavegen` | Wave generator | An **elliptical cam** + gold bearing ring — the harmonic drive's input |
+| `flexspline` | Flexspline | A thin, **flexible steel cup** with external teeth — the harmonic drive's output |
+| `circspline` | Circular spline | A fixed ring gear (internal teeth) — the reference |
+| `crossroller` | Cross-roller bearing | 16 rollers arranged in a **90°-crossed** pattern |
+| `flange` | Output flange | A bolt circle + a hollow-shaft hole — connects to the next link |
 
-## 동작
+## Behavior
 
-- **축방향 분해**: 하우징이 위로 열리고 → 엔코더는 입력 쪽(-x)으로 → 하모닉 3겹(캠·컵·링)·베어링·플랜지가 출력 쪽(+x)으로 **일렬로** 펼쳐집니다 — 동심 구조가 한눈에.
-- **감속 시각화 연출**: 자동 회전을 켜면 입력(웨이브 제너레이터)은 빠르게, 출력(컵·플랜지)은 **느리게 역방향**으로 돕니다. 실제 감속비는 ≈100:1이지만 시연은 12:1로 과장했습니다.
-- **단면(cutaway) 옵션**: 조립 상태에서 절단면으로 동심 구조(모터 링·권선·하모닉·베어링)를 봅니다.
+- **Axial exploding**: the housing opens upward → the encoder moves toward the input side (-x) → the three harmonic-drive layers (cam, cup, ring), bearing, and flange spread out **in a line** toward the output side (+x) — the concentric structure becomes visible at a glance.
+- **Reduction-ratio animation**: with auto-rotate on, the input (wave generator) spins fast while the output (cup and flange) spins **slowly, in the opposite direction**. The real reduction ratio (≈100:1) would make the output look motionless, so the demo exaggerates it to 12:1 (the real figure is stated in `data.ts`).
+- **Cutaway option**: reveals the concentric structure (motor ring, windings, harmonic drive, bearing) in cross-section while assembled.
 
-## 주요 사양 (정보 패널·카탈로그)
+## Key specs (info panel / catalog)
 
-frameless BLDC + strain wave gear · 감속비 ≈ 100:1 · 정격 토크 ≈ 50–200 N·m · 반복 정밀도 ≈ ±0.01° · 앱솔루트 엔코더 17–20bit · 크로스롤러 베어링 1개 · 중공축 케이블 통과
+Frameless BLDC + strain-wave gear · reduction ratio ≈ 100:1 · rated torque ≈ 50-200 N·m · repeatability ≈ ±0.01° · absolute encoder 17-20 bit · 1 cross-roller bearing · hollow-shaft cable pass-through
 
-## 학습 포인트
+## Learning points
 
-1. **하모닉 드라이브의 마법**: 바깥 링보다 이가 2개 적은 유연한 컵 — 타원 캠이 한 바퀴 돌 때 컵은 그 차이만큼만 돈다. 부품 3개 = 기어 수십 단, 백래시 거의 0.
-2. 모터는 빠르고 약하다 → 감속기가 **속도를 토크로** 바꾼다. 출력은 입력의 역방향.
-3. 크로스롤러 베어링 하나가 축·반경·모멘트 하중을 모두 받는다 — 관절을 짧고 단단하게.
-4. 이런 모듈 **6~7개를 이으면 로봇 팔**(자유도 6~7). 케이블은 중공축으로 통과.
+1. **The harmonic drive's trick**: a flexible cup with 2 fewer teeth than the outer ring — for every full turn of the elliptical cam, the cup only rotates by that 2-tooth difference. 3 parts = dozens of gear stages worth of reduction, with near-zero backlash.
+2. A motor is fast but weak → the reduction gear converts **speed into torque**. The output spins opposite to the input.
+3. A single cross-roller bearing handles axial, radial, and moment loads all at once — keeping the joint short and rigid.
+4. Chain **6-7 of these modules together and you get a robot arm** (6-7 degrees of freedom). Cables pass through the hollow shaft.
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·축방향 분해·감속 연출·원주 인스턴싱 헬퍼
-- [`data.ts`](data.ts) — 부품 8종 설명, 4개 언어 (lead / detail / facts / spec / sources)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양·남은 보강
+- [`model.tsx`](model.tsx) — geometry, materials, axial exploding, the reduction-ratio animation, circular-instancing helpers
+- [`data.ts`](data.ts) — descriptions for the 8 parts, in 4 languages (lead / detail / facts / spec / sources)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec and remaining follow-ups
 
-## 구현 메모
+## Implementation notes
 
-- 신규 절차 텍스처 0 — 하우징만 브러시드 메탈 재사용, 치형·롤러·볼트·눈금은 전부 원주 배치 인스턴싱(`ringInstances`).
-- 교육용 단순화: 치형 수(실제 수백 개)·비례는 보기 좋게 조정. 토크 센서·브레이크는 생략(설명에 언급).
-- 다음 모델로 **휴머노이드 손**을 만들면 "관절 → 관절의 조합" 흐름이 이어집니다.
+- Zero new procedural textures — only the housing reuses brushed metal; the teeth, rollers, bolts, and graduations are all placed via circular instancing (`ringInstances`).
+- Simplified for education: tooth counts (hundreds in reality) and proportions are adjusted for clarity. A torque sensor and brake are omitted (mentioned in the description only).
+- Making a **humanoid hand** as the next model continues the "joint → combination of joints" flow.

@@ -1,27 +1,27 @@
-# 자동차 (Automotive) — 카테고리
+# Automotive — Category
 
-자동차의 **동력계(powertrain)** 를 3D 분해도로 다루는 카테고리입니다 — 에너지를 저장하고(배터리), 변환하고(모터·엔진), 바퀴로 보내는 구조.
+A category covering a car's **powertrain** as 3D exploded views — the structure that stores energy (battery), converts it (motor/engine), and sends it to the wheels.
 
-## 모델 목록
+## Model list
 
-| 모델 | 상태 | 핵심 질문 | 분해 방식 |
+| Model | Status | Core question | Exploding style |
 |---|---|---|---|
-| [`ev-battery/`](ev-battery/) EV 배터리 팩 | ✅ 학습 가능 | 작은 셀을 **어떻게 큰 에너지로 키우는가** | 혼합 (수직 + 평면) |
-| [`drive-motor/`](drive-motor/) 구동 모터 | ✅ 학습 가능 | 전기를 **어떻게 회전력으로 바꾸는가** | 축방향 (axial) |
-| [`combustion-engine/`](combustion-engine/) 내연기관 엔진 | ✅ 학습 가능 | 연료를 **어떻게 동력으로 바꾸는가** | 정비 순서 수직 |
+| [`ev-battery/`](ev-battery/) EV Battery Pack | ✅ Learnable | **How** do small cells scale up into large energy storage | Mixed (vertical + planar) |
+| [`drive-motor/`](drive-motor/) Drive Motor | ✅ Learnable | **How** is electricity converted into rotational force | Axial |
+| [`combustion-engine/`](combustion-engine/) Internal Combustion Engine | ✅ Learnable | **How** is fuel converted into power | Vertical, in service-teardown order |
 
-**추천 학습 순서: EV 배터리 → 구동 모터 → 내연기관** — 전기 동력계(저장 → 구동)를 먼저 보고, 같은 일을 연료의 폭발로 해내는 내연기관과 비교합니다.
+**Recommended order: EV Battery → Drive Motor → Internal Combustion Engine** — see the electric powertrain (storage → drive) first, then compare it to the combustion engine, which does the same job via fuel explosion.
 
-## 이 카테고리의 공통 시각 언어
+## Shared visual language for this category
 
-- **분해 방향**: 혼합 — 한 하우징 안에 부품이 중첩·배열되므로, 커버·상부는 수직으로 들고 내부 모듈은 평면으로 펼친다.
-- **색**: 에너지·전동 톤으로 시안~틸 그린을 보조 강조에 사용(냉각·셀). 금속은 구리·실버·골드.
-- **공통 용어**: 셀(cell) · 모듈(module) · 팩(pack) · BMS · 버스바(busbar) · 고정자/회전자(stator/rotor).
+- **Explode direction**: mixed — since parts are nested and arranged within a single housing, covers/upper sections lift vertically while internal modules spread out on a plane.
+- **Colors**: cyan-to-teal-green as a secondary accent for energy/electric-drive tones (cooling, cells). Metals use copper, silver, gold.
+- **Shared terminology**: cell, module, pack, BMS, busbar, stator/rotor.
 
-## 폴더 구성
+## Folder layout
 
-각 모델 폴더는 `model.tsx`(형상) + `data.ts`(부품 설명 4개 언어) + `README.md`(사람용) + `CLAUDE.md`(AI 지침)로 구성됩니다. 회전·줌·분해·선택·정보 패널은 모델 코드에 없고 [`src/shared/r3f/`](../src/shared/r3f/)의 공통 엔진이 처리합니다.
+Each model folder consists of `model.tsx` (geometry) + `data.ts` (4-language part descriptions) + `README.md` (human-facing) + `CLAUDE.md` (AI guidance). Rotation, zoom, exploding, selection, and the info panel are not in the model code — they're handled by the shared engine in [`src/shared/r3f/`](../src/shared/r3f/).
 
-## 정확성에 대해
+## On accuracy
 
-모델은 대표적인 구조를 따르되 **교육 목적으로 단순화**되어 있습니다(셀 수·비례 등은 보기 좋게 조정). 부품 설명의 치수(`spec`)는 대표적인 수치 범위를 표기합니다.
+Models follow representative real-world structure but are **simplified for educational purposes** (cell counts, proportions, etc. are adjusted for clarity). The dimensions in each part's `spec` field represent typical value ranges.

@@ -1,49 +1,49 @@
-# EV 배터리 팩 — 모델
+# EV Battery Pack — Model
 
-> **핵심 질문: 낮은 전압의 작은 셀을 어떻게 차를 움직이는 큰 에너지로 키우는가?**
-> 전기차 배터리는 **셀 → 모듈 → 팩**의 3단 계층입니다. 약 3.7 V짜리 셀을 직렬로 길게 이어 수백 V를 만들고, 냉각·BMS·하우징이 그것을 안전하고 균일하게 지킵니다. 자동차 카테고리의 첫 모델.
+> **Core question: how do small, low-voltage cells scale up into the large energy store that moves a car?**
+> An EV battery is a 3-tier hierarchy: **cell → module → pack**. Cells of about 3.7 V are wired in a long series to reach hundreds of volts, and cooling, a BMS, and a housing keep it all safe and uniform. The first model in the automotive category.
 
-## 구조 (아래 → 위, 모듈은 평면 배열)
+## Structure (bottom → top, modules arranged on a plane)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `enclosure` | 팩 하우징 | 차 바닥에 까는 알루미늄 트레이 + 측벽 |
-| `coldplate` | 냉각판 | 모듈 아래 액냉 판 (시안 채널 텍스처) |
-| `module` | 배터리 모듈 ×6 | 3열×2행 평면 배열. 엔드플레이트 + 셀 묶음 |
-| `cell` | 배터리 셀 | 형식 옵션: 각형/원통/파우치 (인스턴싱) |
-| `busbar` | 버스바 | 모듈 단자를 잇는 구리 막대 (상부) |
-| `bms` | BMS 보드 | 셀 감시·보호 (그린 PCB) |
-| `lid` | 상단 커버 | 팩을 덮는 알루미늄 뚜껑 |
+| `enclosure` | Pack housing | The aluminum tray + side walls laid under the car's floor |
+| `coldplate` | Cold plate | A liquid-cooling plate under the modules (cyan channel texture) |
+| `module` | Battery modules ×6 | Arranged 3×2 on a plane. Each module = end plates + a bundle of prismatic cells |
+| `cell` | Battery cell | Prismatic cells inside a module (instanced). Cell-format option: prismatic/cylindrical/pouch |
+| `busbar` | Busbar | Copper bars connecting module terminals (across the top) |
+| `bms` | BMS board | Monitors and protects the cells (green PCB) |
+| `lid` | Top cover | The aluminum lid covering the pack |
 
-## 동작
+## Behavior
 
-- **분해**: 혼합 — 커버·버스바·BMS는 위로(수직), 모듈 6개는 바깥으로 펼쳐지며(평면) 팩 안 배열이 드러납니다. 냉각판·하우징은 아래로.
-- **2단계 분해**: 분해 후반(슬라이더 60% 이후)에 모듈 안의 셀·단자·엔드플레이트가 추가로 벌어집니다 — 셀→모듈→팩 계층이 분해 순서로도 읽힙니다.
-- **모듈 클릭**: "n번째" 모듈 표시(`layer`). 셀은 모듈 안에서 별도로 선택됩니다.
-- 회전·줌·선택·패널은 공통 엔진 — 이 폴더 코드는 형상과 설명뿐.
+- **Exploding**: mixed — the cover, busbar, and BMS move up (vertical), while the 6 modules fan outward (planar), revealing the pack's internal arrangement. The cold plate and housing move down.
+- **2-stage exploding**: in the second half of the explode range (past 60% on the slider), the cells, terminals, and end plates inside each module spread apart further — so the cell→module→pack hierarchy also reads through the exploding order.
+- **Clicking a module**: shows "module n" (`layer`). Cells are selected separately, inside the module.
+- Rotation, zoom, selection, and the info panel are all handled by the shared engine — this folder's code is only geometry and descriptions.
 
-## 옵션 (뷰어 좌상단 토글)
+## Options (top-left viewer toggle)
 
-- **셀 형식** — PRISM(각형, 기본) / CYL(원통 2열 + 양극 캡) / POUCH(파우치 + 탭): 같은 모듈 자리에서 세 가지 셀 패키징을 비교합니다. 2단계 분해도 형식별로 적용됩니다.
+- **Cell format** — PRISM (prismatic, default) / CYL (2 rows of cylindrical cells + positive-terminal caps) / POUCH (pouch cells + tabs): compares three cell packaging styles in the same module slot. The 2-stage exploding also applies per format.
 
-## 주요 사양 (정보 패널·카탈로그)
+## Key specs (info panel / catalog)
 
-셀→모듈→팩 계층 · 팩 ≈ 2.0 × 1.5 m · 셀 ≈ 3.7 V (Li-ion) · 팩 ≈ 400/800 V · 액냉(글리콜/물) · BMS(전압·온도·전류 + 밸런싱) · 밀폐 알루미늄 하우징
+Cell → module → pack hierarchy · pack ≈ 2.0 × 1.5 m · cell ≈ 3.7 V (Li-ion) · pack ≈ 400/800 V · liquid cooling (glycol/water) · BMS (voltage/temperature/current + balancing) · sealed aluminum housing
 
-## 학습 포인트
+## Learning points
 
-1. 셀 한 개는 약 3.7 V로 낮아 **직렬로 길게 이어** 수백 V를 만든다 — 버스바가 대전류를 나른다.
-2. **팩 > 모듈 > 셀** 3단 계층으로 묶어 조립·교체·관리를 쉽게 한다.
-3. 냉각판이 온도를, **BMS**가 모든 셀의 전압·균형을 지켜 안전과 수명을 확보한다.
+1. A single cell is only about 3.7 V, so cells are **wired in a long series** to reach hundreds of volts — the busbar carries the resulting high current.
+2. Grouping into a **pack > module > cell** 3-tier hierarchy makes assembly, replacement, and management easier.
+3. The cold plate manages temperature, and the **BMS** watches every cell's voltage and balance — the basis of safety and lifespan.
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·혼합 분해 벡터
-- [`data.ts`](data.ts) — 부품 7종 설명, 4개 언어 (lead / detail / facts / spec / sources)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양·남은 보강
+- [`model.tsx`](model.tsx) — geometry, materials, mixed explode vectors
+- [`data.ts`](data.ts) — descriptions for the 7 parts, in 4 languages (lead / detail / facts / spec / sources)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec and remaining follow-ups
 
-## 구현 메모
+## Implementation notes
 
-- 신규 절차 텍스처 없이 공용 모듈 재사용: 알루미늄=`makeBrushedMetalTexture`, 냉각 채널=`makeChannelTexture`, BMS=`makeRoutingTexture`.
-- 교육용 단순화: 실제 셀 수(차종당 수천 개)·치수는 차종마다 다릅니다. 여기서는 구조 이해를 위해 모듈 6개·모듈당 셀 5개로 간략화했습니다.
-- 다음 모델로 **구동 모터**를 만들면 "전기 동력계(저장→구동)" 한 쌍이 됩니다.
+- No new procedural textures — reuses shared modules: aluminum = `makeBrushedMetalTexture`, cooling channels = `makeChannelTexture`, BMS = `makeRoutingTexture`.
+- Simplified for education: real cell counts (thousands per vehicle) and dimensions vary by model. Here it's simplified to 6 modules with 5 cells each, for clarity of structure.
+- Making a **drive motor** as the next model completes the "electric powertrain (storage → drive)" pair.

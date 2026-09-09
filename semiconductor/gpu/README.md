@@ -1,47 +1,47 @@
-# GPU 패키지 — 모델
+# GPU Package — Model
 
-> **핵심 질문: 메모리를 왜 프로세서 바로 옆에 두는가?**
-> AI 가속기급 GPU는 칩 하나가 아니라 패키지입니다 — 큰 연산 다이 양옆에 HBM 스택을 두고, 실리콘 인터포저의 수천 배선으로 잇는 **2.5D 패키징**. 데이터 거리가 짧아지면 대역폭은 커지고 전력은 줄어듭니다. 큰 연산 다이 + 옆 메모리 = 현대 AI 가속기의 기본 형태.
+> **Core question: why put memory right next to the processor?**
+> An AI-accelerator-class GPU isn't a single chip — it's a package. HBM stacks sit on either side of a large compute die, connected by thousands of traces on a silicon interposer: **2.5D packaging**. Shorter data distances mean higher bandwidth and lower power. A large compute die plus memory beside it is the basic shape of a modern AI accelerator.
 
-## 구조 (아래 → 위, 일부 평면 배치)
+## Structure (bottom → top, some planar layout)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `substrate` | 패키지 기판 | 가장 큰 받침. 네이비 라우팅 텍스처 |
-| `bga` | BGA 솔더 볼 | 기판 아랫면 16×16 실버 볼 격자 |
-| `interposer` | 실리콘 인터포저 | GPU와 HBM이 함께 올라타는 회색 판. 아랫면 골드 C4 범프 |
-| `gpudie` | GPU 연산 다이 | 중앙의 큰 다이. **청록 포인트색** + "GPU" 각인 (블루 계열 메모리와 구분) |
-| `hbm` | HBM 스택 ×4 | GPU 양옆 2개씩. HBM 모델 형상을 간략화(베이스 + DRAM 4층 + "HBM" 각인) |
-| `lid` | 히트 스프레더 리드 | 패키지 전체를 덮는 브러시드 메탈 덮개 |
+| `substrate` | Package substrate | The largest base. Navy routing texture |
+| `bga` | BGA solder balls | 16×16 grid of silver balls on the underside of the substrate |
+| `interposer` | Silicon interposer | Gray plate carrying both the GPU and the HBM stacks. Gold C4 bumps on the bottom |
+| `gpudie` | GPU compute die | The large die in the center. **Teal accent color** + "GPU" mark (distinguishes it from the blue-family memory) |
+| `hbm` | HBM stacks ×4 | Two on each side of the GPU. A simplified version of the HBM model's geometry (base + 4 DRAM layers + "HBM" mark) |
+| `lid` | Heat-spreader lid | Brushed-metal cover over the whole package |
 
-## 동작 — 혼합 분해 + 2단계
+## Behavior — mixed exploding + 2 stages
 
-- **수직**: 리드는 위로, 기판은 아래로, GPU 다이는 들어올려짐.
-- **평면**: HBM 스택 4개는 각자 **바깥 방향**으로 펼쳐지며 살짝 들림 — 인터포저 위 배치가 드러납니다.
-- **2단계**: 분해 후반(t > 0.6)에 각 HBM 스택의 내부 층이 추가로 벌어집니다(`update` 훅). 상세한 층 구조는 [HBM 모델](../hbm/)이 담당하므로 여기서는 간략화.
+- **Vertical**: the lid lifts up, the substrate drops down, the GPU die is raised.
+- **Planar**: the 4 HBM stacks fan out **outward** and lift slightly — revealing their placement on the interposer.
+- **2 stages**: in the second half of the explode range (t > 0.6), each HBM stack's internal layers spread apart further (`update` hook). Detailed layer structure is handled by the [HBM model](../hbm/), so it's simplified here.
 
-## 옵션 (뷰어 좌상단 토글)
+## Options (top-left viewer toggle)
 
-- **HBM 스택** — ×4(기본) / ×2: 스택 수 구성을 바꿔 봅니다.
-- **리드(덮개)** — ON / OFF: 리드를 벗긴 베어 다이 보기(데이터센터 GPU의 흔한 외형).
+- **HBM stacks** — ×4 (default) / ×2: change how many stacks are configured.
+- **Lid** — ON / OFF: view a bare-die look with the lid removed (a common look for datacenter GPUs).
 
-## 주요 사양 (정보 패널·카탈로그에 표기)
+## Key specs (shown in the info panel / catalog)
 
-GPU die + HBM ×4 (2.5D) · 패키지 ≈ 70 × 70 mm · 연산 다이 ≈ 800 mm²(레티클 한계) · 4 nm · HBM ≈ 1 TB/s/스택 · Si 인터포저 ≈ 2,500 mm² · BGA 1,000+ 볼 · Ni 도금 Cu 리드
+GPU die + HBM ×4 (2.5D) · package ≈ 70 × 70 mm · compute die ≈ 800 mm² (reticle limit) · 4 nm · HBM ≈ 1 TB/s/stack · Si interposer ≈ 2,500 mm² · BGA 1,000+ balls · Ni-plated Cu lid
 
-## 학습 포인트 (정보 패널 facts에 반영)
+## Learning points (reflected in the info panel's facts)
 
-1. HBM을 GPU 옆 몇 mm에 두면 데이터 통로가 넓고 짧아져 **대역폭 ↑ · 전력 ↓**.
-2. 인터포저가 두 칩을 수천 가닥 미세 배선으로 잇는다 — 옆에 놓고 실리콘으로 잇는 방식 = **2.5D**.
-3. 노광 한계(레티클)까지 키운 연산 다이 + 옆 메모리 = AI 가속기의 기본형.
+1. Placing HBM a few mm from the GPU shortens and widens the data path — **higher bandwidth, lower power**.
+2. The interposer connects the two chips with thousands of fine traces — placing chips side by side and connecting them through silicon is **2.5D**.
+3. A compute die pushed to the lithography (reticle) limit, plus memory beside it, is the basic shape of an AI accelerator.
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 형상·재질·혼합 분해 벡터·스택 2단계 update 훅
-- [`data.ts`](data.ts) — 부품 6종 설명, 4개 언어 (lead / detail / facts / spec)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양
+- [`model.tsx`](model.tsx) — geometry, materials, mixed explode vectors, the stack's 2-stage update hook
+- [`data.ts`](data.ts) — descriptions for the 6 parts, in 4 languages (lead / detail / facts / spec)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec
 
-## 구현 메모
+## Implementation notes
 
-- HBM 스택의 다이 텍스처·라우팅 텍스처는 공용 모듈 캐시를 공유 — 스택이 4개여도 텍스처는 1장씩만 생성됩니다.
-- 조립 상태(t=0)에서는 리드가 전부 덮고 있는 게 정상입니다 — 실제 제품 외형이며, 분해 슬라이더가 내부를 드러내는 연출입니다.
+- The HBM stacks' die and routing textures share the shared module's cache — even with 4 stacks, each texture is generated only once.
+- In the assembled state (t=0), the lid normally covers everything — that's the real-world appearance; the explode slider is what reveals the interior.

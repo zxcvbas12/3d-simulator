@@ -1,37 +1,37 @@
-# 로켓 엔진 — 모델
+# Rocket Engine — Model
 
-> **핵심 질문: 추력은 어떻게 생기나?**
-> 액체 추진제 로켓 엔진(가스 발생기 사이클 · LOX/케로신)을 분해합니다. 터보펌프로 추진제를 고압으로 밀어 넣고, 인젝터로 뿜어 섞어 연소실에서 태운 뒤, 노즐로 초음속 가속해 그 반작용으로 추력을 얻습니다. 사이트의 **첫 회전체(원통·원뿔·벨) 형상** 모델입니다.
+> **Core question: how is thrust produced?**
+> Exploring a liquid-propellant rocket engine (gas-generator cycle · LOX/kerosene). A turbopump forces propellant in at high pressure, injectors spray and mix it, it burns in the combustion chamber, and the nozzle accelerates the exhaust to supersonic speed, producing thrust as the reaction. The site's **first body-of-revolution (cylinder/cone/bell) geometry** model.
 
-## 구조 (위 → 아래, 수직 추력축)
+## Structure (top → bottom, vertical thrust axis)
 
-| 부품 id | 부품 | 표현 |
+| Part id | Part | Representation |
 |---|---|---|
-| `gimbal` | 짐벌 마운트 | 맨 위 구조 링 + 스트럿 — 추력 전달 + 방향 조종(TVC) |
-| `turbopump` | 터보펌프 | 측면 원통(펌프+터빈+가스 발생기) — 추진제 가압 |
-| `injector` | 인젝터 돔 | 연소실 위 돔 + 분사 오리피스 격자(인스턴싱) |
-| `chamber` | 연소실 | 구리 벽 원통 + 목(throat), 절제된 골드 발광 |
-| `nozzle` | 노즐 벨 | 큰 팽창 벨(Lathe) — 표면 재생냉각 채널 |
-| `feedlines` | 추진제 배관 | 산화제(골드)·연료(블루) 튜브 + 매니폴드 링 |
+| `gimbal` | Gimbal mount | Structural ring + struts at the very top — transmits thrust and steers direction (TVC) |
+| `turbopump` | Turbopump | Cylindrical assembly on the side (pump + turbine + gas generator) — pressurizes the propellant |
+| `injector` | Injector dome | Dome over the combustion chamber + a grid of injection orifices (instanced) |
+| `chamber` | Combustion chamber | Copper-walled cylinder + throat, restrained gold glow |
+| `nozzle` | Nozzle bell | The large expansion bell (lathe) — regenerative cooling channels on the surface |
+| `feedlines` | Propellant lines | Oxidizer (gold) and fuel (blue) tubing + manifold ring |
 
-## 동작
+## Behavior
 
-- **분해**: 혼합 — 노즐이 아래로 크게 분리되며 목·인젝터를 드러내고, 짐벌·인젝터는 위로, 터보펌프·배관은 옆으로 빠집니다. 순차 전개(stagger) + 가감속.
-- **클릭**: 부품 강조(emissive) + 정보 패널(치수·입문↔심화 토글·출처).
-- 회전·줌·선택·패널은 공통 엔진 — 이 폴더 코드는 형상과 설명뿐입니다.
+- **Exploding**: mixed — the nozzle separates far downward, exposing the throat and injector, while the gimbal and injector move up and the turbopump and lines swing out to the side. Stagger + easing.
+- **Clicking**: highlights the part (emissive) + shows the info panel (dimensions, a basic↔detailed toggle, sources).
+- Rotation, zoom, selection, and the info panel are all handled by the shared engine — this folder's code is only geometry and descriptions.
 
-## 주요 사양 (정보 패널·카탈로그에 표기)
+## Key specs (shown in the info panel / catalog)
 
-추력(해면) ≈ 845 kN · 비추력 Isp ≈ 283 s(SL) / 312 s(vac) · 연소압 ≈ 100 bar · 추진제 LOX/RP-1 (O/F ≈ 2.3) · 사이클 가스 발생기 · 노즐 팽창비 ε ≈ 16 · 전체 높이 ≈ 3.1 m
+Thrust (sea level) ≈ 845 kN · specific impulse Isp ≈ 283 s (SL) / 312 s (vac) · chamber pressure ≈ 100 bar · propellants LOX/RP-1 (O/F ≈ 2.3) · cycle: gas generator · nozzle expansion ratio ε ≈ 16 · overall height ≈ 3.1 m
 
-## 파일
+## Files
 
-- [`model.tsx`](model.tsx) — 회전체 형상(Lathe 노즐·연소실, 인젝터, 터보펌프, 배관, 짐벌)·재질·분해 벡터
-- [`data.ts`](data.ts) — 부품 6종 설명, 4개 언어 (lead / detail / facts / spec / sources)
-- [`CLAUDE.md`](CLAUDE.md) — AI 협업용 모델 사양
+- [`model.tsx`](model.tsx) — body-of-revolution geometry (lathe nozzle/chamber, injector, turbopump, lines, gimbal), materials, explode vectors
+- [`data.ts`](data.ts) — descriptions for the 6 parts, in 4 languages (lead / detail / facts / spec / sources)
+- [`CLAUDE.md`](CLAUDE.md) — AI-collaboration model spec
 
-## 구현 메모
+## Implementation notes
 
-- 새 공용 텍스처 `makeChannelTexture`(재생냉각 채널)를 추가했고, 다른 부품은 기존 다이/금속 텍스처를 재사용합니다.
-- 연소실·노즐은 카테고리 강조색인 구리/브론즈(실제 재생냉각 연소실이 구리합금). 목에 절제된 골드 발광으로 연소를 암시.
-- 향후 확장: 노즐 냉각 채널 단면, HBM처럼 스택 2단계 분해 연출.
+- Added a new shared texture, `makeChannelTexture` (regenerative cooling channels); other parts reuse the existing die/metal textures.
+- The chamber and nozzle use the category's accent color, copper/bronze (real regenerative-cooling chambers are a copper alloy). A restrained gold glow at the throat hints at combustion.
+- Future extensions: a cross-section of the nozzle cooling channels, a 2-stage explode like HBM's.
