@@ -96,6 +96,19 @@ Append `?stats` to any model screen URL to show an FPS overlay (stats.js) for pe
 
 ---
 
+## Contributing
+
+`main` is protected — direct pushes are rejected. Every change goes through a branch and a pull request, and the `e2e` check (Playwright, see [CI workflow](.github/workflows/ci.yml)) must pass before it can be merged.
+
+```
+git checkout -b my-change
+# ...edit...
+git push -u origin my-change
+gh pr create
+```
+
+---
+
 ## Project Structure
 
 
