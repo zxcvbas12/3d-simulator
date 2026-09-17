@@ -10,9 +10,17 @@ import "./index.css";
 import App from "./App";
 import { BRAND } from "@shared/config";
 import { useAppStore } from "./shared/state/store";
+import { useRoute } from "./shared/state/route";
 
 document.title = `${BRAND} — 3D 학습 시뮬레이터`;
 document.documentElement.lang = useAppStore.getState().lang;
+
+// E2E test hook — canvas content isn't DOM-queryable, so Playwright reads/drives state
+// directly. import.meta.env.DEV is inlined to false in production builds, so this whole
+// block is dead-code-eliminated from the shipped bundle.
+if (import.meta.env.DEV) {
+  (window as unknown as { __STRATA_TEST__?: unknown }).__STRATA_TEST__ = { useAppStore, useRoute };
+}
 
 const root = document.getElementById("app");
 if (!root) throw new Error("#app mount not found");
