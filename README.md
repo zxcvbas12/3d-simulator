@@ -1,5 +1,7 @@
 # STRATA — 3D Learning Simulator
 
+![CI](https://github.com/zxcvbas12/3d-simulator/actions/workflows/ci.yml/badge.svg)
+
 > An educational website for exploring complex technical products through **3D exploded views**.
 > Rotate the product, expand (explode) and collapse (assemble) parts with scroll/pinch/slider, and click any part to see an explanation of its role.
 > **STRATA** is a placeholder brand name. It can be changed in one place: [`shared/config.ts`](shared/config.ts).
