@@ -3,6 +3,10 @@ dist/
 *.local
 .DS_Store
 
+# Playwright output
+/playwright-report/
+/test-results/
+
 # Claude Code 로컬(머신별) 설정 — 공유하지 않음
 .claude/settings.local.json
 
